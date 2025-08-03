@@ -4,9 +4,10 @@ import {
   useEffect
 } from 'react'
 import { signInWithPopup, GoogleAuthProvider , onAuthStateChanged} from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import {auth, db} from '../firebase.js'
 import {askai, askaiStream, relatedAI} from '../Gemini.js'
+
 import {
   useNavigate
 } from 'react-router'
@@ -32,7 +33,7 @@ import SearchTools from '../components/SearchTools.jsx';
 import Result from './Result.jsx';
 
 export default function Home() {
-
+  
   const HomeRef = useRef(null)
   const titleRef = useRef(null)
   const smallTitleRef = useRef(null)
@@ -53,6 +54,8 @@ export default function Home() {
   const  searchContainerRef = useRef(null)
 
   const genImageWrapper = useRef(null)
+  const customizeWrapper = useRef(null)
+
   const loginWrapper = useRef(null)
   
 
@@ -61,21 +64,24 @@ export default function Home() {
 
   const navigate = useNavigate()
 
-  const [smallTitleTxt, setSmallTitle] = useState("Home")
-
   const [btnState, setBtnState] = useState(false)
   const [animactive, setAnimactive] = useState(true)
   const [animations, setAnimations] = useState(true)
+  const [customAnimEnabled, setCustomAnimEnabled] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showRecents, setShowRecents] = useState(false)
   const [showGenImage, setShowGenImage] = useState(false)
+  const [showCusAI, setShowCusAI] = useState(false)
+  const [customPreferences, setCustomPreferences] = useState({})
+
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [drawerCollapsed, setDrawerCollapsed] = useState(true)
   const [showDialog, setShowDialog] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const [toastText, setToastText] = useState("")
   const [relatedQues, setRelatedQues] = useState([])
-  const [generativeModel, setGenerativeModel] = useState("2.0 Flash")
+  // const [generativeModel, setGenerativeModel] = useState("2.0 Flash")
+  const [proEnabled, setProEnabled] = useState(false)
 
   const [animState, setAnimState] = useState(true)
 
@@ -85,12 +91,14 @@ export default function Home() {
 
   const [image, setImage] = useState(null)
 
-  const [question, setQuestion] = useState()
+  const [question, setQuestion] = useState("")
   const [placeHolder, setPlaceHolder] = useState("")
 
   const [onSearch, setOnSearch] = useState(false)
 
   const [answering, setAnswering] = useState(false)
+
+  const [recentsChats, setRecentChats ] = useState([])
 
   const [chatID, setChatID] = useState("")
   const [isLoggedIn, setLoginState] = useState(false)
@@ -103,23 +111,40 @@ export default function Home() {
 
   const [user, setUser] = useState(null)
 
+  const [streamedAnswer, setStreamedAnswer] = useState("")
 
-  useEffect(()=>{
-    const unsubscribe = onAuthStateChanged(auth, (user)=>{
-      if(user){
-        setLoginState(true)
-        setUser(user)
-        if (loginWrapper.current) loginWrapper.current.classList.add("hide")
-        setTimeout(()=>{
-          setShowLoginDialog(false)
-        }, 200)
+
+    useEffect(()=>{
+      const unsubscribe = onAuthStateChanged(auth, async (user)=>{
+        if(user){
+          setLoginState(true)
+          setUser(user)
+
+          const chatsRef = collection(db, "users", user.uid, "chats");
+          const chatDocs = await getDocs(chatsRef);
+
+          const allChats = [];
+          chatDocs.forEach(doc => {
+            allChats.push({ id: doc.id, ...doc.data() });
+          });
+
+          const formattedChats = allChats.map((chat, index) => ({
+            title: chat.title,
+            index: index
+          }));
+
+          setRecentChats(formattedChats);
+
+          if (loginWrapper.current) loginWrapper.current.classList.add("hide")
+          setTimeout(()=>{
+            setShowLoginDialog(false)
+          }, 200)
 
         
-      }
-    })
-
-    return () => unsubscribe()
-  }, [])
+        }
+      })
+      return () => unsubscribe()
+    }, [])
 
   useEffect(() => {
     setAnimactive(animState)
@@ -136,6 +161,32 @@ export default function Home() {
     return result
   }
 
+  const getDate = () =>{
+    const now = new Date();
+
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = now.getFullYear();
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    return `Date: ${day} / ${month} / ${year}, Time: ${hours}:${minutes}`;
+
+  }
+
+  const deleteData = async () => {
+    const chatsRef = collection(db, "users", user.uid, "chats");
+    const chatsSnapshot = await getDocs(chatsRef);
+
+    const deletePromises = chatsSnapshot.docs.map((chatDoc) =>
+      deleteDoc(doc(db, "users", user.uid, "chats", chatDoc.id))
+    );
+
+    await Promise.all(deletePromises);
+    console.log("All chats deleted.");
+  };
+
   const genApiEndpoint = "https://queai-backend.vercel.app/api/genImage"
 
   const extractJsonFromText = (text) => {
@@ -151,17 +202,71 @@ export default function Home() {
 
 
 
-  const getResult = async (history, prompt, lang, resType) => {
+  // const getResult = async (history, prompt, lang, resType, onChunk) => {
+  //   try {
+  //     setRelatedQues(null)
+  //     const response = await askai(generativeModel, history, prompt, lang, resType)
+  //     getRelatedQues(response)
+  //     return response
+  //   } catch (err) {
+  //     console.log(err)
+  //     return null
+  //   }
+  // }
+ 
+
+
+
+
+
+  const getResult = async (history, prompt, currentTime, lang, resType, onChunk) => {
+
     try {
-      setRelatedQues(null)
-      const response = await askai(generativeModel, history, prompt, lang, resType)
-      getRelatedQues(response)
-      return response
+
+      setStreamedAnswer("")
+      
+      const response = await fetch('https://jude7733-queai.hf.space/chat/stream', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_input: (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}` ) + (`Current Time: ${currentTime}`) + (`Prompt: ${prompt}`),
+            model_name:"gemini-2.5-pro",
+
+            
+          }),
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error('Network response was not ok.');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break; 
+        }
+        const chunk = decoder.decode(value, { stream: true });
+        setStreamedAnswer((prev) => prev + chunk)
+        onChunk(chunk)
+      }
+
+      setAnswering(false);
+      getRelatedQues(streamedAnswer);
+
     } catch (err) {
       console.log(err)
-      return null
+      setAnswering(false)
+      onChunk("An error occured. Please try again.")
     }
   }
+
+
+
 
   const getRelatedQues = async(ans)=>{
     try {
@@ -265,10 +370,16 @@ export default function Home() {
     inputBox.style.height = 'auto';
     inputBox.style.height = inputBox.scrollHeight + 'px';
     setBtnState(false)
+    setQuestion("")
 
-    let prompt = que || question;
+    let prompt = que || (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}` ) + question
 
-    if(!toolMode || toolName !== "draw"){
+
+    let ques = que || (question);
+
+
+
+    if(!toolMode){
 
       if (!searched) {
         setSearched(true)
@@ -286,6 +397,10 @@ export default function Home() {
         homeContainerRef.current.classList.add('onsearch')
         setDrawerCollapsed(true)
         setOnSearch(true)
+      }
+
+      if(!(messages[0])){
+        setChatID(getRandomString(10))
       }
 
       const history = []
@@ -309,35 +424,60 @@ export default function Home() {
   
   
       setMessages([...messages, {
-        que: prompt,
+        que: ques,
         ans: ""
       }]);
   
       setAnswering(true);
       setRelatedQues(null);
 
-      
-      
-      (async ()=>{
+      const currentTime = getDate()
 
-        let streamedAnswer = "";
-        await askaiStream(generativeModel, history, prompt,(chunk) => {
-          streamedAnswer += chunk;
-          setMessages((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1].ans += chunk;
-            return updated;
+      if (proEnabled) {
+        (async () => {
+
+          let streamedAnswer = ""
+
+          await getResult(history, prompt, currentTime, searchLang, "fast", (chunk)=>{
+            streamedAnswer += chunk;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].ans += chunk;
+              return updated;
+            });
+            
+          })
+          
+        })()
+      } else {
+
+         (async ()=>{
+          let streamedAnswer = "";
+          await askaiStream("2.0 Flash", history, prompt, currentTime, (chunk) => {
+            streamedAnswer += chunk;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].ans += chunk;
+              return updated;
+            });
           });
-        });
-        setAnswering(false);
-        getRelatedQues(streamedAnswer);
-      })()
+          setAnswering(false);
+          getRelatedQues(streamedAnswer);
+        })()
+      }
 
     }else{
       if(toolMode && toolName === "draw"){
-        genImage(question)
-        setImage(null)
-        setShowGenImage(true)
+        if(question !== "") {
+          genImage(question)
+          setImage(null)
+          setShowGenImage(true)
+        }
+      }
+      if(toolMode && toolName === "code"){
+        if(question !== "") {
+          navigate(`/createProject?prompt=${question}`)
+        }
       }
     }
   }
@@ -356,6 +496,7 @@ export default function Home() {
             onSearch={onSearch}
             isLoggedIn={isLoggedIn}
             setShowSettings={setShowSettings}
+            recentsChats={recentsChats}
           />
             <div ref={homeContainerRef} style={{
               padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? "10px 10px 10px 80px" : "10px 10px 10px 0")) : "150px 0 0"
@@ -372,6 +513,7 @@ export default function Home() {
                 setShowSettings={setShowSettings}
                 setLoginState={setLoginState}
                 setShowDialog={setShowDialog}
+                setShowCusAI={setShowCusAI}
               />
               <div ref={introRef} className="intro">
                 <h1 ref={introTxt} className='introTxt' >{welcomeMsgHead}</h1>
@@ -399,8 +541,10 @@ export default function Home() {
                 setShowToast={setShowToast}
                 setToastText={setToastText}
                 ToastRef={ToastRef}
-                generativeModel={generativeModel}
-                setGenerativeModel={setGenerativeModel}
+                answering={answering}
+                user={user}
+                // generativeModel={generativeModel}
+                // setGenerativeModel={setGenerativeModel}
               />
               <SearchBox
                 ref={searchBoxRef}
@@ -413,7 +557,7 @@ export default function Home() {
                 setAnimactive={setAnimactive}
                 setOnSearch={setOnSearch}
                 searched={searched}
-                placeHolder= {`${toolMode ? (toolName === "draw" && "Describe your image" || toolName === "code" && "Write a code for..." || toolName === "summarise" && "Enter text to summarise " || toolName === "story" && "Write a story about..." || toolName === "learn" && "What is the..." ) : "Ask anything..."}`}
+                placeHolder= {`${toolMode ? (toolName === "draw" && "Describe your image" || toolName === "code" && "Describe your project" || toolName === "summarise" && "Enter text to summarise " || toolName === "story" && "Write a story about..." || toolName === "learn" && "What is the..." ) : "Ask anything..."}`}
                 onKeyDown={handleButtonClick}
                 setBtnState={setBtnState}
                 onLangChanged={setSearchLang}
@@ -421,6 +565,8 @@ export default function Home() {
                 toolName={toolName}
                 setToolMode={setToolMode}
                 searchContainerRef={searchContainerRef}
+                proEnabled={proEnabled}
+                setProEnabled={setProEnabled}
               />  
               <SearchTools
                 ref={toolsRef}
@@ -473,6 +619,11 @@ export default function Home() {
             auth={auth}
             setUser={setUser}
             setLoginState={setLoginState}
+            customAnimEnabled={customAnimEnabled}
+            setCustomAnimEnabled={setCustomAnimEnabled}
+            customPreferences={customPreferences}
+            setCustomPreferences={setCustomPreferences}
+            deletedata={deleteData}
           />
         }
         {
@@ -499,7 +650,7 @@ export default function Home() {
                     genImageWrapper.current.classList.add("hide")
                     setTimeout(()=>{
                       setShowGenImage(false)
-                    }, 300)
+                    }, 200)
                     }} >
                       <span className="material-symbols-outlined">close</span>
                   </div>
@@ -562,9 +713,16 @@ export default function Home() {
 
                     try{
                       const result = await signInWithPopup(auth, provider)
-
-                      console.log("signed in successful", result.user)
-
+                      const user = result.user;
+                      try {
+                        const docRef = doc(db, "users", user.uid)
+                        const docSnap = await getDoc(docRef)
+                        if(docSnap.exists){
+                          console.log("Doc data: ", docSnap.data())
+                        }
+                      } catch (err) {
+                        console.log(err)
+                      } 
                       setLoginState(true)
                     } catch (err){
                       console.log("error signin:", err)
@@ -577,6 +735,31 @@ export default function Home() {
                     <p>Continue with Google</p>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        {
+          showCusAI && 
+          <div className="customizeContainer">
+            <div className="customizeWrapper" ref={customizeWrapper}>
+              <div className="customizeHeader">
+                <h2>Customize Que AI</h2>
+                <div className="close-btn btn" onClick={() =>{
+                  customizeWrapper.current.classList.add("hide")
+                  setTimeout(()=>{
+                    setShowCusAI(false)
+                  }, 200)
+                  }} >
+                    <span className="material-symbols-outlined">close</span>
+                </div>
+              </div>
+              <div className="customizeBody">
+                  <p>Name your AI</p>
+                  <input type="text" placeholder='Name your AI' />
+                  <p>System instructions</p>
+                  <textarea name="" id="" placeholder='System instructions' rows={"1"}></textarea>
               </div>
             </div>
           </div>

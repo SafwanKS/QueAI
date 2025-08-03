@@ -35,7 +35,7 @@ const SearchTools = forwardRef(({
                 animState && setAnimactive(true)
                 }}>
                 <span className='material-symbols-outlined'>code</span>
-                <p>Write a code</p>
+                <p>Create a project</p>
             </div>
             <div className="tool" onClick={()=>{
                 // setQuestion("Can you summarise this text for me? ")

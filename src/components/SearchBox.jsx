@@ -31,7 +31,9 @@ const SearchBox = forwardRef(({
   toolMode,
   toolName, 
   setToolMode,
-  searchContainerRef
+  searchContainerRef,
+  setProEnabled, 
+  proEnabled
 }, ref) => {
   const navigate = useNavigate()
   const [rows,
@@ -40,14 +42,9 @@ const SearchBox = forwardRef(({
     setShowDialogBox] = useState(false)
   const [searchLang, setSearchLang] = useState('English')
   const [tempSearchLang, setTempSearchLang] = useState('English')
-  const [searchMode, setSearchMode] = useState('Balanced')
-  const [tempSearchMode, setTempSearchMode] = useState('Balanced')
-  
+
   const [showLangDialog,
     setShowLangDialog] = useState(false)
-  const [showTypeDialog,
-    setShowTypeDialog] = useState(false)
-    
     const languages = [
     "Afrikaans",
     "Albanian",
@@ -151,12 +148,7 @@ const SearchBox = forwardRef(({
       setTimeout(()=> {
         setShowLangDialog(false)
       }, 200)
-    } else if (dType === 'type') {
-      setShowDialogBox(false)
-      setTimeout(()=> {
-        setShowTypeDialog(false)
-      }, 200)
-    }
+    } 
   }
 
   const ifConfirm = (dType) => {
@@ -168,21 +160,12 @@ const SearchBox = forwardRef(({
       setTimeout(()=> {
         setShowLangDialog(false)
       }, 200)
-    } else if (dType === 'type') {
-      setSearchMode(tempSearchMode)
-      setShowDialogBox(false)
-      setTimeout(()=> {
-        setShowTypeDialog(false)
-      }, 200)
-    }
-
+    } 
   }
     
   const showDialog = (d) => {
     if (d === 'lang')
       setShowLangDialog(true)
-    else if (d === 'type')
-      setShowTypeDialog(true)
   }
   
   const inputBoxRef = useRef(null)
@@ -287,24 +270,29 @@ const SearchBox = forwardRef(({
         <div className='searchBoxButtonContainer'>
           {
             !animactive &&
-
-            <div className='chipContainer'>
-              <SelectionChip
-                  onClick={()=> {
-                    showDialog('type')
-                    setShowDialogBox(true)
-                  }} 
-                  icon={'bolt'}
-                  body={searchMode} />
-              <SelectionChip
-                  onClick={()=> {
-                    showDialog('lang')
-                    setShowDialogBox(true)
-                  }}
-                  icon={'language'}
-                  body={searchLang} />
-              <span className='blank' />
+            <>
+            <div className="btn add-btn">
+              <span className="material-symbols-outlined">add</span>
             </div>
+              <div className='chipContainer'>
+                <SelectionChip
+                    onClick={()=> {
+                      setProEnabled(!proEnabled)
+                    }} 
+                    icon={'bolt'}
+                    active={proEnabled}
+                    body={"Pro (Beta)"} />
+                <SelectionChip
+                    onClick={()=> {
+                      showDialog('lang')
+                      setShowDialogBox(true)
+                    }}
+                    icon={'language'}
+                    body={searchLang} />
+                <span className='blank' />
+              </div>
+            </>
+
           }
           
           <SmallBtn
@@ -312,7 +300,7 @@ const SearchBox = forwardRef(({
             state={btnState && !answering ? "active": "inactive"}
             bgcolor={`${toolMode && toolName }`}
             icon={"arrow_upward"}
-            onClick={handleButtonClick}
+            onClick={() => handleButtonClick()}
             />
         </div>
       </div>

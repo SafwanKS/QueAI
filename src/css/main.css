@@ -12,7 +12,7 @@
   color: var(--main-text);
   -ms-overflow-style: none;
   scrollbar-width: none; 
-  cursor: default;
+  /* cursor: default; */
 
   user-select: none;
   -webkit-user-select: none;

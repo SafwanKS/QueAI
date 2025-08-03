@@ -20,7 +20,7 @@ function Recents({setShowRecents, setShowDialog}) {
             </div>
             </div>
             <div className="recents-body">
-            jjs
+            
             </div>
         </div>
     </div>

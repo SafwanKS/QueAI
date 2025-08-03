@@ -18,7 +18,8 @@ const Header = forwardRef(({
   setShowLoginDialog, 
   user,
   setLoginState,
-  setShowDialog
+  setShowDialog,
+  setShowCusAI
 }, ref)=>{
   const navigate = useNavigate()
   const [route,
@@ -74,10 +75,10 @@ const Header = forwardRef(({
                   </div>
                  
                 </div>
-                <div className="customize-button pbtn" onClick={()=> setShowSettings(true)}>
+                {/* <div className="customize-button pbtn" onClick={()=> setShowCusAI(true)}>
                     <span className="material-symbols-outlined">chat_bubble</span>
                     <p>Customize Que AI</p>
-                  </div>
+                  </div> */}
                  <div className="settings-button pbtn" onClick={()=> setShowSettings(true)}>
                     <span className="material-symbols-outlined">settings</span>
                     <p>Settings</p>

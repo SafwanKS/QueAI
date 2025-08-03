@@ -1,0 +1,208 @@
+.editor{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #141414;
+    overflow: hidden;
+}
+
+.splash{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    background-color: #141414;
+    z-index: 1000;
+    pointer-events: auto;
+    visibility: visible;  
+}
+
+@keyframes fadein {
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+.splash *{
+    animation: fadein 1s;
+}
+.splash img{
+    height: 80px;
+    width: 80px;
+
+}
+
+.loading{
+    width: 100px;
+    height: 3px;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+}
+
+.loadingbar{
+    width: 80px;
+    height: 2px;
+    background-color: #f6f6f6;
+    position: absolute;
+    left: 100%;
+    animation: loadinganim 2.3s linear infinite;
+}
+
+@keyframes loadinganim{
+    0%{
+        width: 80px;
+        left: 100%;
+    }
+    50%{
+        left: -50%;
+        width: 50px;
+    }
+    100%{
+        width: 80px;
+        left: 100%;
+    }
+}
+
+.editorHeader{
+    min-height: 50px;
+    max-height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    overflow: hidden;
+    gap: 10px;
+
+
+}
+.editorHeader img{
+    height: 40px;
+    width: 40px;
+
+}
+
+.gap{
+    flex: 1;
+}
+
+.editorHeader h1{
+    font-family: GeneralSans-medium;
+}
+
+.runBtn{
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    gap: 5px;
+    border: 1px solid #636262;
+    border-radius: 30px ;
+    cursor: pointer;
+}
+
+.runBtn:hover{
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.runBtn span{
+    font-size: 18px;
+    margin-bottom: 2px;
+}
+
+.runBtn p{
+    font-size: 14px;
+    font-family: GeneralSans-Medium;
+}
+
+.subMenu{
+    padding: 0 10px;
+    display: flex;
+    gap: 5px;
+    height: 40px;
+    align-items: center;
+}
+
+.menuItem{
+    padding: 2px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.menuItem:hover{
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.editorWindow{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    position: relative;
+}
+
+.editorWindow .sideBar{
+    min-width: 300px;
+    padding: 10px;
+    border-right: 1px solid rgb(66, 64, 64);
+    overflow-y: scroll;
+}
+
+.code-editor{
+    flex: 3;
+    width: 100%;
+    height: 100vh;
+    pointer-events: auto;
+    cursor: auto;
+    position: relative;
+    overflow-y: scroll;
+    /* background-color: #222; */
+    /* padding-top: 10px; */
+}
+
+
+.projectName{
+    max-width: fit-content;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    background-color: transparent   ;
+    border: 1px solid transparent;
+    cursor: text;
+}
+
+.projectName:hover{
+    border: 1px solid #5a5858;
+}
+
+.sideBarItem{
+    width: 100%;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.sideBarItem:hover{
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.sideBarItem.active{
+    background-color: rgba(255, 255, 255, 0.10);
+}
+
+.cm-theme, .cm-editor{
+    min-height: calc(100vh - 70px) !important;
+}

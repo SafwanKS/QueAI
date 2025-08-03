@@ -1,6 +1,7 @@
 import React, {useEffect, useState, forwardRef} from "react";
 import ReactMarkdown from 'react-markdown';
-
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import {auth, db} from '../firebase.js'
 import '../css/LoadingBar.css'
 
 const Result = forwardRef(({
@@ -26,7 +27,9 @@ const Result = forwardRef(({
     setToastText,
     toastRef,
     generativeModel, 
-    setGenerativeModel
+    setGenerativeModel,
+    answering,
+    user
 }, ref)=>{
 
     const [showModelSelect, setShowModeSelect] = useState(false)
@@ -35,16 +38,15 @@ const Result = forwardRef(({
     if(messages[0]){
       const node = lastElement.current
       if(messages[messages.length - 1].ans == "" && node) node.scrollIntoView(true)
-      if(chatID){
-        localStorage.setItem(chatID, JSON.stringify(messages))
-        localStorage.setItem(messages[0].que, chatID)
-      }else{
-        const chatid = getRandomString(10)
-        setChatID(chatid)
-        setChats((prev) => {})
-        localStorage.setItem("chats", JSON.stringify(chats) )
-        localStorage.setItem(chatid, JSON.stringify(messages))
-        localStorage.setItem(messages[0].que, chatid)
+      if(chatID !== ""){
+        if(messages[messages.length - 1].ans && messages[messages.length - 1].ans !== null && messages[messages.length - 1].ans !== ""){
+            (async () => {
+                await setDoc(doc(db, "users", user.uid, "chats",  chatID), {
+                    title: messages[0].que,
+                    messages
+                })
+            })()
+        }
       }
     }
   }, [messages])
@@ -116,7 +118,7 @@ const Result = forwardRef(({
                 </div>
                 <div className="result-header-right">
 
-                    <div className="modelSelect">
+                    {/* <div className="modelSelect">
                         <div className="model-select-btn" onClick={()=> setShowModeSelect(!showModelSelect)} style={{
                             background: showModelSelect && "var(--dialog-bg)"
                         }}>
@@ -136,7 +138,7 @@ const Result = forwardRef(({
                                 }}>Gemini 2.5-Flash</div>
                             </div>
                         }
-                    </div>
+                    </div> */}
 
                     <div className="more_btn">
                         <span className="material-symbols-outlined">more_horiz</span>
@@ -156,12 +158,13 @@ const Result = forwardRef(({
                         message.ans && message.ans !== "" ?
                             (
                             <>
-                            <div className='resans markdown-output' >
-                                <ReactMarkdown>
-                                {message.ans}
-                                </ReactMarkdown>
-                            </div>
-                            <div className="actions">
+                                <div className='resans markdown-output' >
+                                    <ReactMarkdown>
+                                    {message.ans}
+                                    </ReactMarkdown>
+                                </div>
+                               
+                                <div className={`actions ${answering || "active"}`}>
                                 <div className="bigActions">
                                     <div className="actionBtn action-share" onClick={() => handleShare(message.que, message.ans)}>
                                     <span className="material-symbols-outlined">ios_share</span>
@@ -184,7 +187,9 @@ const Result = forwardRef(({
                                     </div>
                                 </div>
                             </div>
-                                <div className='line' ></div></>
+                            <div className='line' ></div>
+                               
+                            </>
                             )
                             :
                             (

@@ -24,8 +24,21 @@
 }
 
 .searchBox.toolmode{
-  height: 120px;
+  height: unset;
 }
+
+.searchBoxContainer.onsearch{
+  position: fixed;
+  bottom: 15px;
+  left: 0;
+  width: 100%;
+  justify-content: center;
+}
+
+.searchBoxContainer.onsearch .searchBox{
+  background-color: var(--dialog-bg);
+}
+
 
 
 .searchBox.active::after, .searchBox.active::before{
@@ -104,16 +117,6 @@
 }
 
 
-.searchBoxContainer.onsearch{
-  position: fixed;
-  bottom: 15px;
-  left: 0;
-  width: 100%;
-  justify-content: center;
-}
-
-
-
 .searchBoxInputContainer{
   padding-top: 10px;
   width: 100%;
@@ -125,6 +128,9 @@
   padding-top: 0 !important;
 }
 
+.searchBox.toolmode .chipContainer, .searchBox.toolmode .add-btn{
+  display: none;
+}
 
 .searchBoxInputContainer .searchTool{
   display: flex;
@@ -195,7 +201,7 @@
   margin-top: 25px;
 }
 
-.searchBox textarea{
+.searchBox .searchBoxInputContainer textarea{
   width: 100%;
   outline: none;
   border: none;
@@ -219,7 +225,7 @@
   background: rgba(40,57,70,1);
 }
 
-.searchBox.active{
+.searchBox.active, .searchBox.toolmode{
   flex-direction: row;
   align-items: center;
   height: 70px;
@@ -230,13 +236,15 @@
 }
 
 
-.searchBox.active .searchBoxInputContainer{
+.searchBox.active .searchBoxInputContainer, .searchBox.toolmode .searchBoxInputContainer{
   flex: 1;
   align-items: center;
   padding-top: 0;
 }
 
-.searchBox.active .searchBoxButtonContainer{
+
+
+.searchBox.active .searchBoxButtonContainer, .searchBox.toolmode .searchBoxButtonContainer{
   width: auto;
 }
 
@@ -250,7 +258,7 @@
   backdrop-filter: blur(10px);
 }
 
-.searchBox.active .sendBtn{
+.searchBox.active .sendBtn, .searchBox.toolmode .sendBtn{
   bottom: 15px;
 }
 
@@ -261,4 +269,23 @@
   background:  #272e45;;
 }
 
+.add-btn{
+  height: 100%;
+  aspect-ratio: 1/1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 50%;
+  margin-right: 5px;
+}
 
+
+.add-btn span{
+  font-size: 20px;
+}
+
+.add-btn:hover{
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}

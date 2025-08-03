@@ -10,11 +10,22 @@
   align-items: center;
   gap: 5px;
   /* background: #272e45; */
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(70, 137, 212, 0.15);
+  background-color: transparent;
   border-radius: 30px;
   justify-content: space-between;
   cursor: pointer;
+  position: relative;
+}
+
+.chip.active{
+  background-color: rgba(117, 167, 243, 0.15) !important;
+  /* backdrop-filter: blur(10px); */
+}
+
+.chip:hover{
+  background-color: rgba(255, 255, 255, 0.05);
+  /* backdrop-filter: blur(10px); */
 }
 
 .chip span{ 

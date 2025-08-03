@@ -2,7 +2,24 @@ import React, {useState, useEffect, useRef} from 'react'
 import {signOut} from "firebase/auth";
 import '../css/Settings.css'
 
-function Settings({animations, setShowSettings, setAnimState, animState, Logo, isLoggedIn, user, setShowLoginDialog, auth, setUser, setLoginState}) {
+function Settings({
+    animations, 
+    setShowSettings, 
+    setAnimState, 
+    animState, 
+    Logo, 
+    isLoggedIn, 
+    user, 
+    setShowLoginDialog, 
+    auth, 
+    setUser, 
+    setLoginState,
+    customAnimEnabled,
+    setCustomAnimEnabled,
+    customPreferences,
+    setCustomPreferences, 
+    deletedata
+}) {
 
 const [selectedSettingsItem, setSelectedSettingsItem] = useState("general")
 
@@ -10,6 +27,9 @@ const [selectedSettingsItem, setSelectedSettingsItem] = useState("general")
 const [showSettingsContent, setShowSettingsContent] = useState(false)
 
 const settingsWrapper = useRef(null)
+const cusNameRef = useRef(null)
+const cusPrefRef = useRef(null)
+const cusDescRef = useRef(null)
 
   return (
     <div className="settingsContainer">
@@ -73,7 +93,6 @@ const settingsWrapper = useRef(null)
                         selectedSettingsItem == "general" && 
                         <div className='general'>
                             <h3>Account</h3> 
-
                             <div className="accountContainer">
                                 <div className="profileContainer">
                                     {
@@ -119,6 +138,49 @@ const settingsWrapper = useRef(null)
                                     </div>
                                 </div>
                             </div>
+                            <div className="customizeAI">
+                                <h3>Customise Que AI</h3>
+
+                                <p>Your nickname</p>
+                                <input 
+                                    ref={cusNameRef}
+                                    type="text" 
+                                    placeholder='What should Que AI call you?'
+                                    defaultValue={
+                                        (customPreferences && customPreferences.userName) ? customPreferences.userName : null
+                                    }
+                                    />
+                                <p>Your preferences</p>
+                                <textarea
+                                    ref={cusPrefRef}
+                                    type="text" 
+                                    placeholder='Tell Que AI about you. ' 
+                                    rows={"4"}
+                                    defaultValue={
+                                        (customPreferences && customPreferences.preferences) ? customPreferences.preferences : null
+                                    }
+                                />
+                                <p>How Que AI want to be?</p>
+                                <textarea 
+                                    ref={cusDescRef}
+                                    type="text" 
+                                    placeholder='Describe how Ai wanted to be.' 
+                                    rows={"4"}
+                                    defaultValue={
+                                        (customPreferences && customPreferences.describe) ? customPreferences.describe : null
+                                    }
+                                />
+
+                                <div className="btn-container">
+                                    <div className="save-btn" onClick={()=>{
+                                        setCustomPreferences({
+                                            userName: cusNameRef.current.value,
+                                            preferences: cusPrefRef.current.value,
+                                            describe: cusDescRef.current.value
+                                        })
+                                    }}>Save</div>
+                                </div>
+                            </div>
                         </div>
                     }
                     {
@@ -130,12 +192,26 @@ const settingsWrapper = useRef(null)
                                     <div className="switch-btn"></div>
                                 </div>
                             </div>
-                            <div className="settings-item">
-                                <p className="item-name">Custom animation colour</p>
-                                <div className={`switch ${animations && "active"}`} onClick={() => setAnimState(!animState)} >
-                                    <div className="switch-btn"></div>
-                                </div>
-                            </div>
+                            {
+                                animations && 
+                                <>
+                                    <div className="settings-item">
+                                        <p className="item-name">Custom animation colour</p>
+                                        <div className={`switch ${customAnimEnabled && "active"}`} onClick={() => setCustomAnimEnabled(!customAnimEnabled)} >
+                                            <div className="switch-btn"></div>
+                                        </div>
+                                    </div>
+                                </>
+                            }
+                            
+                        </div>
+                    }
+
+                    {
+                        selectedSettingsItem == "datacontrols" &&
+                        <div className='datacontrols'>
+                            Delete my data
+                            <button onClick={deletedata}>Delete</button>
                         </div>
                     }
 

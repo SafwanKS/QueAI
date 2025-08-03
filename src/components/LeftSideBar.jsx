@@ -12,6 +12,7 @@ const LeftSideBar = forwardRef(({
   onSearch,
   isLoggedIn,
   setShowSettings,
+  recentsChats
 }, ref) =>{
 
   const [emptyChats, setEmptyChats] = useState(false)
@@ -67,6 +68,19 @@ const LeftSideBar = forwardRef(({
                   <h4>Login to see your recent chats</h4>
                 </div>
               </>
+            }
+
+            {
+              
+              recentsChats && recentsChats.length > 0 ? (
+                recentsChats.map((chat, index) =>(
+                  <div>
+                    {chat.title}
+                  </div>
+                ))
+              ) : (
+                <p>No recent chats</p>
+              )
             }
           </div>
         </div>

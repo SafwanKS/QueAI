@@ -2,7 +2,9 @@ import '../css/Login.css'
 export default function Login(props) {
   return (
     
-    <p>
+    <p style={{
+      color: "black"
+    }}>
       Login Page
     </p>
     

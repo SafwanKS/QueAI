@@ -1,6 +1,8 @@
 .settings-body{
   display: flex;
   flex-direction: row;
+
+  overflow: hidden;
 }
 
 .settingsMenuContainer{
@@ -30,12 +32,20 @@
   background-color: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(10px);
 }
+
+
+
+
 .settingsContentContainer{
   flex: 3;
 }
 
 .settings-body .general{
-  padding: 10px 15px  ;
+  padding: 10px 15px;
+
+  padding-bottom: 50px;
+
+  overflow-y: scroll;
 }
 
 
@@ -82,7 +92,7 @@
 
 
 .settings-item{
-  padding: 10px 25px;
+  padding: 10px 15px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -226,4 +236,54 @@
 .about-author{
   margin-top: 20px;
   text-align: center;
+}
+
+
+
+.customizeAI{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customizeAI h3{
+  margin: 15px 0 5px 0;
+}
+
+.customizeAI p{
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.customizeAI input, .customizeAI textarea{
+  width: 100%;
+  resize: none;
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  outline: none;
+  cursor: text;
+  font-size: 0.85em;
+}
+
+.customizeAI input:focus, .customizeAI textarea:focus{
+  border: 1px solid rgba(43, 82, 255, 0.521) !important;
+}
+.customizeAI .btn-container{
+width: 100%;
+display: flex;
+flex-direction: row-reverse;
+padding: 10px 0;
+}
+.customizeAI .save-btn{
+  padding: 8px 13px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.customizeAI .save-btn:hover{
+  background-color: rgba(255, 255, 255, 0.15);
 }
