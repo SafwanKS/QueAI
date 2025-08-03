@@ -1,6 +1,6 @@
 
 {
-    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+    "rewrites": [{ "source": "/(.*)", "destination": "/" }],
     "headers": [
         {
         "source": "/api/askai",
