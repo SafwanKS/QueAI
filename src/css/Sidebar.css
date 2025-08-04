@@ -5,7 +5,7 @@
   height: 100%;
   width: 300px;
   flex: 1;
-  /* backdrop-filter: blur(10px); */
+  /* backdrop-filterr: blur(10px); */
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
@@ -15,9 +15,11 @@
 .left-sidebar.collapsed{
   position: absolute;
   left: 10px;
+  /* left: 0; */
   top: 50%;
   transform: translateY(-50%);
   height: 97%;
+  /* height: 100%; */
   border-radius: 10px;
   z-index: 1000;
   width: 60px;
@@ -94,18 +96,26 @@
   right: 0;
   top: 0; */
   flex: 1;
-  background-color: rgba(255, 255, 255, 0.05);
+  /* background-color: rgba(255, 255, 255, 0.05); */
   position: relative;
   top: auto;
-  right: 10px;
-  height: 97%;
+  /* right: 10px; */
+  /* height: 97%; */
+  height: 100%;
   width: 250px;
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  backdrop-filterr: blur(10px);
+  /* border-radius: 20px; */
   /* animation: rightsideshow 0.5s ease; */
   display: none;
   flex-direction: column;
   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+}
+
+.home-wrapper.anim .right-sidebar{
+  right: 10px;
+  height: 97%;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 @keyframes leftsideshow {
@@ -186,7 +196,7 @@
 
 .sidebar-collapse-btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .left-sidebar-header h1{
@@ -201,7 +211,8 @@
   display: flex;
   flex-direction: column;
   padding: 10px 10px;
-  overflow-y: scroll;
+  overflow-y: hidden;
+  position: relative;
 }
 
 .right-sidebar-body{
@@ -224,7 +235,7 @@
   font-family: GeneralSans-Medium;
   cursor: pointer;
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .new_chat_button:hover{
@@ -247,6 +258,7 @@
 .recent-chats{
   margin-top: 20px;
   flex: 1;
+  height: 100%;
 }
 .recent-chats h3{
   font-family: GeneralSans-Medium;
@@ -274,7 +286,7 @@
 
 .sidebar-footer .setting-btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .sidebar-footer .setting-btn span{
@@ -357,7 +369,10 @@
   flex-direction: column;
   /* align-items: center;
   justify-content: center; */
-  gap: 20px;
+  position: relative;
+  overflow-y: scroll;
+  /* gap: 20px; */
+  padding: 10px 0 100px 0;
 }
 
 .no-recents{
@@ -383,4 +398,21 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;  
+}
+
+.recentChatItem{
+  min-height: 40px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.recentChatItem:hover{
+  background-color: rgba(255, 255, 255, 0.05);
 }

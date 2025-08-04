@@ -20,12 +20,12 @@
 
 .chip.active{
   background-color: rgba(117, 167, 243, 0.15) !important;
-  /* backdrop-filter: blur(10px); */
+  /* backdrop-filterr: blur(10px); */
 }
 
 .chip:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  /* backdrop-filter: blur(10px); */
+  /* backdrop-filterr: blur(10px); */
 }
 
 .chip span{ 

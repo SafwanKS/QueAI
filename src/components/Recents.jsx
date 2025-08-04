@@ -1,6 +1,6 @@
 import React, {useRef} from 'react'
 
-function Recents({setShowRecents, setShowDialog}) {
+function Recents({setShowRecents, setShowDialog, recentsChats, setChatMessages}) {
 
   const recentsWrapper = useRef(null)
 
@@ -13,14 +13,30 @@ function Recents({setShowRecents, setShowDialog}) {
               recentsWrapper.current.classList.add("hide")
               setTimeout(()=>{
                 setShowRecents(false)
-
               }, 200)
               }} >
                 <span className="material-symbols-outlined">close</span>
             </div>
             </div>
             <div className="recents-body">
-            
+            {
+              
+              recentsChats && recentsChats.length > 0 ? (
+                recentsChats.map((chat, index) =>(
+                  <div className='recentChatItem' onClick={()=>{
+                    setChatMessages(chat.messages)
+                    recentsWrapper.current.classList.add("hide")
+                    setTimeout(()=>{
+                      setShowRecents(false)
+                    }, 200)
+                  }}>
+                    <p>{chat.title}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No recent chats</p>
+              )
+            }
             </div>
         </div>
     </div>

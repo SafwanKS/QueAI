@@ -8,12 +8,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  border-radius: 30px 30px 0 0;
+  /* border-radius: 30px 30px 0 0; */
+  overflow-y: hidden;
 }
 
 
 .responses{
   position: relative;
+  height: 100%;
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
@@ -26,8 +28,9 @@
   gap: 15px;
   padding: 50px 0 150px 0;
   overflow-y: scroll;
-  
 }
+
+
 .responseDiv img{
   width: 100%;
   height: 180px;
@@ -102,7 +105,7 @@
   width: 100%;
   display: flex;
   align-items: center;
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
   position: absolute;
   top: 0;
   left: 0;
@@ -249,7 +252,7 @@
 
 .actions .bigActions .actionBtn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(5px);
+  backdrop-filterr: blur(5px);
 }
 
 .actions .quickActions{
@@ -297,4 +300,10 @@
 
 .bottom-spacer {
   height: 1000px; /* Enough to avoid overlay by search box */
+}
+@media (max-width: 768px) {
+  .result-body{
+    max-height: calc(100vh - 150px) !important;
+    overflow-y: scroll;
+  }
 }

@@ -29,12 +29,12 @@ h1, h2, h3, h4, h5, h6, p, span{
   pointer-events: none;
 }
 html{
-  height: 100%;
+  height: -webkit-fill-available;
   width: 100%;
   scroll-behavior: smooth;
 }
 body{
-  height: 100%;
+  height: -webkit-fill-available;
   width: 100%;
   font-family: GeneralSans-Regular;
   display: flex;

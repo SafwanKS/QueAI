@@ -12,7 +12,10 @@ const LeftSideBar = forwardRef(({
   onSearch,
   isLoggedIn,
   setShowSettings,
-  recentsChats
+  recentsChats,
+  setChatMessages,
+  setMessages,
+  shouldSaveChat
 }, ref) =>{
 
   const [emptyChats, setEmptyChats] = useState(false)
@@ -53,7 +56,14 @@ const LeftSideBar = forwardRef(({
         </div>
       </div>
       <div className="left-sidebar-body">
-        <div className="new_chat_button">
+        <div className="new_chat_button" onClick={(e)=> {
+            setMessages([])
+            e.target.style.opacity = "0.7"
+            setTimeout(() => {
+              e.target.style.opacity = "1"
+            }, 200);
+          }
+        }>
           <span className="material-symbols-outlined">add</span>
           <p>New chat</p>
         </div>
@@ -74,8 +84,18 @@ const LeftSideBar = forwardRef(({
               
               recentsChats && recentsChats.length > 0 ? (
                 recentsChats.map((chat, index) =>(
-                  <div>
-                    {chat.title}
+                  <div className='recentChatItem' onClick={(e)=>{
+                    shouldSaveChat.current = false
+                    setChatMessages(chat.messages)
+                    e.target.style.opacity = "0.7"
+                    setTimeout(() => {
+                      e.target.style.opacity = "1"
+                    }, 200);
+                  }}>
+                    <p>{chat.title}</p>
+                    <div className="more">
+                      <span className="material-symbols-outlined">more_horiz</span>
+                    </div>
                   </div>
                 ))
               ) : (

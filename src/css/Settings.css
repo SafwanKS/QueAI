@@ -30,7 +30,7 @@
 }
 .settings-menu-item.active, .settings-menu-item:hover{
   background-color: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 
@@ -54,7 +54,7 @@
   margin-top: 20px;
   display: flex;
   background-color: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -85,7 +85,7 @@
   justify-content: center;
 }
 
-.settings-body .animations, .general{
+.settings-body .animations, .general, .datacontrols{
   width: 100%;
   height: 100%;
 }
@@ -109,7 +109,7 @@
   height: 30px;
   border-radius: 30px;
   background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(0px);
   display: flex;
   align-items: center;
   padding: 0 5px;
@@ -181,7 +181,7 @@
   }
   .settings-menu-item.active{
     background-color: transparent;
-    backdrop-filter: none;
+    backdrop-filterr: none;
   }
   .settings-back{
     display: flex;
@@ -286,4 +286,14 @@ padding: 10px 0;
 
 .customizeAI .save-btn:hover{
   background-color: rgba(255, 255, 255, 0.15);
+}
+
+
+.delete-btn{
+  padding: 5px 10px;
+  border-radius: 10px;
+  background-color: rgba(168, 0, 0, 0.05);
+  font-size: 16px;
+  cursor: pointer;
+  color: rgb(218, 59, 59);
 }

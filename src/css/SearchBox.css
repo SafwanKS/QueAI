@@ -20,7 +20,6 @@
   margin: 0 10px;
   transition: height 0.3s ease, flex-direction 0.3s ease;
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(200px);
 }
 
 .searchBox.toolmode{
@@ -35,11 +34,18 @@
   justify-content: center;
 }
 
+@media (max-width: 768px) {
+  
+  .searchBoxContainer.onsearch{
+    
+    position: absolute;
+    bottom: 25px;
+  }
+}
+
 .searchBoxContainer.onsearch .searchBox{
   background-color: var(--dialog-bg);
 }
-
-
 
 .searchBox.active::after, .searchBox.active::before{
   content: "";
@@ -53,6 +59,15 @@
   background-image: conic-gradient(from var(--angle), transparent 50%, blue);
   z-index: -1;
   animation: spinBox 3s linear infinite;
+}
+
+@media (max-width: 768px){
+  /* .searchBox.active::after, .searchBox.active::before{
+    height: 106%;
+    width: 102%;
+    background-image: conic-gradient(from var(--angle), transparent 50%, rgb(40, 40, 255));
+    animation: spinBox 3s linear infinite ;
+  } */
 }
 
 .searchBox.active.red{
@@ -137,7 +152,7 @@
   align-items: center;
   gap: 5px;
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
   border-radius: 30px;
   padding: 10px 15px;
   position: relative;
@@ -179,7 +194,7 @@
   top: -10px;
   right: 0;
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 
@@ -230,9 +245,9 @@
   align-items: center;
   height: 70px;
   border-radius: 50px;
-  background: var(--dialog-bg);
+  background: #0a1333;
   transition: height 0.3s ease;
-  backdrop-filter: none;
+  backdrop-filterr: none;
 }
 
 
@@ -255,7 +270,7 @@
   right: 10px;
 
   background-color: rgba(255, 255, 255, 0.05) ;
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .searchBox.active .sendBtn, .searchBox.toolmode .sendBtn{
@@ -287,5 +302,5 @@
 
 .add-btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }

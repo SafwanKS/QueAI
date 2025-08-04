@@ -259,7 +259,7 @@ const SearchBox = forwardRef(({
             onKeyDown={e => {
               if (e.key === "Enter" && !e.ctrlKey) {
                 e.preventDefault();
-                !answering && onKeyDown();
+                !answering && window.innerWidth > 768 && onKeyDown();
               }
               if (e.key === "Enter" && e.ctrlKey) {
                 // Action for Ct

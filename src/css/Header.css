@@ -9,7 +9,7 @@
   align-items: center;
   /* background: rgba(16, 18, 24, 1) */
   z-index: 1;
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .header{
@@ -61,7 +61,7 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
   cursor: pointer;
 }
 
@@ -126,7 +126,7 @@
 
 .secondCol .btn:hover, .firstCol .btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .secondCol .btn span{
@@ -159,7 +159,7 @@
   width: 300px;
   /* height: 200px; */
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
   border-radius: 20px;
   position: absolute;
   top: 30px;
@@ -221,7 +221,7 @@
 .settings-button:hover, .logout-button:hover, .customize-button:hover{
   
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+  backdrop-filterr: blur(20px);
 
 }
 

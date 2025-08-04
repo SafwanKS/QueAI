@@ -1,6 +1,6 @@
 import React, {useEffect, useState, forwardRef} from "react";
 import ReactMarkdown from 'react-markdown';
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import {auth, db} from '../firebase.js'
 import '../css/LoadingBar.css'
 
@@ -29,7 +29,9 @@ const Result = forwardRef(({
     generativeModel, 
     setGenerativeModel,
     answering,
-    user
+    user,
+    getChats,
+    shouldSaveChat
 }, ref)=>{
 
     const [showModelSelect, setShowModeSelect] = useState(false)
@@ -38,16 +40,20 @@ const Result = forwardRef(({
     if(messages[0]){
       const node = lastElement.current
       if(messages[messages.length - 1].ans == "" && node) node.scrollIntoView(true)
-      if(chatID !== ""){
-        if(messages[messages.length - 1].ans && messages[messages.length - 1].ans !== null && messages[messages.length - 1].ans !== ""){
-            (async () => {
-                await setDoc(doc(db, "users", user.uid, "chats",  chatID), {
-                    title: messages[0].que,
-                    messages
-                })
-            })()
+        if(chatID !== "" && shouldSaveChat.current){
+            if(messages[messages.length - 1].ans && messages[messages.length - 1].ans !== null && messages[messages.length - 1].ans !== ""){
+                (async () => {
+                    await setDoc(doc(db, "users", user.uid, "chats",  chatID), {
+                        title: messages[0].que,
+                        messages: messages,
+                        timestamp: Date.now()
+                    })
+                    await getChats(user)
+                })()
+            }
+        }else{
+            console.log("chat id missing")
         }
-      }
     }
   }, [messages])
 

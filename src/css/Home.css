@@ -2,6 +2,7 @@
   height: 100%;
   width: 100%;
   display: flex;
+  position: relative;
 }
 
 .home-wrapper {
@@ -10,13 +11,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  backdrop-filter: blur(90px);
+  backdrop-filter: blur(0px);
+  background-color: rgb(8, 8, 14);
   overflow-y: hidden;
   justify-content: center;
-
+  position: relative;
   flex-direction: row;
-  gap: 10px;
+  /* gap: 10px; */
   transition:  scale 0.3s;
+}
+
+.home-wrapper.anim{
+  backdrop-filter: blur(90px);
+  background-color: transparent;
+  gap: 10px;
 }
 
 
@@ -39,11 +47,15 @@
 
 .homeContainer.onsearch{
   flex-direction: row;
-  gap: 10px;
+  /* gap: 10px; */
   padding: 10px 10px 10px 80px;
   align-items: center;
   position: relative;
 }
+
+.home-wrapper.anim .homeContainer.onsearch{
+  padding: 10px;
+} 
 
 @media (max-width: 768px){ 
   .homeContainer{
@@ -90,6 +102,7 @@
   position: relative;
   background: #000;
 }
+
 
 @property --angle{
   syntax: "<angle>";
@@ -184,120 +197,21 @@
 }
 
 
-.searchbox{
-  width: 600px;
-  background-color: var(--dialog-bg);
-  border-radius: 50px;
-  padding: 15px 10px;
-  display: flex;
-  align-items: center;
-  margin-top: 30px;
-  position: relative;
-  bottom: 0;
 
-  
-}
-
-.searchbox.onsearch{
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 15px;
-}
-
-.searchbox.active::after, .searchbox.active::before{
-  content: "";
-  position: absolute;
-  height: 105%;
-  width: 101%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50px;
-  background-image: conic-gradient(from var(--angle), transparent 50%, blue);
-  z-index: -1;
-  animation: spinBox 3s linear infinite;
-}
-
-.searchbox.active::after{
-  filter: blur(10px);
-  opacity: 1;
-}
-
-.searchbox .inputContainer{
-  width: 90%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  padding-left: 10px;
-  position: relative;
-}
-
-.searchbox .inputContainer textarea{
-  position: relative;
-  width: 100%;
-  outline: none;
-  border: none;
-  background: transparent;
-  font-size: 16px;
-  font-family: GeneralSans-Regular;
-  padding: 0 10px;
-  max-height: 120px;
-  word-wrap: break-word;
-  resize: none;
-  display: flex;
-  align-items: center;
-  cursor: text;
-  transition: height 0.3s linear;
-}
-
-.searchbox .inputContainer textarea:focus .searchbox{
-  border-radius: 10px;
-}
-
-
-
-.searchbox .buttonContainer{
-  width: 10%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.searchbox .buttonContainer .btn{
-  height: 40px;
-  aspect-ratio: 1/1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.searchbox .buttonContainer .btn.send:hover{
-  filter: brightness(1.5);
-}
-
-.btn.upload:hover{
-  background-color: #2d2f36;
-}
-
-.searchbox .buttonContainer .btn.send.inactive{
-  background-color: var(--button-bg);
-  pointer-events: none;
-}
-
-.searchbox .buttonContainer .btn.send.active{
-  background-color: var(--button-active);
-  pointer-events: auto;
-}
-
-
-@media (max-width: 768px){
-  .searchbox{
-    width: 90%;
+@media (max-width: 768px) {
+  /* .neon1, .neon2{
+    width: 100px;
+    height: 100px;
   }
+  .bg-wrapper{
+    display: none;
+  }
+  .home-wrapper{
+    backdrop-filter: blur(0);
+    background-color: rgb(14, 16, 26);
+  } */
 }
+
 
 @keyframes spinBox{
   0%{
@@ -339,7 +253,7 @@
 
 .tool:hover{
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 
@@ -373,11 +287,16 @@
   width: 800px;
   flex:3;
   height: 100%;
-  border-radius: 20px;
-  background-color: rgba(255, 255, 255, 0.05);
+  /* border-radius: 20px; */
+  /* background-color: rgba(255, 255, 255, 0.05); */
   display: none;
   animation: shows 0.5s ease;
   /* margin: 10px 0; */
+}
+
+.home-wrapper.anim .result{
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .result.show{
@@ -386,7 +305,7 @@
   align-items: center;
   position: relative;
   overflow-y: scroll;
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 @media (max-width: 768px){
@@ -429,7 +348,7 @@
 
 .model-select-btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .model-select-btn p, .model-select-item{
@@ -502,7 +421,7 @@
 
 .back_btn:hover, .more_btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .result .result-header h1{
@@ -572,8 +491,8 @@
   width: 800px;
   max-width: 100%;
   height: 500px;
-  background-color: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(10px);
+  background-color: rgb(8, 8, 14);
+  backdrop-filterr: blur(10px);
   border-radius: 20px;
   position: relative;
   display: flex;
@@ -666,7 +585,7 @@
 
 .related-ques-item:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
+  backdrop-filterr: blur(10px);
 }
 
 .related-ques-item p{
@@ -689,7 +608,7 @@
 
 .markdown-output pre{
   background-color: rgba(255, 255, 255, 0.05);
-  /* backdrop-filter: blur(10px); */
+  /* backdrop-filterr: blur(10px); */
   padding: 20px;  
   border-radius: 10px;
   word-wrap: break-word;
@@ -756,7 +675,7 @@
   cursor: pointer;
   gap: 15px;
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10);
+  backdrop-filterr: blur(10);
   padding: 15px 25px;
   border-radius: 30px;
 }

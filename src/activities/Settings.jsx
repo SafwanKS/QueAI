@@ -46,7 +46,7 @@ const cusDescRef = useRef(null)
                     </div>)
 
                 }
-                <div className="close-btn btn" onClick={() =>
+                <div className="close-btn btn" onClick={(e) =>
                     {
                         settingsWrapper.current.classList.add("hide")
                         setTimeout(() => {
@@ -59,28 +59,44 @@ const cusDescRef = useRef(null)
             </div>
             <div className="settings-body">
                 <div className={`settingsMenuContainer ${showSettingsContent && "hide"}`}>
-                    <div className={`settings-menu-item ${selectedSettingsItem === "general" && "active"}`}  onClick={()=> {
+                    <div className={`settings-menu-item ${selectedSettingsItem === "general" && "active"}`}  onClick={(e)=> {
+                        e.target.style.opacity = "0.7"
+                        setTimeout(() => {
+                            e.target.style.opacity = "1"
+                        }, 200);
                         setSelectedSettingsItem("general")
                         window.innerWidth < 768 && setShowSettingsContent(true)
                         }} >
                             {/* <span className="material-symbols-outlined">settings</span> */}
                             <h4>General</h4>
                         </div>
-                    <div className={`settings-menu-item ${selectedSettingsItem === "animation" && "active"}`} onClick={()=> {
+                    <div className={`settings-menu-item ${selectedSettingsItem === "animation" && "active"}`} onClick={(e)=> {
+                        e.target.style.opacity = "0.7"
+                        setTimeout(() => {
+                            e.target.style.opacity = "1"
+                        }, 200);
                         setSelectedSettingsItem("animation")
                         window.innerWidth < 768 && setShowSettingsContent(true)
                         }}>
                             {/* <span className="material-symbols-outlined">resume</span> */}
                             <h4>Animations</h4>
                         </div>
-                    <div className={`settings-menu-item ${selectedSettingsItem === "datacontrols" && "active"}`} onClick={()=> {
+                    <div className={`settings-menu-item ${selectedSettingsItem === "datacontrols" && "active"}`} onClick={(e)=> {
+                        e.target.style.opacity = "0.7"
+                        setTimeout(() => {
+                            e.target.style.opacity = "1"
+                        }, 200);
                         setSelectedSettingsItem("datacontrols")
                         window.innerWidth < 768 && setShowSettingsContent(true)
                         }}>
                             {/* <span className="material-symbols-outlined">database</span> */}
                             <h4>Data controls</h4>
                         </div>
-                    <div className={`settings-menu-item ${selectedSettingsItem === "about" && "active"}`}  onClick={()=> {
+                    <div className={`settings-menu-item ${selectedSettingsItem === "about" && "active"}`}  onClick={(e)=> {
+                        e.target.style.opacity = "0.7"
+                        setTimeout(() => {
+                            e.target.style.opacity = "1"
+                        }, 200);
                         setSelectedSettingsItem("about")
                         window.innerWidth < 768 && setShowSettingsContent(true)
                         }}>
@@ -120,8 +136,12 @@ const cusDescRef = useRef(null)
                                         }
                                     </p>
                                 </div>
-                                <div className="buttonContainer" onClick={()=>{
+                                <div className="buttonContainer" onClick={(e)=>{
                                     if(isLoggedIn && user){
+                                        e.target.style.opacity = "0.7"
+                                        setTimeout(() => {
+                                            e.target.style.opacity = "1"
+                                        }, 200);
                                         (async ()=>{
                                             await signOut(auth)
                                             setUser(null)
@@ -172,7 +192,11 @@ const cusDescRef = useRef(null)
                                 />
 
                                 <div className="btn-container">
-                                    <div className="save-btn" onClick={()=>{
+                                    <div className="save-btn" onClick={(e)=>{
+                                        e.target.style.opacity = "0.7"
+                                        setTimeout(() => {
+                                            e.target.style.opacity = "1"
+                                        }, 200);
                                         setCustomPreferences({
                                             userName: cusNameRef.current.value,
                                             preferences: cusPrefRef.current.value,
@@ -210,8 +234,21 @@ const cusDescRef = useRef(null)
                     {
                         selectedSettingsItem == "datacontrols" &&
                         <div className='datacontrols'>
-                            Delete my data
-                            <button onClick={deletedata}>Delete</button>
+
+                             <div className="settings-item">
+                                <p className="item-name">Delete chat data</p>
+                                <div className="delete-btn" onClick={(e)=>{
+                                    e.target.style.opacity = "0.7"
+                                    setTimeout(() => {
+                                        e.target.style.opacity = "1"
+                                    }, 200);
+
+                                    deletedata()
+                                    
+                                }}>
+                                    Delete
+                                </div>
+                            </div>
                         </div>
                     }
 

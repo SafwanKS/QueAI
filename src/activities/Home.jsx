@@ -62,6 +62,10 @@ export default function Home() {
   const lastElement = useRef(null)
   const ToastRef = useRef(null)
 
+
+  const shouldSaveChat = useRef(false);
+
+
   const navigate = useNavigate()
 
   const [btnState, setBtnState] = useState(false)
@@ -113,6 +117,46 @@ export default function Home() {
 
   const [streamedAnswer, setStreamedAnswer] = useState("")
 
+  const getChats = async (user) =>{
+    const chatsRef = collection(db, "users", user.uid, "chats");
+      const chatDocs = await getDocs(chatsRef);
+      const allChats = [];
+      chatDocs.forEach(doc => {
+        allChats.push({ id: doc.id, ...doc.data() });
+      });
+      allChats.sort((a, b) => {
+        if (!a.timestamp || !b.timestamp) return 0;
+        return b.timestamp - a.timestamp
+      });
+      const formattedChats = allChats.map((chat, index) => ({
+        title: chat.title,
+        messages: chat.messages,
+        index: index,
+        timestamp: chat.timestamp
+      }));
+      setRecentChats(formattedChats);
+  }
+
+  const setChatMessages = (messages) =>{
+    setSearched(true)
+    setMessages(messages)
+    introRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    resultRef.current.classList.add("show")
+    leftSidebarRef.current.classList.add("show")
+    rightSidebarRef.current.classList.add("show")
+    homeWrapperRef.current.style.paddingTop = "0"
+    // searchBoxRef.current.classList.add('onsearch')
+    searchContainerRef.current.classList.add('onsearch')
+    searchBoxRef.current.classList.remove('active')
+    homeContainerRef.current.classList.add('onsearch')
+    // setDrawerCollapsed(true)
+    setOnSearch(true)
+  }
+
+  
 
     useEffect(()=>{
       const unsubscribe = onAuthStateChanged(auth, async (user)=>{
@@ -120,20 +164,7 @@ export default function Home() {
           setLoginState(true)
           setUser(user)
 
-          const chatsRef = collection(db, "users", user.uid, "chats");
-          const chatDocs = await getDocs(chatsRef);
-
-          const allChats = [];
-          chatDocs.forEach(doc => {
-            allChats.push({ id: doc.id, ...doc.data() });
-          });
-
-          const formattedChats = allChats.map((chat, index) => ({
-            title: chat.title,
-            index: index
-          }));
-
-          setRecentChats(formattedChats);
+          await getChats(user)
 
           if (loginWrapper.current) loginWrapper.current.classList.add("hide")
           setTimeout(()=>{
@@ -163,7 +194,6 @@ export default function Home() {
 
   const getDate = () =>{
     const now = new Date();
-
     const day = String(now.getDate()).padStart(2, '0');
     const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
     const year = now.getFullYear();
@@ -199,24 +229,6 @@ export default function Home() {
       return null;
     }
   }
-
-
-
-  // const getResult = async (history, prompt, lang, resType, onChunk) => {
-  //   try {
-  //     setRelatedQues(null)
-  //     const response = await askai(generativeModel, history, prompt, lang, resType)
-  //     getRelatedQues(response)
-  //     return response
-  //   } catch (err) {
-  //     console.log(err)
-  //     return null
-  //   }
-  // }
- 
-
-
-
 
 
   const getResult = async (history, prompt, currentTime, lang, resType, onChunk) => {
@@ -372,6 +384,8 @@ export default function Home() {
     setBtnState(false)
     setQuestion("")
 
+    HomeRef.current.focus()
+
     let prompt = que || (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}` ) + question
 
 
@@ -382,6 +396,8 @@ export default function Home() {
     if(!toolMode){
 
       if (!searched) {
+
+        
         setSearched(true)
         introRef.current.classList.add("hide")
         toolsRef.current.classList.add("hide")
@@ -422,7 +438,9 @@ export default function Home() {
         )
       });
   
-  
+      shouldSaveChat.current = true;
+
+
       setMessages([...messages, {
         que: ques,
         ans: ""
@@ -445,24 +463,24 @@ export default function Home() {
               updated[updated.length - 1].ans += chunk;
               return updated;
             });
-            
           })
-          
+
         })()
       } else {
 
          (async ()=>{
-          let streamedAnswer = "";
-          await askaiStream("2.0 Flash", history, prompt, currentTime, (chunk) => {
-            streamedAnswer += chunk;
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1].ans += chunk;
-              return updated;
+            let streamedAnswer = "";
+            await askaiStream("2.0 Flash", history, prompt, currentTime, (chunk) => {
+              streamedAnswer += chunk;
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].ans += chunk;
+                return updated;
+              });
             });
-          });
-          setAnswering(false);
-          getRelatedQues(streamedAnswer);
+            
+            setAnswering(false);
+            getRelatedQues(streamedAnswer);
         })()
       }
 
@@ -487,7 +505,7 @@ export default function Home() {
       <div ref={HomeRef} className="home" style={{
         background: !animations && "var(--main-bg)"
       }} >
-        <div ref={homeWrapperRef} className={`home-wrapper`}>
+        <div ref={homeWrapperRef} className={`home-wrapper ${animations && "anim"}`}>
           <LeftSideBar
             ref={leftSidebarRef}
             drawerCollapsed={drawerCollapsed}
@@ -497,9 +515,12 @@ export default function Home() {
             isLoggedIn={isLoggedIn}
             setShowSettings={setShowSettings}
             recentsChats={recentsChats}
+            setChatMessages={setChatMessages}
+            setMessages={setMessages}
+            shouldSaveChat={shouldSaveChat}
           />
             <div ref={homeContainerRef} style={{
-              padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? "10px 10px 10px 80px" : "10px 10px 10px 0")) : "150px 0 0"
+              padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 80px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
             }} className="homeContainer" >
               <Header
                 ref={headerRef}
@@ -543,6 +564,8 @@ export default function Home() {
                 ToastRef={ToastRef}
                 answering={answering}
                 user={user}
+                getChats={getChats}
+                shouldSaveChat={shouldSaveChat}
                 // generativeModel={generativeModel}
                 // setGenerativeModel={setGenerativeModel}
               />
@@ -631,6 +654,8 @@ export default function Home() {
           <Recents 
             setShowRecents={setShowRecents}
             setShowDialog={setShowDialog}
+            recentsChats={recentsChats}
+            setChatMessages={setChatMessages}
           /> 
         }
         {
@@ -708,7 +733,11 @@ export default function Home() {
                   justifyContent: "center",
                   alignItems: "center"
                 }}>
-                  <div className="googlLoginBox" onClick={async () =>{
+                  <div className="googlLoginBox" onClick={async (e) =>{
+                    e.target.style.opacity = "0.7"
+                        setTimeout(() => {
+                            e.target.style.opacity = "1"
+                        }, 200);
                     const provider = new GoogleAuthProvider()
 
                     try{
