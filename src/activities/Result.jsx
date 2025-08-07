@@ -1,5 +1,6 @@
 import React, { useEffect, useState, forwardRef } from "react";
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from "remark-gfm";
 import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { auth, db } from '../firebase.js'
 import '../css/LoadingBar.css'
@@ -56,6 +57,7 @@ const Result = forwardRef(({
       }
     }
   }, [messages])
+
 
   const handleSave = (title, text) => {
     const blob = new Blob([text], { type: "text/plain" })
@@ -165,15 +167,11 @@ const Result = forwardRef(({
                     (
                       <>
                         <div className='resans markdown-output' >
-                          <ReactMarkdown components={{
-                            h1: ({ node, ...props }) => <h1 style={{ margin: '0.5em 0' }} {...props} />,
-                            h2: ({ node, ...props }) => <h2 style={{ margin: '0.4em 0' }} {...props} />,
-                            p: ({ node, ...props }) => <p style={{ margin: '0.2em 0' }} {...props} />,
-                            ul: ({ node, ...props }) => <ul style={{ margin: '0.2em 0' }} {...props} />,
-                            li: ({ node, ...props }) => <li style={{ margin: '0.1em 0' }} {...props} />,
-                          }}>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {message.ans}
                           </ReactMarkdown>
+
+                          
                         </div>
 
                         <div className={`actions ${answering || "active"}`}>

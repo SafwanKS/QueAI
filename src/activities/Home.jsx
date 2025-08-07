@@ -20,6 +20,7 @@ import Logo from '../assets/logosmall.png'
 import Gemini from "../assets/gemini.png"
 import '../css/Home.css'
 import '../css/Search.css'
+import '../css/loader.css'
 import SearchBox from '../components/SearchBox.jsx'
 import Header from '../components/Header.jsx';
 import GLogo from '../assets/google-logo.png'
@@ -470,7 +471,7 @@ export default function Home() {
 
          (async ()=>{
             let streamedAnswer = "";
-            await askaiStream("2.0 Flash", history, prompt, currentTime, (chunk) => {
+            await askaiStream("2.0 Flash", history, prompt, searchLang, currentTime, (chunk) => {
               streamedAnswer += chunk;
               setMessages((prev) => {
                 const updated = [...prev];
@@ -683,12 +684,28 @@ export default function Home() {
               </div>
               <div className="genImageBody">
                 {
-                  image && <img
+                  image ? <img
                       src={`data:${image.mimeType};base64,${image.base64Data}`}
                       alt="Generated"
                     />
+                  :
+                  <div className="loading">
+                    <div className="spinner">
+                      <div className="bar1"></div>
+                      <div className="bar2"></div>
+                      <div className="bar3"></div>
+                      <div className="bar4"></div>
+                      <div className="bar5"></div>
+                      <div className="bar6"></div>
+                      <div className="bar7"></div>
+                      <div className="bar8"></div>
+                      <div className="bar9"></div>
+                      <div className="bar10"></div>
+                      <div className="bar11"></div>
+                      <div className="bar12"></div>
+                    </div>
+                  </div>
                 }
-                
                 
               </div>
             </div>

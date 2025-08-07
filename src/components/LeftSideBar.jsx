@@ -71,18 +71,16 @@ const LeftSideBar = forwardRef(({
           <h3>Recents</h3>
           <div className="recent-chats-container">
             {
-              !isLoggedIn &&
+              !isLoggedIn ?
               <>
                 <div className="no-recents">
                   <span className="material-symbols-outlined">history</span>
                   <h4>Login to see your recent chats</h4>
                 </div>
               </>
-            }
-
-            {
-              
-              recentsChats && recentsChats.length > 0 ? (
+              :
+              (
+                recentsChats && recentsChats.length > 0 ? (
                 recentsChats.map((chat, index) =>(
                   <div className='recentChatItem' onClick={(e)=>{
                     shouldSaveChat.current = false
@@ -100,6 +98,7 @@ const LeftSideBar = forwardRef(({
                 ))
               ) : (
                 <p>No recent chats</p>
+              )
               )
             }
           </div>

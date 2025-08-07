@@ -307,3 +307,21 @@
     overflow-y: scroll;
   }
 }
+
+
+.resans h2 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+}
+.resans ul {
+  padding-left: 20px;
+}
+.resans table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.resans td, .resans th {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
