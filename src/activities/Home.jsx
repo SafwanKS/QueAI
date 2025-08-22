@@ -4,10 +4,11 @@ import {
   useEffect
 } from 'react'
 import { signInWithPopup, GoogleAuthProvider , onAuthStateChanged} from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, sum } from "firebase/firestore";
 import {auth, db} from '../firebase.js'
-import {askai, askaiStream, relatedAI} from '../Gemini.js'
-
+import {askai, askaiStream, relatedAI, summariseAI, createImageAI} from '../Gemini.js'
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from "remark-gfm";
 import {
   useNavigate
 } from 'react-router'
@@ -15,7 +16,6 @@ import axios from 'axios'
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import { Link } from 'react-router'
-import ReactMarkdown from 'react-markdown';
 import Logo from '../assets/logosmall.png'
 import Gemini from "../assets/gemini.png"
 import '../css/Home.css'
@@ -56,6 +56,7 @@ export default function Home() {
 
   const genImageWrapper = useRef(null)
   const customizeWrapper = useRef(null)
+  const summariseWrapper = useRef(null)
 
   const loginWrapper = useRef(null)
   
@@ -77,6 +78,7 @@ export default function Home() {
   const [showRecents, setShowRecents] = useState(false)
   const [showGenImage, setShowGenImage] = useState(false)
   const [showCusAI, setShowCusAI] = useState(false)
+  const [showSummarise, setShowSummarise] = useState(false)
   const [customPreferences, setCustomPreferences] = useState({})
 
   const [showLoginDialog, setShowLoginDialog] = useState(false)
@@ -110,6 +112,7 @@ export default function Home() {
   const [toolMode, setToolMode] = useState(false)
   const [toolName, setToolName] = useState("")
   const [welcomeMsgHead, setWelcomeMsgTxt] = useState("Meet Que AI")
+  const [summarisedText, setSummarisedText] = useState("")
 
   const [chats, setChats] = useState({})
   const [chatNames, setChatNames] = useState({})
@@ -156,6 +159,35 @@ export default function Home() {
     // setDrawerCollapsed(true)
     setOnSearch(true)
   }
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey && event.key.toLowerCase() === "u") {
+        event.preventDefault();
+        setAnimState(prev => !prev);
+      }
+      if(event.key === "Escape"){
+        setShowDialog(false)
+        setShowLoginDialog(false)
+        setShowRecents(false)
+        setShowSettings(false)
+      }
+      if (event.ctrlKey && event.key.toLowerCase() === "b") {
+        event.preventDefault();
+        setDrawerCollapsed(prev => !prev)
+      }
+      if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        setShowSettings(true)
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   
 
@@ -296,14 +328,10 @@ export default function Home() {
     }
   }
 
+
   const genImage = async(prompt) => {
     try{
-      const response = await axios.post(genApiEndpoint, {
-        prompt: prompt
-      })
-      const img = response.data
-
-      console.log(img)
+      const img = await createImageAI(prompt)
 
       if(img && img.base64Data){
         setImage(img)
@@ -372,6 +400,21 @@ export default function Home() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  const handleClearChat = () =>{
+    introRef.current.classList.remove("hide")
+    toolsRef.current.classList.remove("hide")
+    headerRef.current.classList.remove("hide")
+    resultRef.current.classList.remove("show")
+    leftSidebarRef.current.classList.remove("show")
+    rightSidebarRef.current.classList.remove("show")
+    homeContainerRef.current.style.paddingTop = "150px"
+    searchContainerRef.current.classList.remove('onsearch')
+    searchBoxRef.current.classList.add('active')
+    homeContainerRef.current.classList.remove('onsearch')
+    setSearched(false)
+    setMessages([])
   }
 
 
@@ -498,6 +541,24 @@ export default function Home() {
           navigate(`/createProject?prompt=${question}`)
         }
       }
+      if(toolMode && toolName === "summarise"){
+        if(question !== "") {
+          setShowSummarise(true);
+          (async()=>{
+            try {
+              await summariseAI(question, (chunk)=>{
+                setSummarisedText((prev) => {
+                  const text = prev + chunk
+                  return text
+                })
+              })
+            } catch (err) {
+              console.log(err);
+            }
+          })()
+          
+        }
+      }
     }
   }
 
@@ -519,6 +580,7 @@ export default function Home() {
             setChatMessages={setChatMessages}
             setMessages={setMessages}
             shouldSaveChat={shouldSaveChat}
+            handleClearChat={handleClearChat}
           />
             <div ref={homeContainerRef} style={{
               padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 80px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
@@ -536,6 +598,10 @@ export default function Home() {
                 setLoginState={setLoginState}
                 setShowDialog={setShowDialog}
                 setShowCusAI={setShowCusAI}
+                setAnimations={setAnimations}
+                animations={animations}
+                setAnimState={setAnimState}
+                animState={animState}
               />
               <div ref={introRef} className="intro">
                 <h1 ref={introTxt} className='introTxt' >{welcomeMsgHead}</h1>
@@ -567,6 +633,10 @@ export default function Home() {
                 user={user}
                 getChats={getChats}
                 shouldSaveChat={shouldSaveChat}
+                setMessages={setMessages}
+                relatedQues={relatedQues}
+                handleButtonClick={handleButtonClick}
+                handleClearChat={handleClearChat}
                 // generativeModel={generativeModel}
                 // setGenerativeModel={setGenerativeModel}
               />
@@ -591,6 +661,7 @@ export default function Home() {
                 searchContainerRef={searchContainerRef}
                 proEnabled={proEnabled}
                 setProEnabled={setProEnabled}
+                onSearch={onSearch}
               />  
               <SearchTools
                 ref={toolsRef}
@@ -622,12 +693,12 @@ export default function Home() {
           </div>
 
         <div className={`bg-wrapper ${toolMode && (toolName == "draw" && "red" || toolName == "code" && "green" || toolName == "summarise" && "blue" || toolName == "story" && "purple" || toolName == "learn" && "yellow" )} ${animations ? "active" : "inactive"}`}>
-          <div className="box1">
-            <div className="neon1"></div>
+          <div className="box">
+            {/* <div className="neon1"></div> */}
           </div>
-          <div className="box2">
+          {/* <div className="box2">
             <div className="neon2"></div>
-          </div>
+          </div> */}
         </div>
         {
           showSettings && 
@@ -806,6 +877,46 @@ export default function Home() {
                   <input type="text" placeholder='Name your AI' />
                   <p>System instructions</p>
                   <textarea name="" id="" placeholder='System instructions' rows={"1"}></textarea>
+              </div>
+            </div>
+          </div>
+        }
+        {
+          showSummarise && 
+          <div className="summariseContainer">
+            <div className="summariseWrapper" ref={summariseWrapper}>
+              <div className="summariseHeader">
+                <h2>Summarise text</h2>
+                <div className="close-btn btn" onClick={() =>{
+                  summariseWrapper.current.classList.add("hide")
+                  setTimeout(()=>{
+                    setShowSummarise(false)
+                    setSummarisedText("")
+                  }, 200)
+                  }} >
+                    <span className="material-symbols-outlined">close</span>
+                </div>
+              </div>
+              <div className="summariseBody">
+                {
+                  summarisedText && summarisedText !== "" ? (
+                    <div className='resans markdown-output' >
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {summarisedText}
+                      </ReactMarkdown>
+                    </div>
+                   
+                  ) : (
+                   <>
+                      <div className='loadingBars'>
+                        <div className='loadingBar' />
+                        <div className='loadingBar' />
+                        <div className='loadingBar' />
+                      </div>
+                    </>
+                  )
+                }
+                
               </div>
             </div>
           </div>

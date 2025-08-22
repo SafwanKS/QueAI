@@ -69,35 +69,59 @@
 }
 
 
-.resans *{
+.resans *, .resans{
   user-select: text;
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
+    cursor: text;
+  pointer-events: auto;
 }
+
 
 #response p{
   margin: 0;
   padding: 0;
   cursor: text;
   pointer-events: auto;
+  line-height: 1.3em;
+
+  /* font-family: "Work Sans", sans-serif; */
+  font-optical-sizing: auto;
+  font-weight: unset;
+  font-style: normal;
+
 }
 
+.resans ul{
+  list-style: none;
+}
+.resans li{
+  height: unset !important;
+  padding: 0 !important;
+}
 .actionBtn
 
 .responseDiv p{
   font-size: 1em;
   line-height: 1.5;
   color: var(--text-color);
-  font-family: GeneralSans-Regular;
+  font-family: GeneralSans-SemiBold;
+
 }
 
 .responseDiv{
   position: relative;
 }
 .responseDiv h1{
+  font-size: 30px;
+  /* letter-spacing: 0.3px; */
+}
 
-  
+@media (max-width: 768px) {
+  .responseDiv h1{
+    font-size: 24px;
+  }
 }
 
 /* .header{
@@ -258,9 +282,9 @@
 .actions .quickActions{
   display: flex;
   align-items: center;
-  justify-content: end;
+  /* justify-content: end; */
   gap: 10px;
-  flex: 1;
+  /* flex: 1; */
 }
 
 .actions .quickActions .actionBtn{
@@ -299,7 +323,7 @@
 
 
 .bottom-spacer {
-  height: 1000px; /* Enough to avoid overlay by search box */
+  height: 1000px;
 }
 @media (max-width: 768px) {
   .result-body{
@@ -314,7 +338,7 @@
   margin-top: 1rem;
 }
 .resans ul {
-  padding-left: 20px;
+  /* padding-left: 20px; */
 }
 .resans table {
   border-collapse: collapse;
@@ -324,4 +348,22 @@
   border: 1px solid #ccc;
   padding: 8px;
 }
+
+.response .related-ques{
+  flex: 0;
+  width: 100%;
+}
+
+
+.response .related-ques-list{
+  height: 130px !important;
+  opacity: 0;
+}
+
+
+.response .related-ques.active .response .related-ques-list{
+  opacity: 1;
+}
+
+
 

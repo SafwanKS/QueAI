@@ -14,6 +14,7 @@ import SelectionChip from '../components/SelectionChip.jsx'
 
 
 const SearchBox = forwardRef(({
+  homeContainerRef,
   handleInputChange,
   handleButtonClick,
   onKeyDown,
@@ -33,7 +34,8 @@ const SearchBox = forwardRef(({
   setToolMode,
   searchContainerRef,
   setProEnabled, 
-  proEnabled
+  proEnabled,
+  onSearch
 }, ref) => {
   const navigate = useNavigate()
   const [rows,
@@ -42,6 +44,22 @@ const SearchBox = forwardRef(({
     setShowDialogBox] = useState(false)
   const [searchLang, setSearchLang] = useState('English')
   const [tempSearchLang, setTempSearchLang] = useState('English')
+  const [showAddOnes, setShowAddOnes] = useState("")
+
+
+  useEffect(() => {
+      const handleKeyDown = (event) => {
+        if(event.key === "Escape"){
+          setShowAddOnes(false)
+        }
+      };
+  
+      window.addEventListener("keydown", handleKeyDown);
+  
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }, []);
 
   const [showLangDialog,
     setShowLangDialog] = useState(false)
@@ -168,37 +186,6 @@ const SearchBox = forwardRef(({
       setShowLangDialog(true)
   }
   
-  const inputBoxRef = useRef(null)
-  const searchBoxRef = useRef(null)
-  
-  // const handleInputChange = (event) => {
-  //   props.onChange(event)
-  //   const inputBox = inputBoxRef.current
-  //   const searchBox = searchBoxRef.current
-  //   inputBox.rows = inputBox.value.split('\n').length;
-  //   inputBox.style.height = 'auto';
-  //   inputBox.style.height = inputBox.scrollHeight + 'px';
-  //   setBtnState(inputBox.value.length > 0)
-    
-  // }
-  
-
- /* const handleBtnClick = () => { 
-    const inputBox = inputBoxRef.current
-    const searchBox = searchBoxRef.current
-    if (props.responseRef) {
-      const responseRef = props.responseRef
-      const resRef = responseRef.current
-    }
-    let query = inputBox.value.trim()
-    navigate(`/search?q=${query}&&lang=${props.language}&&type=${props.type}`)
-    inputBox.value = ""
-    inputBox.rows = inputBox.value.split('\n').length;
-    inputBox.style.height = 'auto';
-    inputBox.style.height = inputBox.scrollHeight + 'px';
-    setBtnState(false)
-  } */
-
   return(
     <>
     {
@@ -230,9 +217,16 @@ const SearchBox = forwardRef(({
         </Dialog>
     }
     
+    
 
     <div className="searchBoxContainer" ref={searchContainerRef}>
+      {/* <div className="filesContainer">
+
+      </div> */}
       <div className={`searchBox ${toolMode && "toolmode"} ${toolMode && (toolName == "draw" && "red" || toolName == "code" && "green" || toolName == "summarise" && "blue" || toolName == "story" && "purple" || toolName == "learn" && "yellow" )} ${animactive && "active"}`} ref={ref} onClick={()=> window.innerWidth > 768 && inputRef.current.focus()}>
+        {/* <div className="filesContainer">
+
+        </div>  */}
         <div className='searchBoxInputContainer'>
           {
             toolMode &&
@@ -271,8 +265,42 @@ const SearchBox = forwardRef(({
           {
             !animactive &&
             <>
-            <div className="btn add-btn">
-              <span className="material-symbols-outlined">add</span>
+            
+            <div className="btn-wrapper">
+              <div className={`btn add-btn ${showAddOnes && "active"}`} onClick={()=>{
+                setShowAddOnes(!showAddOnes)
+              }}>
+                <span className="material-symbols-outlined">add</span>
+              </div>
+
+              {
+                showAddOnes && (
+                  <div className="searchAddOnes">
+                    <div className="searchAddOne">
+                      <span className="material-symbols-outlined">attach_file</span>
+                      <p>Add photos & files</p>
+                    </div>
+
+                    <div className="line"></div>
+
+                    <div className="searchAddOne">
+                      <span className="material-symbols-outlined">draw</span>
+                      <p>Create an image</p>
+                    </div>
+
+                    <div className="searchAddOne">
+                      <span className="material-symbols-outlined">assignment</span>
+                      <p>Summarise text</p>
+                    </div>
+
+                    <div className="searchAddOne">
+                      <span className="material-symbols-outlined">book_2</span>
+                      <p>Learn a topic</p>
+                    </div>
+                  </div>
+                )
+              }
+              
             </div>
               <div className='chipContainer'>
                 <SelectionChip

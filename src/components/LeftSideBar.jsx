@@ -4,6 +4,8 @@ import { useLocation } from 'react-router'
 import '../css/Sidebar.css'
 import Logo from '../assets/logosmall.png';
 
+import GlobalTooltip from "./GlobalTooltip";
+
 const LeftSideBar = forwardRef(({
   leftSidebarRef,
   drawerCollapsed,
@@ -15,7 +17,17 @@ const LeftSideBar = forwardRef(({
   recentsChats,
   setChatMessages,
   setMessages,
-  shouldSaveChat
+  shouldSaveChat,
+  introRef,
+  toolsRef,
+  headerRef,
+  rightSidebarRef,
+  homeContainerRef,
+  searchContainerRef,
+  searchBoxRef,
+  setSearched,
+  resultRef,
+  handleClearChat
 }, ref) =>{
 
   const [emptyChats, setEmptyChats] = useState(false)
@@ -34,20 +46,19 @@ const LeftSideBar = forwardRef(({
     
   }, [])  
   
-
+ 
   return (
     <div ref={ref} className={`left-sidebar ${!(window.innerWidth < 768) ? (drawerCollapsed && "collapsed") : "closed"}`} style={{
-            display: window.innerWidth < 768 && onSearch ? "none" : "flex",
-            position: window.innerWidth < 768 && "absolute",
-            left: window.innerWidth < 768 && "0",
-            background: (window.innerWidth < 768 || (searched && drawerCollapsed)) && "rgba(13, 13, 15, 0.9)",
-            backdropFilter: window.innerWidth < 768 && "20px",
-            zIndex: "10000",
-
-          }} >
+      // display: window.innerWidth < 768 && onSearch ? "none" : "flex",
+      position: window.innerWidth < 768 && "absolute",
+      left: window.innerWidth < 768 && "0",
+      background: (window.innerWidth < 768 || (searched && drawerCollapsed)) && "var(--dialog-bg)",
+      backdropFilter: window.innerWidth < 768 && "20px",
+      zIndex: "10000",
+    }} >
       <div className="left-sidebar-header">
         <img src={Logo} alt="logo" />
-        <div className="sidebar-collapse-btn btn"  onClick={()=> {
+        <div className="sidebar-collapse-btn btn" title={`${drawerCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}`} onClick={()=> {
           window.innerWidth > 768 ?
           setDrawerCollapsed(!drawerCollapsed)
           : ref.current.classList.add("closed")
@@ -57,7 +68,7 @@ const LeftSideBar = forwardRef(({
       </div>
       <div className="left-sidebar-body">
         <div className="new_chat_button" onClick={(e)=> {
-            setMessages([])
+          handleClearChat()
             e.target.style.opacity = "0.7"
             setTimeout(() => {
               e.target.style.opacity = "1"
@@ -105,11 +116,11 @@ const LeftSideBar = forwardRef(({
         </div>
       </div>
       <div className="sidebar-footer">
-            <div className="setting-btn" onClick={()=> setShowSettings(true)}>
-              <span className="material-symbols-outlined">settings</span>
-              <p>Settings</p>
-            </div>
+        <div className="setting-btn" onClick={()=> setShowSettings(true)}>
+          <span className="material-symbols-outlined">settings</span>
+          <p>Settings</p>
         </div>
+      </div>
     </div>
   )
 

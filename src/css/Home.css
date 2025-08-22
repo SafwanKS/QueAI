@@ -22,7 +22,7 @@
 }
 
 .home-wrapper.anim{
-  backdrop-filter: blur(90px);
+  /* backdrop-filter: blur(90px); */
   background-color: transparent;
   gap: 10px;
 }
@@ -78,31 +78,39 @@
   display: none;
 }
 
-.box1{
+.box{
   width: 100%;
-  height: 50%;
-  display: flex;
-  justify-content: end;
+  height: 0;
+  box-shadow: 0 0 400px 50px blue;
   position: relative;
- 
   z-index: -1;
+  animation: showShadow 3s;
 }
 
-.box2{
-  width: 100%;
-  height: 50%;
-  display: flex;
-  justify-content: start;
+
+@keyframes showShadow{
+  from{
+    box-shadow: 0 0 100px 0px blue;
+  }
+  to{
+    box-shadow: 0 0 400px 50px blue;
+  }
 }
 
-.neon1, .neon2{
-  width: 400px;
-  height: 400px;
-  border-radius: 10px;
-  position: relative;
-  background: #000;
-}
+/* @media (max-width: 768px) {
+  .box{
+    box-shadow: 0 0 200px 350px rgba(0, 0, 255, 0.185);
+  }
 
+  @keyframes showShadow{
+  from{
+    box-shadow: 0 0 100px 0px blue;
+  }
+  to{
+    box-shadow: 0 0 200px 350px rgba(0, 0, 255, 0.185);
+  }
+}
+} */
 
 @property --angle{
   syntax: "<angle>";
@@ -110,37 +118,23 @@
   inherits: false;
 }
 
-.neon1::before, .neon1::after, .neon2::before, .neon2::after{
-  content: "";
-  position: absolute;
-  height: 130%;
-  width: 130%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: inherit;
-  background-image: conic-gradient(from var(--angle), transparent 40%, blue);
-  z-index: -1;
-  animation: spin 3s linear infinite;
+.bg-wrapper.red .box{
+  box-shadow: 0 0 400px 50px rgb(255, 0, 0);
 }
 
-.bg-wrapper.red .neon1::before, .bg-wrapper.red .neon1::after, .bg-wrapper.red .neon2::before, .bg-wrapper.red .neon2::after{
-  background-image: conic-gradient(from var(--angle), transparent 40%, rgb(255, 0, 0));
+.bg-wrapper.blue .box{
+  box-shadow: 0 0 400px 30px rgb(0, 60, 255);
 }
 
-.bg-wrapper.blue .neon1::before, .bg-wrapper.blue .neon1::after, .bg-wrapper.blue .neon2::before, .bg-wrapper.blue .neon2::after{
-  background-image: conic-gradient(from var(--angle), transparent 40%, rgb(0, 60, 255));
+.bg-wrapper.green .box{
+  box-shadow: 0 0 400px 30px rgb(0, 255, 21);
+}
+.bg-wrapper.purple .box{
+  box-shadow: 0 0 400px 30px rgb(89, 0, 255);
 }
 
-.bg-wrapper.green .neon1::before, .bg-wrapper.green .neon1::after, .bg-wrapper.green .neon2::before, .bg-wrapper.green .neon2::after{
-  background-image: conic-gradient(from var(--angle), transparent 40%, rgb(0, 255, 21));
-}
-.bg-wrapper.purple .neon1::before, .bg-wrapper.purple .neon1::after, .bg-wrapper.purple .neon2::before, .bg-wrapper.purple .neon2::after{
-  background-image: conic-gradient(from var(--angle), transparent 40%, rgb(89, 0, 255));
-}
-
-.bg-wrapper.yellow .neon1::before, .bg-wrapper.yellow .neon1::after, .bg-wrapper.yellow .neon2::before, .bg-wrapper.yellow .neon2::after{
-  background-image: conic-gradient(from var(--angle), transparent 40%, rgb(255, 153, 0));
+.bg-wrapper.yellow .box{
+  box-shadow: 0 0 400px 30px rgb(255, 153, 0);
 }
 
 
@@ -194,22 +188,7 @@
 .home .intro p{
   font-size: 20px;
   font-family: GeneralSans-Medium;
-}
-
-
-
-@media (max-width: 768px) {
-  /* .neon1, .neon2{
-    width: 100px;
-    height: 100px;
-  }
-  .bg-wrapper{
-    display: none;
-  }
-  .home-wrapper{
-    backdrop-filter: blur(0);
-    background-color: rgb(14, 16, 26);
-  } */
+  margin-bottom: 25px;
 }
 
 
@@ -297,6 +276,12 @@
 .home-wrapper.anim .result{
   border-radius: 20px;
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+@media (max-width: 768px){
+  .home-wrapper.anim .result{
+    border-radius: 0;
+  }
 }
 
 .result.show{
@@ -451,7 +436,7 @@
   display: flex;
 }
 
-.settingsContainer, .recentsContainer, .genImageContainer, .loginContainer, .customizeContainer{
+.settingsContainer, .recentsContainer, .genImageContainer, .loginContainer, .customizeContainer, .summariseContainer{
   position: fixed;
   width: 100%;
   height: 100%;
@@ -459,7 +444,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 @keyframes shows {
@@ -487,7 +472,7 @@
 
 
 
-.settings-wrapper, .recents-wrapper, .genImageWrapper, .loginWrapper, .customizeWrapper{
+.settings-wrapper, .recents-wrapper, .genImageWrapper, .loginWrapper, .customizeWrapper, .summariseWrapper{
   width: 800px;
   max-width: 100%;
   height: 500px;
@@ -501,8 +486,11 @@
   margin: 0 10px;
   overflow: scroll;
 }
-
-.settings-wrapper.hide, .recents-wrapper.hide, .genImageWrapper.hide, .loginWrapper.hide, .customizeWrapper.hide{
+/* .summariseWrapper{
+  height: unset;
+  max-height: 500px;
+} */
+.settings-wrapper.hide, .recents-wrapper.hide, .genImageWrapper.hide, .loginWrapper.hide, .customizeWrapper.hide, .summariseWrapper.hide{
   animation: hides 0.2s ease-in-out;
 }
 
@@ -514,7 +502,7 @@
   }
 }
 
-.settings-header, .recents-header, .genImageHeader, .loginHeader, .customizeHeader{
+.settings-header, .recents-header, .genImageHeader, .loginHeader, .customizeHeader, .summariseHeader{
   width: 100%;
   display: flex;
   align-items: center;
@@ -654,6 +642,13 @@
   align-items: center;
   padding: 10px;
 }
+
+.summariseBody{
+  height: calc(100% - 81px);
+  width: 100%;
+  padding: 10px;
+}
+
 
 .genImageBody img{
   max-width: 100%;

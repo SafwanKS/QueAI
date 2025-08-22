@@ -6,6 +6,7 @@ import '../css/Header.css'
 import Logo from '../assets/logosmall.png'
 import Avatar from '../assets/avatar.png'
 import SmallBtn from './SmallBtn.jsx'
+import GlobalTooltip from "./GlobalTooltip";
 
 const Header = forwardRef(({
   headerRef,
@@ -19,7 +20,11 @@ const Header = forwardRef(({
   user,
   setLoginState,
   setShowDialog,
-  setShowCusAI
+  setShowCusAI,
+  setAnimations,
+  animations,
+  setAnimState,
+  animState
 }, ref)=>{
   const navigate = useNavigate()
   const [route,
@@ -30,9 +35,11 @@ const Header = forwardRef(({
   }, [location])
   
   return(
+    
     <div ref={ref} className="header" style={{
       padding: !drawerCollapsed && "0 40px"
     }}>
+      <GlobalTooltip />
       <div className="firstCol">
         {
           window.innerWidth < 768 &&
@@ -43,6 +50,11 @@ const Header = forwardRef(({
         <h1>Que AI</h1>
       </div>
       <div className="secondCol">
+        <div className="btn animation" data-title='Toggle animation (Ctrl + u)' onClick={()=>{
+              setAnimState(!animState)
+            }} >
+              <span className="material-symbols-outlined">animation</span>
+            </div>
         {
           !isLoggedIn ?
           <div className='login-btn' onClick={() => setShowLoginDialog(true)}>
@@ -52,7 +64,8 @@ const Header = forwardRef(({
           </div>
           :
           <>
-            <div className="btn recents" title='Recents' onClick={()=>{
+            
+            <div className="btn recents" data-title='Recents' onClick={()=>{
               setShowDialog(true)
                setShowRecents(true)
             }} >

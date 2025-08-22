@@ -1,8 +1,10 @@
 .searchBoxContainer{
   width: 100%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   position: relative;
+  gap: 10px;
 }
 
 .searchBox{
@@ -22,13 +24,16 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+.searchBox.onsearch{
+  max-width: 650px;
+}
 .searchBox.toolmode{
   height: unset;
 }
 
 .searchBoxContainer.onsearch{
   position: fixed;
-  bottom: 15px;
+  bottom: 10px;
   left: 0;
   width: 100%;
   justify-content: center;
@@ -206,7 +211,7 @@
   width:100%;
   display: flex;
 }
-@media (min-width: 768px){
+/* @media (min-width: 768px){
   .searchBox{
     margin-top: 20px;
     
@@ -214,7 +219,7 @@
 }
 .home .searchBox{
   margin-top: 25px;
-}
+} */
 
 .searchBox .searchBoxInputContainer textarea{
   width: 100%;
@@ -250,6 +255,9 @@
   backdrop-filterr: none;
 }
 
+.searchBox.toolmode{
+  max-height: 200px;
+}
 
 .searchBox.active .searchBoxInputContainer, .searchBox.toolmode .searchBoxInputContainer{
   flex: 1;
@@ -287,20 +295,86 @@
 .add-btn{
   height: 100%;
   aspect-ratio: 1/1;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   border-radius: 50%;
   margin-right: 5px;
+  position: relative;
 }
-
 
 .add-btn span{
   font-size: 20px;
+  transition: all 0.3s;
 }
+
+.add-btn.active span{
+  transform: rotate(45deg);
+  scale: 1.1;
+}
+
 
 .add-btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
   backdrop-filterr: blur(10px);
+}
+
+.add-btn.active{
+  background-color: rgba(117, 167, 243, 0.15);
+}
+
+.btn-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+
+.searchAddOnes {
+  width: 180px;
+  background-color: rgb(23, 25, 46);
+  position: absolute;
+  bottom: 100%; /* stick it above the button */
+  left: 0;
+  z-index: 1000;
+  border-radius: 15px;
+  pointer-events: auto;
+  margin-bottom: 5px; /* small gap */
+  box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.5);
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.searchAddOne{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.searchAddOne:hover{
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.searchAddOne span{
+  font-size: 20px;
+}
+.searchAddOne p{
+  font-size: 15px;
+}
+
+.searchAddOnes .line{
+  margin: 5px 0;
+}
+
+
+.filesContainer{
+  height: 60px;
+  width: 100%;
+  background-color: var(--dialog-bg);
+  border-radius: 20px;
+  margin: 0 10px;
 }

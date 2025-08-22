@@ -22,25 +22,25 @@ const RightSideBar = forwardRef(({
         </div>
         <div className="right-sidebar-body">
             <div className="related-ques">
-            <ul className="related-ques-list">
-                {
-                    relatedQues !== null ?
-                        relatedQues.map((que, index) => 
-                            <li className="related-ques-item" onClick={()=> {
-                                setTimeout(()=>{
-                                    handleButtonClick(que)
-                                }, 100)
-                                
-                            }} key={index}>
-                                <p>{que}</p>
-                                <span className="material-symbols-outlined">arrow_outward</span>
-                            </li>
-                        )
-                    : 
-                        <></>
-                }
-                
-            </ul>
+                <ul className="related-ques-list">
+                    {
+                        relatedQues !== null ?
+                            relatedQues.map((que, index) => 
+                                <li className="related-ques-item" onClick={()=> {
+                                    setTimeout(()=>{
+                                        handleButtonClick(que)
+                                    }, 100)
+                                    
+                                }} key={index}>
+                                    <p>{que}</p>
+                                    <span className="material-symbols-outlined">arrow_outward</span>
+                                </li>
+                            )
+                        : 
+                            <></>
+                    }
+                    
+                </ul>
             </div>
             <div className="right-sidebar-footer">
             <div className="footer-logo">

@@ -41,6 +41,33 @@ const askai = async (generativeModel, history, prompt, lang, type) => {
     }
 }
 
+const createImageAI = async (prompt) =>{
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash-preview-image-generation",
+      contents: prompt,
+      config: {
+        responseModalities: [Modality.TEXT, Modality.IMAGE],
+      },
+    });
+    let mimeType = null;
+    let base64Data = null;
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData) {
+        
+        mimeType = part.inlineData.mimeType;
+        base64Data = part.inlineData.data;
+        break; 
+      }
+    }
+    return { mimeType, base64Data };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+
+
 const getCodeAI = async (prompt) =>{
   try{
     console.log("req recieved")
@@ -82,7 +109,7 @@ const askaiStream = async (generativeModel, history, prompt, language, currentTi
 
 
     const result = await chat.sendMessageStream({
-        message: `Current time : ${currentTime}. Prompt: ${prompt}, Language: ${language}`
+        message: `${currentTime !== null && currentTime !== undefined && `Current time: ${currentTime}`} Prompt: ${prompt}, Language: ${language}`
     });
 
     for await (const chunk of result) {
@@ -90,31 +117,53 @@ const askaiStream = async (generativeModel, history, prompt, language, currentTi
         onChunk(text);
     }
   } catch (err) {
-    // console.log(err);
+     console.log(err);
   }
 };
 
+const summariseAI = async (text, onChunk) =>{
+  try {
+    const chat = ai.chats.create({
+        model: "gemini-2.0-flash",
+        history: [],
+        config:{
+            systemInstruction: "You are a text summariser ai. You have to summarise the text user give to you."
+        }
+    });
+    const result = await chat.sendMessageStream({
+        message: `Summarise this text: ${text}`
+    });
+    for await (const chunk of result) {
+        const text = chunk.text;
+        onChunk(text);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 const relatedAI = async (ans) =>{
     try{
         const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: `Based on the following answer, generate 3 meaningful and relevant
-                    follow-up questions. Each question must be no longer than 6 words.
-                    Return your response strictly in this format and nothing else (without blackquotes and json text at first):
-                    {
-                    "que1": "",
-                    "que2": "",
-                    "que3": ""
-                    } Answer: ${ans} `
+          model: "gemini-2.0-flash",
+          contents: `Based on the following answer, generate 3 meaningful and relevant
+                      follow-up questions. Each question must be no longer than 6 words.
+                      Return your response strictly in this format and nothing else (without blackquotes and json text at first):
+                      {
+                      "que1": "",
+                      "que2": "",
+                      "que3": ""
+                      } Answer: ${ans} `
         })
         const responseText = response.text
         return responseText
   } catch (err) {
-    // console.log(err)
+     console.log(err)
   }
 }
 
 
 
-export {askai, askaiStream, relatedAI, getCodeAI}
+
+
+export {askai, askaiStream, relatedAI, getCodeAI, summariseAI, createImageAI}
