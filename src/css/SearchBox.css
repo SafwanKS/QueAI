@@ -6,6 +6,7 @@
   position: relative;
   gap: 10px;
   z-index: 10000;
+  pointer-events: none;
 }
 
 .searchBox{
@@ -24,6 +25,7 @@
   margin: 0 10px;
   transition: min-height 0.3s ease, flex-direction 0.3s ease;
   background: rgba(255, 255, 255, 0.05);
+  pointer-events: auto;
 }
 
 

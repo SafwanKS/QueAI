@@ -322,6 +322,12 @@
   flex: 1;
 }
 
+@media (min-width:768px) {
+  .result-header-left{
+    padding-left: 60px;
+  }
+}
+
 .back_btn, .more_btn{
   width: 40px;
   height: 40px;

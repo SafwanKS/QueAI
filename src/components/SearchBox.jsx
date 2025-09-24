@@ -192,6 +192,11 @@ const SearchBox = forwardRef(({
     if (d === 'lang')
       setShowLangDialog(true)
   }
+
+  const clearPreview = () =>{
+    addBtn.current.style.display = "flex"
+    fileInputContainer.current.style.display = "none"
+  }
   
   return(
     <>
@@ -259,17 +264,14 @@ const SearchBox = forwardRef(({
                       />
                       <div className="searchAddOne" onClick={() => fileInputRef.current.click()}>
                         <span className="material-symbols-outlined">attach_file</span>
-                        <p>Add photos & files</p>
+                        <p>Upload image</p>
                       </div>
                     </div>
                   )
                 }
               </div>
               <div className="filesContainer" ref={fileInputContainer}>
-                <div className="close-btn" onClick={()=>{
-                  addBtn.current.style.display = "flex"
-                  fileInputContainer.current.style.display = "none"
-                }}>
+                <div className="close-btn" onClick={clearPreview}>
                   <span className="material-symbols-outlined">close</span>
                 </div>
                 <img src={previewImage} alt="" />

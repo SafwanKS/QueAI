@@ -69,6 +69,9 @@ const Canvas = forwardRef(({
                             <div className="canvas-chat-item" key={index} ref={index === canvasImages.length - 1 ? lastElement : null}>
                                 <div className="user-prompt">
                                     {
+                                        item.previewImg && (<img src={item.previewImg} alt="preview" />)
+                                    }
+                                    {
                                         item.title && (<p>{item.title}</p>)
                                     }
                                 </div>

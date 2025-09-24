@@ -390,32 +390,6 @@ export default function Home() {
     setQuestion(e.target.value)
   }
 
-  // useEffect(()=>{
-  //   if(toolName !== ""){
-  //     if (introTxt.current) {
-  //     introTxt.current.classList.remove("change");
-  //     setTimeout(() => {
-  //      introTxt.current.classList.add("change");
-  //      setTimeout(() => {
-  //       setWelcomeMsgTxt(
-  //       `${
-  //         toolName ==="draw" && "Describe your image" ||
-  //         toolName ==="code" && "Describe your image"
-  //       }`
-  //      )
-  //      }, 500);
-  //     },);
-  //   }
-  //   }
-
-  //   return () => {
-  //     introTxt.current.classList.add("change");
-  //      setTimeout(() => {
-  //       setWelcomeMsgTxt("Meet Que AI")
-  //      }, 500);
-  //   }
-  // }, [toolName])
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -426,9 +400,7 @@ export default function Home() {
 
   const downloadImage = (obj) =>{
     if (!obj.img) return;
-
     const imageName = obj.title.replaceAll(' ', "-")
-
     const link = document.createElement("a")
     link.href = `data:${obj.img.mimeType};base64,${obj.img.base64Data}`;
     link.download = `${imageName}.${obj.img.mimeType.split('/')[1]}`;
@@ -450,16 +422,13 @@ export default function Home() {
 
 
   const generateImage = async (prompt) => {
-    // if (!file || !prompt) return alert("Upload an image and enter a prompt");
-
     try {
       const base64Image = await fileToBase64(uploadedImage);
       let newIndex;
         setCanvasImages(prev => {
           newIndex = prev.length;
-          return [...prev, { title: prompt, img: null }];
+          return [...prev, { title: prompt, img: null, previewImg: previewImage }];
       });
-
       const response = await ai.models.generateContent({
         model: "gemini-2.0-flash-preview-image-generation",
         contents: [
@@ -494,8 +463,6 @@ export default function Home() {
       }
 
       if (base64Data) {
-        // setResultImage(`data:${mimeType};base64,${base64Data}`);
-
         try{
           const img = {
             mimeType: mimeType,
