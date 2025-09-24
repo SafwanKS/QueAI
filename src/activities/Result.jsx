@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
 import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { auth, db } from '../firebase.js'
+import {getTitle} from '../Gemini.js'
 import '../css/LoadingBar.css'
 const Result = forwardRef(({
   introRef,
@@ -54,6 +55,8 @@ const Result = forwardRef(({
       if (chatID !== "" && shouldSaveChat.current) {
         if (messages[messages.length - 1].ans && messages[messages.length - 1].ans !== null && messages[messages.length - 1].ans !== "") {
           (async () => {
+            // const title = await getTitle(messages[0].que)
+            // alert(title)
             await setDoc(doc(db, "users", user.uid, "chats", chatID), {
               title: messages[0].que,
               messages: messages,

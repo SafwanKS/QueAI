@@ -222,6 +222,7 @@
   padding: 0 5px;
   display: flex;
   flex-direction: column;
+  font-family: "Poppins";
 }
 
 .new_chat_button{
@@ -348,6 +349,7 @@
 
 .footer-logo .logo-txt{
   font-family: GeneralSans-Medium;
+  font-family: "Poppins";
 }
 
 
@@ -358,8 +360,10 @@
 
 .dvlpr p a{
   font-family: GeneralSans-Medium;
+  font-family: "Poppins";
   pointer-events: auto;
   cursor: pointer;
+  font-weight: 600;
 }
 
 
@@ -395,6 +399,7 @@
 .no-recents h4{
   font-size: 18px;
   font-family: GeneralSans-Regular;
+  font-family: "Poppins", sans-serif;
   color: rgba(255, 255, 255, 0.5);
   white-space: nowrap;
   overflow: hidden;
@@ -428,3 +433,4 @@
   padding-left: 20px;
   
 }
+

@@ -42,13 +42,13 @@
 
 }
 
-.loading{
+/* .loading{
     width: 100px;
     height: 3px;
     display: flex;
     overflow: hidden;
     position: relative;
-}
+} */
 
 .loadingbar{
     width: 80px;

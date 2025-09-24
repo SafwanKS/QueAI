@@ -1,0 +1,214 @@
+.canvas-body{
+    max-width: 1000px;
+    align-items: center;
+    /* justify-content: center; */
+    padding: 0;
+}
+.canvas-home{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.canvas-header-col{
+    flex: 1;
+    display: flex;
+}
+.canvas-header-col:first-child{
+    padding: 0 60px;
+}
+.canvas-header-col:nth-child(2){
+    justify-content: center;
+    padding: 0 60px;
+
+}
+.canvas-header-col:last-child{
+    justify-content: end;
+    padding: 0 60px;
+
+}
+
+@media (max-width: 768px) {
+    .canvas-header-col{
+        padding: 0 !important;
+    }
+}
+
+.canvac-chip-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.canvas-chip{
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* background: #272e45; */
+  border: 1px solid rgba(70, 137, 212, 0.15);
+  background-color: transparent;
+  border-radius: 30px;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+
+}
+
+.canvas-chip:hover{
+}
+
+.canvas-chip span{ 
+  font-size: 20px;
+  color: rgb(247, 53, 53);
+  padding: 0;
+  margin: 0;
+}
+.canvas-chip p{
+  font-size: 14px;
+  color: rgb(247, 53, 53);
+  padding: 0;
+  margin: 0;
+}
+
+.imageStack{
+    /* width: 300px; */
+    display: flex;
+    position: relative;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.imageStack img{
+    height: 200px;
+    width: 150px;
+    object-fit: cover;
+    border-radius: 20px;
+    position: absolute;
+    box-shadow: 0 0 30px 10px black;
+}
+
+.imageStack img:nth-child(1){
+    left: -200px;
+    transform: rotate(-10deg);
+}
+.imageStack img:nth-child(2){
+    /* right: -150px; */
+    z-index: 100;
+    scale: 1.3;
+    
+}
+
+.imageStack img:nth-child(3){
+    right: -200px;
+    transform: rotate(10deg);
+}
+
+
+.canvas-chat{
+    height: 100%;
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    opacity: 0;
+    transition: all 0.3s;
+}
+
+.canvas-chat-item{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.canvas-chat-item:last-child{
+    min-height: 100%;
+}
+.user-prompt{
+    display: flex;
+    justify-content: end;
+}
+.user-prompt p{
+    padding: 10px 15px;
+    background-color: rgb(247, 53, 53);
+    border-radius: 20px 0 20px 20px;
+}
+.response-image{
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+.img-overlay{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    position: absolute;
+    /* filter: ; */
+    box-shadow: inset 0 30px 8px -8px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    padding: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+}
+
+.response-image:hover .img-overlay{
+    opacity: 1;
+    pointer-events: auto;
+    transition: all 0.3s;
+}
+.img-overlay .download-btn{
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+}
+.img-overlay .download-btn:hover{
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.response-image img{
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.imageLoading{
+    height: 300px;
+    width: 300px;
+    background-image: conic-gradient();
+}
+
+
+.hideCanvas{
+    animation: hidecan 0.3s;
+}
+
+@keyframes hidecan {
+    from{
+        /* scale: 1; */
+        opacity: 1;
+    }
+    to{
+        /* scale: 0; */
+        opacity: 0;
+    }
+}
+
+.showCanvas{
+    /* animation: showcan 0.3s; */
+    opacity: 1;
+    transition: all 0.3s;
+}
+
+@keyframes showcan {
+    from{
+        /* scale: 0; */
+        opacity: 0;
+    }
+    to{
+        /* scale: 1; */
+        opacity: 1;
+    }
+}

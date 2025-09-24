@@ -7,7 +7,10 @@ const SearchTools = forwardRef(({
     setToolMode,
     setToolName,
     setAnimactive, 
-    animState
+    animState,
+    searchContainerRef,
+    showCanvasWindow,
+    setCustomePlaceHolder
 }, ref)=>{
     return (
         <div ref={ref} className="toolsContainer">
@@ -18,6 +21,9 @@ const SearchTools = forwardRef(({
                 }, 200);
                 setToolMode(true)
                 setToolName("draw")
+                // searchContainerRef.current.classList.add("onsearch")
+                showCanvasWindow()
+                setCustomePlaceHolder("Describe your image")
                 setTimeout(() => {
                     inputRef.current.focus()
                 }, 100);

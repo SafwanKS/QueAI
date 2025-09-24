@@ -5,12 +5,14 @@
   align-items: center;
   position: relative;
   gap: 10px;
+  z-index: 10000;
 }
 
 .searchBox{
   width: 90%;
-  height: 110px;
-  max-height: unset;
+  min-height: 110px;
+  /* height: 110px; */
+  max-height: ;
   max-width: 600px;
   display: flex;  
   flex-direction: column;
@@ -20,9 +22,11 @@
   padding: 10px;
   position: relative;
   margin: 0 10px;
-  transition: height 0.3s ease, flex-direction 0.3s ease;
+  transition: min-height 0.3s ease, flex-direction 0.3s ease;
   background: rgba(255, 255, 255, 0.05);
 }
+
+
 
 .searchBox.onsearch{
   max-width: 650px;
@@ -33,7 +37,7 @@
 
 .searchBoxContainer.onsearch{
   position: fixed;
-  bottom: 10px;
+  bottom: 20px;
   left: 0;
   width: 100%;
   justify-content: center;
@@ -50,6 +54,10 @@
 
 .searchBoxContainer.onsearch .searchBox{
   background-color: var(--dialog-bg);
+}
+
+.searchBoxContainer.onsearch .searchBox .chipContainer{
+  margin-left: 20px;
 }
 
 .searchBox.active::after, .searchBox.active::before{
@@ -148,7 +156,7 @@
   padding-top: 0 !important;
 }
 
-.searchBox.toolmode .chipContainer, .searchBox.toolmode .add-btn{
+.searchBox.toolmode .chipContainer{
   display: none;
 }
 
@@ -192,19 +200,20 @@
   text-transform: capitalize;
 }
 
-.searchBoxInputContainer .searchTool .close-btn{
+.searchBoxInputContainer .searchTool .close-btn, .filesContainer .close-btn{
   height: 20px;
   width: 20px;
   position: absolute;
-  top: -10px;
+  top: -5px;
   right: 0;
   background-color: rgba(255, 255, 255, 0.05);
   backdrop-filterr: blur(10px);
 }
 
 
-.searchBoxInputContainer .searchTool .close-btn span{
+.searchBoxInputContainer .searchTool .close-btn span, .filesContainer .close-btn span{
   color: white;
+  font-size: 14px;
 }
 
 .searchBoxButtonContainer{
@@ -228,6 +237,7 @@
   background: transparent;
   font-size: 16px;
   font-family: GeneralSans-Regular;
+  font-family: "Poppins";
   padding: 0 10px;
   max-height: 120px;
   word-wrap: break-word;
@@ -248,11 +258,14 @@
 .searchBox.active, .searchBox.toolmode{
   flex-direction: row;
   align-items: center;
-  height: 70px;
+  justify-content: center;
+  min-height: unset;
+  min-height: 70px;
+  max-height: 70px;
   border-radius: 50px;
   background: #0a1333;
   transition: height 0.3s ease;
-  backdrop-filterr: none;
+  
 }
 
 .searchBox.toolmode{
@@ -294,6 +307,7 @@
 
 .add-btn{
   height: 100%;
+  min-height: 40px; 
   aspect-ratio: 1/1;
   display: inline-flex;
   justify-content: center;
@@ -331,7 +345,7 @@
 
 
 .searchAddOnes {
-  width: 180px;
+  width: 200px;
   background-color: rgb(23, 25, 46);
   position: absolute;
   bottom: 100%; /* stick it above the button */
@@ -363,7 +377,7 @@
   font-size: 20px;
 }
 .searchAddOne p{
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .searchAddOnes .line{
@@ -372,9 +386,21 @@
 
 
 .filesContainer{
-  height: 60px;
-  width: 100%;
-  background-color: var(--dialog-bg);
+  height: 55px;
+  aspect-ratio: 1/1;
+  max-width: 600px;
+  background-color: rgba(255, 255, 255, 0.05);
+  z-index: 1000;
   border-radius: 20px;
-  margin: 0 10px;
+  /* margin: 0 10px; */
+  display: none;
+  position: relative;
+}
+
+
+.filesContainer img{
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
+  object-fit: cover;
 }

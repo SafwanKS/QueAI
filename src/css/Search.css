@@ -114,8 +114,10 @@
   position: relative;
 }
 .responseDiv h1{
-  font-size: 30px;
+  font-size: 28px;
   /* letter-spacing: 0.3px; */
+  user-select: text;
+  pointer-events: auto;
 }
 
 @media (max-width: 768px) {

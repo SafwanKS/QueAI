@@ -35,7 +35,11 @@ const SearchBox = forwardRef(({
   searchContainerRef,
   setProEnabled, 
   proEnabled,
-  onSearch
+  onSearch,
+  fileInputRef,
+  handleFileChange,
+  uploadedImage,
+  previewImage
 }, ref) => {
   const navigate = useNavigate()
   const [rows,
@@ -45,6 +49,9 @@ const SearchBox = forwardRef(({
   const [searchLang, setSearchLang] = useState('English')
   const [tempSearchLang, setTempSearchLang] = useState('English')
   const [showAddOnes, setShowAddOnes] = useState("")
+
+  const addBtn = useRef(null)
+  const fileInputContainer = useRef(null)
 
 
   useEffect(() => {
@@ -215,14 +222,12 @@ const SearchBox = forwardRef(({
             }
           </ul>
         </Dialog>
-    }
+    } 
     
     
 
     <div className="searchBoxContainer" ref={searchContainerRef}>
-      {/* <div className="filesContainer">
-
-      </div> */}
+      
       <div className={`searchBox ${toolMode && "toolmode"} ${toolMode && (toolName == "draw" && "red" || toolName == "code" && "green" || toolName == "summarise" && "blue" || toolName == "story" && "purple" || toolName == "learn" && "yellow" )} ${animactive && "active"}`} ref={ref} onClick={()=> window.innerWidth > 768 && inputRef.current.focus()}>
         {/* <div className="filesContainer">
 
@@ -230,13 +235,54 @@ const SearchBox = forwardRef(({
         <div className='searchBoxInputContainer'>
           {
             toolMode &&
-            <div className="searchTool">
-              <span className={`${toolName} material-symbols-outlined`}>{toolName == "draw" && "draw" || toolName == "code" && "code" || toolName == "summarise" && "assignment" || toolName == "story" && "ink_pen" || toolName == "learn" && "book_2" }</span>
-              <p>{toolName}</p>
-              <div className="close-btn" onClick={()=> setToolMode(false)}>
-                <span className="material-symbols-outlined">close</span>
+            <>
+              <div className="btnWrapper">
+                <div className={`btn add-btn ${showAddOnes && "active"}`} ref={addBtn} onClick={()=>{
+                  setShowAddOnes(!showAddOnes)
+                }}>
+                  <span className="material-symbols-outlined">add</span>
               </div>
-          </div>
+                {
+                  showAddOnes && (
+                    <div className="searchAddOnes">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={(e)=> {
+                          handleFileChange(e)
+                          setShowAddOnes(false)
+                          addBtn.current.style.display = "none"
+                          fileInputContainer.current.style.display = "block"
+                        }}
+                      />
+                      <div className="searchAddOne" onClick={() => fileInputRef.current.click()}>
+                        <span className="material-symbols-outlined">attach_file</span>
+                        <p>Add photos & files</p>
+                      </div>
+                    </div>
+                  )
+                }
+              </div>
+              <div className="filesContainer" ref={fileInputContainer}>
+                <div className="close-btn" onClick={()=>{
+                  addBtn.current.style.display = "flex"
+                  fileInputContainer.current.style.display = "none"
+                }}>
+                  <span className="material-symbols-outlined">close</span>
+                </div>
+                <img src={previewImage} alt="" />
+              </div>
+            </> 
+            
+            // <div className="searchTool">
+            //   <span className={`${toolName} material-symbols-outlined`}>{toolName == "draw" && "draw" || toolName == "code" && "code" || toolName == "summarise" && "assignment" || toolName == "story" && "ink_pen" || toolName == "learn" && "book_2" }</span>
+            //   <p>{toolName}</p>
+            //   <div className="close-btn" onClick={()=> setToolMode(false)}>
+            //     <span className="material-symbols-outlined">close</span>
+            //   </div>
+            // </div>
           }
           
           <textarea
@@ -251,12 +297,15 @@ const SearchBox = forwardRef(({
             onChange={handleInputChange}
             value={value}
             onKeyDown={e => {
-              if (e.key === "Enter" && !e.ctrlKey) {
+              if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                !answering && window.innerWidth > 768 && onKeyDown();
+                e.target.value.trim() !== "" && (!answering && window.innerWidth > 768 && onKeyDown());
               }
-              if (e.key === "Enter" && e.ctrlKey) {
-                // Action for Ct
+              if (e.shiftKey && e.key === "Enter") {
+                e.preventDefault();
+                e.target.value = e.target.value + "\n"
+                e.target.rows = e.target.value.split('\n').length;
+                handleInputChange()
               }
             }}
             />

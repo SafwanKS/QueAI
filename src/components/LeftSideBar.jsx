@@ -27,7 +27,7 @@ const LeftSideBar = forwardRef(({
   searchBoxRef,
   setSearched,
   resultRef,
-  handleClearChat
+  handleClearChat,
 }, ref) =>{
 
   const [emptyChats, setEmptyChats] = useState(false)
