@@ -245,6 +245,9 @@
 .tool p{
   pointer-events: none;
   font-size: 14px;
+   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; 
 }
 
 .tool:nth-child(1) span{

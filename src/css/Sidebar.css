@@ -83,12 +83,14 @@
     opacity: 1;
 }
 
-.left-sidebar.collapsed .new_chat_button p{
+.left-sidebar.collapsed .new_chat_button p,.left-sidebar.collapsed .gallery_btn p,
+.left-sidebar.collapsed .lessons_btn p,.left-sidebar.collapsed .stories_btn p{
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-.left-sidebar.collapsed:hover .new_chat_button p{
+.left-sidebar.collapsed:hover .new_chat_button p,.left-sidebar.collapsed:hover .gallery_btn p,
+.left-sidebar.collapsed:hover .lessons_btn p,.left-sidebar.collapsed:hover .stories_btn p{
     opacity: 1;
 }
 
@@ -225,7 +227,7 @@
   font-family: "Poppins";
 }
 
-.new_chat_button{
+.new_chat_button, .gallery_btn, .lessons_btn, .stories_btn{
   max-width: 100%;
   min-height: 40px;
   display: flex;
@@ -236,20 +238,26 @@
   color: #fff;
   font-family: GeneralSans-Medium;
   cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.05);
   backdrop-filterr: blur(10px);
+  margin-top: 5px;
 }
 
-.new_chat_button:hover{
+.new_chat_button{
+  margin-top: 0;
+  background-color: rgba(255, 255, 255, 0.05);
+
+}
+
+.new_chat_button:hover, .gallery_btn:hover, .lessons_btn:hover, .stories_btn:hover{
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.new_chat_button span{
+.new_chat_button span, .gallery_btn span, .lessons_btn span, .stories_btn span{
   font-size: 20px;
   margin-bottom: 2px;
 }
 
-.new_chat_button p{
+.new_chat_button p, .gallery_btn p, .lessons_btn p, .stories_btn p{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;  

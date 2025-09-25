@@ -5,7 +5,7 @@
   align-items: center;
   position: relative;
   gap: 10px;
-  z-index: 10000;
+  z-index: 100;
   pointer-events: none;
 }
 
@@ -59,7 +59,7 @@
 }
 
 .searchBoxContainer.onsearch .searchBox .chipContainer{
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 
 .searchBox.active::after, .searchBox.active::before{
@@ -157,7 +157,7 @@
 .searchBox.toolmode .searchBoxInputContainer{
   padding-top: 0 !important;
 }
-
+wriute
 .searchBox.toolmode .chipContainer{
   display: none;
 }
@@ -208,13 +208,14 @@
   position: absolute;
   top: -5px;
   right: 0;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.25);
   backdrop-filterr: blur(10px);
 }
 
 
 .searchBoxInputContainer .searchTool .close-btn span, .filesContainer .close-btn span{
-  color: white;
+  color: black;
+  font-weight: 800;
   font-size: 14px;
 }
 

@@ -36,7 +36,11 @@ const Result = forwardRef(({
   setMessages,
   relatedQues,
   handleButtonClick,
-  handleClearChat
+  handleClearChat,
+  stories,
+  lessons,
+  toolMode,
+  toolName
 }, ref) => {
 
   const [showModelSelect, setShowModeSelect] = useState(false)
@@ -70,6 +74,20 @@ const Result = forwardRef(({
       }
     }
   }, [messages])
+
+  useEffect(()=>{
+    if(stories[0]){
+      const node = lastElement.current
+      if (stories[stories.length - 1].content == "" && node) node.scrollIntoView(true)
+    }
+  }, [stories])
+
+  useEffect(()=>{
+    if(lessons[0]){
+      const node = lastElement.current
+      if (lessons[lessons.length - 1].ans == "" && node) node.scrollIntoView(true)
+    }
+  }, [lessons])
 
 
   const handleSave = (title, text) => {
@@ -116,6 +134,16 @@ const Result = forwardRef(({
     }
   }
 
+  let itemName
+
+  if(toolMode){
+    if(toolName === "story") itemName = stories
+    else if(toolName === "learn") itemName = lessons
+  }else{
+    itemName = messages
+  }
+
+
   return (
     <div ref={ref} className="result">
       <div className="result-header">
@@ -136,30 +164,39 @@ const Result = forwardRef(({
 
       <div className="result-body">
         {
-          messages.map((message, index) =>
-            <div key={index} ref={index === messages.length - 1 ? lastElement : null} className="responseDiv">
-              <h1>{message.que}</h1>
+          itemName?.map((item, index) =>
+            <div key={index} ref={index === (toolMode ? toolName === "story" ? stories.length : lessons.length : messages.length) - 1 ? lastElement : null} className="responseDiv">
+              <h1>
+                {toolMode 
+                  ? toolName === "story" 
+                    ? item.title 
+                    : item.que
+                  : item.que
+                }
+              </h1>
               <div className='line' ></div>
               <div id="response"
               >
                 {
-                  message.ans && message.ans !== "" ?
+                  (item.ans || item.content) && (item.ans || item.content) !== "" ?
                     (
                       <>
                         <div className='resans' >
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {message.ans}
-                          </ReactMarkdown>
-
-                          
+                            {toolMode 
+                              ? toolName === "story" 
+                                ? item.content 
+                                : item.ans
+                              : item.ans
+                            }
+                          </ReactMarkdown>                          
                         </div>
-
                         <div className={`actions ${answering || "active"}`}>
                           <div className="quickActions">
                             <div className="actionBtn action-favorite">
                               <span className="material-symbols-outlined">favorite</span>
                             </div>
-                            <div className="actionBtn action-copy" onClick={() => copyText(message.ans)}>
+                            <div className="actionBtn action-copy" onClick={() => copyText(item.ans || item.content)}>
                               <span className="material-symbols-outlined">content_copy</span>
                             </div>
                             {/* <div className="actionBtn actionMenu">
@@ -167,19 +204,17 @@ const Result = forwardRef(({
                             </div> */}
                           </div>
                           <div className="bigActions">
-                            <div className="actionBtn action-share" onClick={() => handleShare(message.que, message.ans)}>
+                            <div className="actionBtn action-share" onClick={() => handleShare((item.que || item.title), (item.ans || item.content))}>
                               <span className="material-symbols-outlined">ios_share</span>
                               <p>Share</p>
                             </div>
-                            <div className="actionBtn actionExport" onClick={() => handleSave(message.que, message.ans)}>
+                            <div className="actionBtn actionExport" onClick={() => handleSave((item.que || item.title), (item.ans || item.content))}>
                               <span className="material-symbols-outlined">save_alt</span>
                               <p>Export</p>
                             </div>
                           </div>
-
                         </div>
                         <div className='line' ></div>
-
                         {
                           window.innerWidth < 768 && <>
                             <div className={`relates-ques ${answering || "active"}`}>
@@ -206,9 +241,6 @@ const Result = forwardRef(({
                           <div className='line' ></div>
                           </>
                         }
-
-                        
-
                       </>
                     )
                     :
@@ -224,6 +256,7 @@ const Result = forwardRef(({
             </div>
           )
         }
+
       </div>
     </div>
   );

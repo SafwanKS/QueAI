@@ -78,6 +78,36 @@ const LeftSideBar = forwardRef(({
           <span className="material-symbols-outlined">add</span>
           <p>New chat</p>
         </div>
+        <div className="gallery_btn" onClick={(e)=> {
+            e.target.style.opacity = "0.7"
+            setTimeout(() => {
+              e.target.style.opacity = "1"
+            }, 200);
+          }
+        }>
+          <span className="material-symbols-outlined">animated_images</span>
+          <p>Gallery</p>
+        </div>
+        <div className="stories_btn" onClick={(e)=> {
+            e.target.style.opacity = "0.7"
+            setTimeout(() => {
+              e.target.style.opacity = "1"
+            }, 200);
+          }
+        }>
+          <span className="material-symbols-outlined">auto_stories</span>
+          <p>Stories</p>
+        </div>
+        <div className="lessons_btn" onClick={(e)=> {
+            e.target.style.opacity = "0.7"
+            setTimeout(() => {
+              e.target.style.opacity = "1"
+            }, 200);
+          }
+        }>
+          <span className="material-symbols-outlined">school</span>
+          <p>Lessons</p>
+        </div>
         <div className="recent-chats">
           <h3>Recents</h3>
           <div className="recent-chats-container">

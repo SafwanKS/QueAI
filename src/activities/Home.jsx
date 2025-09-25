@@ -6,7 +6,7 @@ import {
 import { signInWithPopup, GoogleAuthProvider , onAuthStateChanged} from "firebase/auth";
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, sum } from "firebase/firestore";
 import {auth, db} from '../firebase.js'
-import {askai, askaiStream, relatedAI, summariseAI, createImageAI, ai} from '../Gemini.js'
+import {askai, askaiStream, relatedAI, summariseAI, createImageAI, ai, storyWriteAI, genStoryTitle, tutorAI, genLessonName} from '../Gemini.js'
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
 import {
@@ -103,6 +103,8 @@ export default function Home() {
   const [searched, setSearched] = useState(false)
 
   const [messages, setMessages] = useState([])
+  const [stories, setStories] = useState([])
+  const [lessons, setLessons] = useState([])
 
   const [image, setImage] = useState(null)
 
@@ -646,6 +648,126 @@ export default function Home() {
           }
         }
       }
+      if(toolMode && toolName === "story"){
+        if(question.trim() !== ""){
+          setSearched(true)
+          introRef.current.classList.add("hide")
+          toolsRef.current.classList.add("hide")
+          headerRef.current.classList.add("hide")
+          resultRef.current.classList.add("show")
+          leftSidebarRef.current.classList.add("show")
+          homeWrapperRef.current.style.paddingTop = "0"
+          searchContainerRef.current.classList.add('onsearch')
+          homeContainerRef.current.classList.add('onsearch')
+          setDrawerCollapsed(true)
+          setOnSearch(true)
+
+          const history = []
+  
+          stories.map((story, index)=> {
+            history.push(
+              {
+                role: "user",
+                parts: [{
+                  text: story.title
+                }]
+              },
+              {
+                role: "model",
+                parts: [{
+                  text: story.content
+                }]
+              }
+            )
+          });
+      
+          shouldSaveChat.current = true;
+
+          (async ()=>{
+
+            const storyTitle = await genStoryTitle(question)
+
+            setStories([...stories, {
+              title: storyTitle,
+              content: ""
+            }]);
+        
+            setAnswering(true);
+            
+            let streamedAnswer = "";
+            await storyWriteAI( question, history, (chunk) => {
+              streamedAnswer += chunk;
+              setStories((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].content += chunk;
+                return updated;
+              });
+            });
+            
+            setAnswering(false);
+        })()
+        }
+      }
+      if(toolMode && toolName === "learn"){
+        if(question.trim() !== ""){
+          setSearched(true)
+          introRef.current.classList.add("hide")
+          toolsRef.current.classList.add("hide")
+          headerRef.current.classList.add("hide")
+          resultRef.current.classList.add("show")
+          leftSidebarRef.current.classList.add("show")
+          homeWrapperRef.current.style.paddingTop = "0"
+          searchContainerRef.current.classList.add('onsearch')
+          homeContainerRef.current.classList.add('onsearch')
+          setDrawerCollapsed(true)
+          setOnSearch(true)
+
+          const history = []
+  
+          lessons.map((lesson, index)=> {
+            history.push(
+              {
+                role: "user",
+                parts: [{
+                  text: lesson.que
+                }]
+              },
+              {
+                role: "model",
+                parts: [{
+                  text: lesson.ans
+                }]
+              }
+            )
+          });
+      
+          shouldSaveChat.current = true;
+          
+          (async ()=>{
+
+            const lessonName = lessons[0]?.que ? question : await genLessonName(question) 
+
+            setLessons([...lessons, {
+              que: lessonName,
+              ans: ""
+            }]);
+            
+            setAnswering(true);
+
+            let streamedAnswer = "";
+            await tutorAI( question, history, (chunk) => {
+              streamedAnswer += chunk;
+              setLessons((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].ans += chunk;
+                return updated;
+              });
+            });
+            
+            setAnswering(false);
+          })()
+        }
+      }
       if(toolMode && toolName === "code"){
         if(question !== "") {
           navigate(`/createProject?prompt=${question}`)
@@ -666,7 +788,6 @@ export default function Home() {
               console.log(err);
             }
           })()
-          
         }
       }
     }
@@ -729,6 +850,10 @@ export default function Home() {
                 searchBoxRef={searchBoxRef}
                 setSearched={setSearched}
                 messages={messages}
+                stories={stories}
+                lessons={lessons}
+                toolMode={toolMode}
+                toolName={toolName}
                 lastElement={lastElement}
                 chatID={chatID}
                 setChatID={setChatID}

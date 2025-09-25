@@ -234,57 +234,59 @@ const SearchBox = forwardRef(({
     <div className="searchBoxContainer" ref={searchContainerRef}>
       
       <div className={`searchBox ${toolMode && "toolmode"} ${toolMode && (toolName == "draw" && "red" || toolName == "code" && "green" || toolName == "summarise" && "blue" || toolName == "story" && "purple" || toolName == "learn" && "yellow" )} ${animactive && "active"}`} ref={ref} onClick={()=> window.innerWidth > 768 && inputRef.current.focus()}>
-        {/* <div className="filesContainer">
-
-        </div>  */}
         <div className='searchBoxInputContainer'>
           {
             toolMode &&
             <>
-              <div className="btnWrapper">
-                <div className={`btn add-btn ${showAddOnes && "active"}`} ref={addBtn} onClick={()=>{
-                  setShowAddOnes(!showAddOnes)
-                }}>
-                  <span className="material-symbols-outlined">add</span>
-              </div>
-                {
-                  showAddOnes && (
-                    <div className="searchAddOnes">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        ref={fileInputRef}
-                        style={{ display: "none" }}
-                        onChange={(e)=> {
-                          handleFileChange(e)
-                          setShowAddOnes(false)
-                          addBtn.current.style.display = "none"
-                          fileInputContainer.current.style.display = "block"
-                        }}
-                      />
-                      <div className="searchAddOne" onClick={() => fileInputRef.current.click()}>
-                        <span className="material-symbols-outlined">attach_file</span>
-                        <p>Upload image</p>
+            {
+              toolName === "draw" ?
+              <>
+                <div className="btnWrapper">
+                  <div className={`btn add-btn ${showAddOnes && "active"}`} ref={addBtn} onClick={()=>{
+                    setShowAddOnes(!showAddOnes)
+                  }}>
+                    <span className="material-symbols-outlined">add</span>
+                </div>
+                  {
+                    showAddOnes && (
+                      <div className="searchAddOnes">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          style={{ display: "none" }}
+                          onChange={(e)=> {
+                            handleFileChange(e)
+                            setShowAddOnes(false)
+                            addBtn.current.style.display = "none"
+                            fileInputContainer.current.style.display = "block"
+                          }}
+                        />
+                        <div className="searchAddOne" onClick={() => fileInputRef.current.click()}>
+                          <span className="material-symbols-outlined">attach_file</span>
+                          <p>Upload image</p>
+                        </div>
                       </div>
-                    </div>
-                  )
-                }
-              </div>
-              <div className="filesContainer" ref={fileInputContainer}>
-                <div className="close-btn" onClick={clearPreview}>
+                    )
+                  }
+                </div>
+                <div className="filesContainer" ref={fileInputContainer}>
+                  <div className="close-btn" onClick={clearPreview}>
+                    <span className="material-symbols-outlined">close</span>
+                  </div>
+                  <img src={previewImage} alt="" />
+                </div>
+              </>
+              :
+              <div className="searchTool">
+                <span className={`${toolName} material-symbols-outlined`}>{toolName == "draw" && "draw" || toolName == "code" && "code" || toolName == "summarise" && "assignment" || toolName == "story" && "ink_pen" || toolName == "learn" && "book_2" }</span>
+                {window.innerWidth > 768 && <p>{toolName}</p>}
+                <div className="close-btn" onClick={()=> setToolMode(false)}>
                   <span className="material-symbols-outlined">close</span>
                 </div>
-                <img src={previewImage} alt="" />
               </div>
+            }  
             </> 
-            
-            // <div className="searchTool">
-            //   <span className={`${toolName} material-symbols-outlined`}>{toolName == "draw" && "draw" || toolName == "code" && "code" || toolName == "summarise" && "assignment" || toolName == "story" && "ink_pen" || toolName == "learn" && "book_2" }</span>
-            //   <p>{toolName}</p>
-            //   <div className="close-btn" onClick={()=> setToolMode(false)}>
-            //     <span className="material-symbols-outlined">close</span>
-            //   </div>
-            // </div>
           }
           
           <textarea
