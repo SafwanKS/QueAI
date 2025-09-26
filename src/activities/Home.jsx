@@ -33,6 +33,9 @@ import SearchTools from '../components/SearchTools.jsx';
 // import Search from './Search.jsx';
 import Result from './Result.jsx';
 import Canvas from './Canvas.jsx';
+import Gallery from './Gallery.jsx';
+import Stories from './Stories.jsx';
+import Lessons from './Lessons.jsx';
 
 export default function Home() {
   
@@ -106,6 +109,10 @@ export default function Home() {
   const [stories, setStories] = useState([])
   const [lessons, setLessons] = useState([])
 
+  const [showGallery, setShowGallery] = useState(null)
+  const [showStories, setShowStories] = useState(null)
+  const [showLessons, setShowLessons] = useState(null)
+
   const [image, setImage] = useState(null)
 
   const [question, setQuestion] = useState("")
@@ -118,6 +125,11 @@ export default function Home() {
   const [recentsChats, setRecentChats ] = useState([])
 
   const [canvasImages, setCanvasImages ] = useState([])
+
+
+
+  const [galleryImages, setGalleryImages] = useState([])
+  const [lessonsList, setLessonsList] = useState([])
 
   const [chatID, setChatID] = useState("")
   const [isLoggedIn, setLoginState] = useState(false)
@@ -229,6 +241,16 @@ export default function Home() {
     setAnimactive(animState)
     setAnimations(animState)
   }, [animState])
+
+  useEffect(()=>{
+    const savedStories = JSON.parse(localStorage.getItem("stories")) || []
+    setStories(savedStories)
+  }, [])
+
+  useEffect(()=>{
+    localStorage.setItem("stories", JSON.stringify(stories))
+  }, [stories])
+
 
 
   const getRandomString = (length) => {
@@ -378,6 +400,27 @@ export default function Home() {
   const [emptyChats, setEmptyChats] = useState(false)
 
 
+  const showStoriesWindow = () =>{
+    setSearched(true)
+    introRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    resultRef.current.classList.remove("show")
+    leftSidebarRef.current.classList.add("show")
+    rightSidebarRef.current.classList.remove("show")
+    homeWrapperRef.current.style.paddingTop = "0"
+    // searchBoxRef.current.classList.add('onsearch')
+    searchContainerRef.current.classList.add('onsearch')
+    searchContainerRef.current.style.display = "none"
+    searchBoxRef.current.classList.remove('active')
+    homeContainerRef.current.classList.add('onsearch')
+    setDrawerCollapsed(true)
+    setOnSearch(true)
+    setShowStories(true)
+  }
+
+
   const [text, setText] = useState("")
 
   const [previewImage, setPreviewImage] = useState(null)
@@ -505,7 +548,7 @@ export default function Home() {
     setSearched(false)
     setToolMode(false)
     setCustomePlaceHolder("")
-    setToolName("")
+    setToolName("") 
     setMessages([])
   }
 
@@ -518,13 +561,16 @@ export default function Home() {
     leftSidebarRef.current.classList.add("show")
     // rightSidebarRef.current.classList.add("show")
     homeWrapperRef.current.style.paddingTop = "0"
-    // searchBoxRef.current.classList.add('onsearch')
+    searchBoxRef.current.classList.add('onsearch')
     searchContainerRef.current.classList.add('onsearch')
-    searchBoxRef.current.classList.remove('active')
+    // searchBoxRef.current.classList.remove('active')
     searchBoxRef.current.classList.add("canvas")
     homeContainerRef.current.classList.add('onsearch')
     setDrawerCollapsed(true)
     setOnSearch(true)
+
+    setToolMode(true)
+    setToolName("draw")
   }
 
 
@@ -650,110 +696,114 @@ export default function Home() {
       }
       if(toolMode && toolName === "story"){
         if(question.trim() !== ""){
-          setSearched(true)
-          introRef.current.classList.add("hide")
-          toolsRef.current.classList.add("hide")
-          headerRef.current.classList.add("hide")
-          resultRef.current.classList.add("show")
-          leftSidebarRef.current.classList.add("show")
-          homeWrapperRef.current.style.paddingTop = "0"
-          searchContainerRef.current.classList.add('onsearch')
-          homeContainerRef.current.classList.add('onsearch')
-          setDrawerCollapsed(true)
-          setOnSearch(true)
 
-          const history = []
-  
-          stories.map((story, index)=> {
-            history.push(
-              {
-                role: "user",
-                parts: [{
-                  text: story.title
-                }]
-              },
-              {
-                role: "model",
-                parts: [{
-                  text: story.content
-                }]
-              }
-            )
-          });
-      
-          shouldSaveChat.current = true;
+          (async()=>{
 
-          (async ()=>{
+            setAnswering(true);
 
             const storyTitle = await genStoryTitle(question)
+            setSearched(true)
+            introRef.current.classList.add("hide")
+            toolsRef.current.classList.add("hide")
+            headerRef.current.classList.add("hide")
+            resultRef.current.classList.add("show")
+            leftSidebarRef.current.classList.add("show")
+            homeWrapperRef.current.style.paddingTop = "0"
+            searchContainerRef.current.classList.add('onsearch')
+            homeContainerRef.current.classList.add('onsearch')
+            setDrawerCollapsed(true)
+            setOnSearch(true)
 
-            setStories([...stories, {
-              title: storyTitle,
-              content: ""
-            }]);
-        
-            setAnswering(true);
-            
-            let streamedAnswer = "";
-            await storyWriteAI( question, history, (chunk) => {
-              streamedAnswer += chunk;
-              setStories((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].content += chunk;
-                return updated;
-              });
+            const history = []
+    
+            stories.map((story, index)=> {
+              history.push(
+                {
+                  role: "user",
+                  parts: [{
+                    text: story.title
+                  }]
+                },
+                {
+                  role: "model",
+                  parts: [{
+                    text: story.content
+                  }]
+                }
+              )
             });
-            
-            setAnswering(false);
-        })()
+        
+            shouldSaveChat.current = true;
+
+              // const img = await createImageAI(storyTitle)
+
+              setStories([...stories, {
+                title: storyTitle,
+                content: "",
+                // image: img || {}
+              }]);
+          
+              
+              
+              let streamedAnswer = "";
+              await storyWriteAI( question, history, (chunk) => {
+                streamedAnswer += chunk;
+                setStories((prev) => {
+                  const updated = [...prev];
+                  updated[updated.length - 1].content += chunk;
+                  return updated;
+                });
+              });
+              
+              setAnswering(false);
+          })()
         }
       }
       if(toolMode && toolName === "learn"){
         if(question.trim() !== ""){
-          setSearched(true)
-          introRef.current.classList.add("hide")
-          toolsRef.current.classList.add("hide")
-          headerRef.current.classList.add("hide")
-          resultRef.current.classList.add("show")
-          leftSidebarRef.current.classList.add("show")
-          homeWrapperRef.current.style.paddingTop = "0"
-          searchContainerRef.current.classList.add('onsearch')
-          homeContainerRef.current.classList.add('onsearch')
-          setDrawerCollapsed(true)
-          setOnSearch(true)
-
-          const history = []
-  
-          lessons.map((lesson, index)=> {
-            history.push(
-              {
-                role: "user",
-                parts: [{
-                  text: lesson.que
-                }]
-              },
-              {
-                role: "model",
-                parts: [{
-                  text: lesson.ans
-                }]
-              }
-            )
-          });
-      
-          shouldSaveChat.current = true;
-          
-          (async ()=>{
-
+          (async () =>{
+            setAnswering(true);
             const lessonName = lessons[0]?.que ? question : await genLessonName(question) 
 
+            setSearched(true)
+            introRef.current.classList.add("hide")
+            toolsRef.current.classList.add("hide")
+            headerRef.current.classList.add("hide")
+            resultRef.current.classList.add("show")
+            leftSidebarRef.current.classList.add("show")
+            homeWrapperRef.current.style.paddingTop = "0"
+            searchContainerRef.current.classList.add('onsearch')
+            homeContainerRef.current.classList.add('onsearch')
+            setDrawerCollapsed(true)
+            setOnSearch(true)
+  
+            const history = []
+    
+            lessons.map((lesson, index)=> {
+              history.push(
+                {
+                  role: "user",
+                  parts: [{
+                    text: lesson.que
+                  }]
+                },
+                {
+                  role: "model",
+                  parts: [{
+                    text: lesson.ans
+                  }]
+                }
+              )
+            });
+        
+            shouldSaveChat.current = true;
+  
+  
             setLessons([...lessons, {
               que: lessonName,
               ans: ""
             }]);
-            
-            setAnswering(true);
-
+              
             let streamedAnswer = "";
             await tutorAI( question, history, (chunk) => {
               streamedAnswer += chunk;
@@ -812,6 +862,8 @@ export default function Home() {
             setMessages={setMessages}
             shouldSaveChat={shouldSaveChat}
             handleClearChat={handleClearChat}
+            showStoriesWindow={showStoriesWindow}
+            showCanvasWindow={showCanvasWindow}
           />
             <div ref={homeContainerRef} style={{
               padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
@@ -837,6 +889,7 @@ export default function Home() {
               <div ref={introRef} className="intro">
                 <h1 ref={introTxt} className='introTxt' >{welcomeMsgHead}</h1>
                 <p>Your personal AI, ready to help you think better and move faster.</p>
+                <p>From B. Voc. Software Development</p>
               </div>
               <Result 
                 ref={resultRef}
@@ -885,6 +938,21 @@ export default function Home() {
                 downloadImage={downloadImage}
               />
 
+              {
+                showGallery &&
+                <Gallery />
+              }
+              {
+                showStories &&
+                <Stories 
+                  stories={stories}
+                />
+              }
+              {
+                showLessons &&
+                <Lessons />
+              }
+
               <SearchBox
                 ref={searchBoxRef}
                 inputRef={inputRef}
@@ -912,6 +980,7 @@ export default function Home() {
                 uploadedImage={uploadedImage}
                 previewImage={previewImage}
                 generateImage={generateImage}
+                setCustomePlaceHolder={setCustomePlaceHolder}
               />  
               <SearchTools
                 ref={toolsRef}

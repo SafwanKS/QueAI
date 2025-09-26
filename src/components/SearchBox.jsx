@@ -39,7 +39,8 @@ const SearchBox = forwardRef(({
   fileInputRef,
   handleFileChange,
   uploadedImage,
-  previewImage
+  previewImage,
+  setCustomePlaceHolder
 }, ref) => {
   const navigate = useNavigate()
   const [rows,
@@ -281,11 +282,14 @@ const SearchBox = forwardRef(({
               <div className="searchTool">
                 <span className={`${toolName} material-symbols-outlined`}>{toolName == "draw" && "draw" || toolName == "code" && "code" || toolName == "summarise" && "assignment" || toolName == "story" && "ink_pen" || toolName == "learn" && "book_2" }</span>
                 {window.innerWidth > 768 && <p>{toolName}</p>}
-                <div className="close-btn" onClick={()=> setToolMode(false)}>
+                <div className="close-btn" onClick={()=> {
+                  setToolMode(false)
+                  setCustomePlaceHolder("")
+                }}>
                   <span className="material-symbols-outlined">close</span>
                 </div>
               </div>
-            }  
+            }   
             </> 
           }
           
@@ -382,6 +386,7 @@ const SearchBox = forwardRef(({
             bgcolor={`${toolMode && toolName }`}
             icon={"arrow_upward"}
             onClick={() => handleButtonClick()}
+            answering={answering}
             />
         </div>
       </div>

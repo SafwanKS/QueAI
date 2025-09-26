@@ -178,10 +178,15 @@ const Result = forwardRef(({
               <div id="response"
               >
                 {
+                          item.image && item.image.base64Data &&
+                            <img src={`data:${item.image.mimeType};base64,${item.image.base64Data}`} />
+                          }
+                {
                   (item.ans || item.content) && (item.ans || item.content) !== "" ?
                     (
                       <>
                         <div className='resans' >
+                          
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {toolMode 
                               ? toolName === "story" 

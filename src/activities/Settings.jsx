@@ -216,7 +216,7 @@ const cusDescRef = useRef(null)
                                     <div className="switch-btn"></div>
                                 </div>
                             </div>
-                            {
+                            {/* {
                                 animations && 
                                 <>
                                     <div className="settings-item">
@@ -226,7 +226,7 @@ const cusDescRef = useRef(null)
                                         </div>
                                     </div>
                                 </>
-                            }
+                            } */}
                             
                         </div>
                     }
@@ -264,28 +264,21 @@ const cusDescRef = useRef(null)
                             </div>
                             <div className="about-author">
                                 <div className="dvlpr">
-                                    <p>An  open - source AI chatbot application designed & developed by <a href='https://github.com/SafwanKS' onClick={(e)=> {
+                                    <p>An  open - source AI chatbot application designed & developed by <br /> <a href='https://github.com/SafwanKS' onClick={(e)=> {
                                     e.preventDefault()
                                     window.open("https://github.com/SafwanKS")
-                                    }}>Safwan KS</a></p>
+                                    }}>Safwan KS</a> from B. Voc. Software Development, Carmel College.</p>
+                                </div>
+                            </div>
+
+                            <div className="links">
+                                <div className="github-repo">
+                                    {/* <p>Github:  </p> */}
                                 </div>
                             </div>
                         </div>
                     }
-
                 </div>
-                {/* <div className="settings-item">
-                        <p className="item-name">Animations</p>
-                        <div className={`switch ${animations && "active"}`} onClick={() => setAnimState(!animState)} >
-                        <div className="switch-btn"></div>
-                    </div>
-                </div>
-                <div className="settings-item">
-                    <p className="item-name">Enter is send</p>
-                    <div className={`switch ${animations && "active"}`} onClick={() => setAnimState(!animState)} >
-                    <div className="switch-btn"></div>
-                    </div>
-                </div> */}
             </div>
         </div>
     </div>

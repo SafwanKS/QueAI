@@ -31,7 +31,7 @@ const Canvas = forwardRef(({
             const node = lastElement.current
             if(canvasImages[canvasImages.length - 1].img == null && node) node.scrollIntoView(true)
         }
-    }, [canvasImages])
+    }, [canvasImages]) 
 
     return(
         <div className="canvas" ref={ref}>
@@ -48,7 +48,7 @@ const Canvas = forwardRef(({
                     {
                         showList && 
                         <div className="canvas-chip">
-                            <span className='material-symbols-outlined'>draw</span>
+                            <span className='material-symbols-outlined'>animated_images</span>
                             <p>Canvas</p>
                         </div>
                     }
@@ -127,7 +127,7 @@ const Canvas = forwardRef(({
                     <div className="canvas-home" ref={canvasHome}>
                         <div className="canvac-chip-container">
                             <div className="canvas-chip">
-                                <span className='material-symbols-outlined'>draw</span>
+                                <span className='material-symbols-outlined'>animated_images</span>
                                 <p>Canvas</p>
                             </div>
                         </div>

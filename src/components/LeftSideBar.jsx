@@ -28,6 +28,8 @@ const LeftSideBar = forwardRef(({
   setSearched,
   resultRef,
   handleClearChat,
+  showStoriesWindow,
+  showCanvasWindow
 }, ref) =>{
 
   const [emptyChats, setEmptyChats] = useState(false)
@@ -79,6 +81,7 @@ const LeftSideBar = forwardRef(({
           <p>New chat</p>
         </div>
         <div className="gallery_btn" onClick={(e)=> {
+          showCanvasWindow()
             e.target.style.opacity = "0.7"
             setTimeout(() => {
               e.target.style.opacity = "1"
@@ -86,9 +89,10 @@ const LeftSideBar = forwardRef(({
           }
         }>
           <span className="material-symbols-outlined">animated_images</span>
-          <p>Gallery</p>
+          <p>Canvas</p>
         </div>
         <div className="stories_btn" onClick={(e)=> {
+          showStoriesWindow()
             e.target.style.opacity = "0.7"
             setTimeout(() => {
               e.target.style.opacity = "1"
