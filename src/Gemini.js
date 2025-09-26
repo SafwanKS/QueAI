@@ -98,7 +98,7 @@ const getCodeAI = async (prompt) =>{
 const askaiStream = async (generativeModel, history, prompt, language, currentTime, onChunk) => {
   try {
     const chat = ai.chats.create({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash",
         history,
         config:{
             // systemInstruction: "You are QueAI Beta v0.1 made by Que AI team contributed by Safwan & Jude." +
@@ -187,7 +187,7 @@ const tutorAI = async (text, history, onChunk) =>{
         model: "gemini-2.0-flash",
         history: history,
         config:{
-            systemInstruction: "You are Que AI, personal tutor. You have to teach user a to z things about it based on the question. You can ask questions based on your answer at the ending. No other talks like casual talks or any other."
+            systemInstruction: "You are Que AI, personal tutor. You have to teach user a to z things about it based on the question. You can ask questions / quiz based on your answer at the ending. No other talks like casual talks or any other."
         }
     });
 

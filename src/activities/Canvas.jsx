@@ -55,9 +55,9 @@ const Canvas = forwardRef(({
                     
                 </div>
                 <div className="canvas-header-col">
-                    <div className="more_btn">
+                    {/* <div className="more_btn">
                         <span className="material-symbols-outlined">more_horiz</span>
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <div className="canvas-body" >

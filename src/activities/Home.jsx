@@ -251,6 +251,15 @@ export default function Home() {
     localStorage.setItem("stories", JSON.stringify(stories))
   }, [stories])
 
+  // useEffect(()=>{
+  //   const savedLessons = JSON.parse(localStorage.getItem("lessons")) || []
+  //   setLessons(savedLessons)
+  // }, [])
+
+  // useEffect(()=>{
+  //   localStorage.setItem("lessons", JSON.stringify(lessons))
+  // }, [lessons])
+
 
 
   const getRandomString = (length) => {
@@ -404,20 +413,42 @@ export default function Home() {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-    toolsRef.current.classList.add("hide")
     headerRef.current.classList.add("hide")
-    resultRef.current.classList.remove("show")
+    resultRef.current.classList.add("show")
+    canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
     rightSidebarRef.current.classList.remove("show")
     homeWrapperRef.current.style.paddingTop = "0"
     // searchBoxRef.current.classList.add('onsearch')
     searchContainerRef.current.classList.add('onsearch')
-    searchContainerRef.current.style.display = "none"
     searchBoxRef.current.classList.remove('active')
     homeContainerRef.current.classList.add('onsearch')
     setDrawerCollapsed(true)
     setOnSearch(true)
-    setShowStories(true)
+    setToolMode(true)
+    setToolName("story")
+    // setShowStories(true)
+  } 
+  
+  const showLessonsWindow = () =>{
+    setSearched(true)
+    introRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    resultRef.current.classList.add("show")
+    canvasRef.current.classList.remove("show")
+    leftSidebarRef.current.classList.add("show")
+    rightSidebarRef.current.classList.remove("show")
+    homeWrapperRef.current.style.paddingTop = "0"
+    // searchBoxRef.current.classList.add('onsearch')
+    searchContainerRef.current.classList.add('onsearch')
+    searchBoxRef.current.classList.remove('active')
+    homeContainerRef.current.classList.add('onsearch')
+    setDrawerCollapsed(true)
+    setOnSearch(true)
+    setToolMode(true)
+    setToolName("learn")
+    // setShowStories(true)
   }
 
 
@@ -557,6 +588,7 @@ export default function Home() {
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
     headerRef.current.classList.add("hide")
+    resultRef.current.classList.remove("show")
     canvasRef.current.classList.add("show")
     leftSidebarRef.current.classList.add("show")
     // rightSidebarRef.current.classList.add("show")
@@ -864,6 +896,7 @@ export default function Home() {
             handleClearChat={handleClearChat}
             showStoriesWindow={showStoriesWindow}
             showCanvasWindow={showCanvasWindow}
+            showLessonsWindow={showLessonsWindow}
           />
             <div ref={homeContainerRef} style={{
               padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"

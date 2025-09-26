@@ -29,7 +29,8 @@ const LeftSideBar = forwardRef(({
   resultRef,
   handleClearChat,
   showStoriesWindow,
-  showCanvasWindow
+  showCanvasWindow,
+  showLessonsWindow
 }, ref) =>{
 
   const [emptyChats, setEmptyChats] = useState(false)
@@ -103,6 +104,7 @@ const LeftSideBar = forwardRef(({
           <p>Stories</p>
         </div>
         <div className="lessons_btn" onClick={(e)=> {
+          showLessonsWindow()
             e.target.style.opacity = "0.7"
             setTimeout(() => {
               e.target.style.opacity = "1"

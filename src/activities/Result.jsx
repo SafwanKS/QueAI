@@ -156,9 +156,9 @@ const Result = forwardRef(({
           <h1 ref={resultTitle} ></h1>
         </div>
         <div className="result-header-right">
-          <div className="more_btn">
+          {/* <div className="more_btn">
             <span className="material-symbols-outlined">more_horiz</span>
-          </div>
+          </div> */}
         </div>
       </div>
 
