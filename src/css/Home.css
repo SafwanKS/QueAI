@@ -189,14 +189,10 @@
   font-size: 20px;
   font-family: GeneralSans-Medium;
   font-family: "Poppins";
+  margin-bottom: 25px;
 }
 
-.home .intro p:last-child{
-  margin-bottom: 0;
-  margin-bottom: 25px;
-  color: grey;
-  font-size: 16px;
-}
+
 
 
 @keyframes spinBox{

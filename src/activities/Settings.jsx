@@ -267,7 +267,10 @@ const cusDescRef = useRef(null)
                                     <p>An  open - source AI chatbot application designed & developed by <br /> <a href='https://github.com/SafwanKS' onClick={(e)=> {
                                     e.preventDefault()
                                     window.open("https://github.com/SafwanKS")
-                                    }}>Safwan KS</a> from B. Voc. Software Development, Carmel College.</p>
+                                    }}>Safwan KS</a> and <a href='https://github.com/jude7733' onClick={(e)=> {
+                                    e.preventDefault()
+                                    window.open("https://github.com/jude7733")
+                                    }}>Jude</a></p>
                                 </div>
                             </div>
 

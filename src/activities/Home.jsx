@@ -922,7 +922,6 @@ export default function Home() {
               <div ref={introRef} className="intro">
                 <h1 ref={introTxt} className='introTxt' >{welcomeMsgHead}</h1>
                 <p>Your personal AI, ready to help you think better and move faster.</p>
-                <p>From B. Voc. Software Development</p>
               </div>
               <Result 
                 ref={resultRef}

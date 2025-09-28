@@ -49,10 +49,10 @@ const RightSideBar = forwardRef(({
                 <p>Beta &nbsp;v0.1</p>
             </div>
             <div className="dvlpr">
-                <p>Designed & Developed by <a href='https://github.com/SafwanKS' onClick={(e)=> {
+                {/* <p>Designed & Developed by <a href='https://github.com/SafwanKS' onClick={(e)=> {
                 e.preventDefault()
                 window.open("https://github.com/SafwanKS")
-                }}>Safwan KS</a></p>
+                }}>Safwan KS</a></p> */}
             </div>
             <div className="social-media-handle-container">
                 <div className="github">
