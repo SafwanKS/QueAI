@@ -7,7 +7,10 @@ const SearchTools = forwardRef(({
     setToolMode,
     setToolName,
     setAnimactive, 
-    animState
+    animState,
+    searchContainerRef,
+    showCanvasWindow,
+    setCustomePlaceHolder
 }, ref)=>{
     return (
         <div ref={ref} className="toolsContainer">
@@ -18,13 +21,16 @@ const SearchTools = forwardRef(({
                 }, 200);
                 setToolMode(true)
                 setToolName("draw")
+                // searchContainerRef.current.classList.add("onsearch")
+                showCanvasWindow()
+                setCustomePlaceHolder("Describe your image")
                 setTimeout(() => {
                     inputRef.current.focus()
                 }, 100);
                 animState && setAnimactive(true)
                 
             }}>
-                <span className='material-symbols-outlined'>draw</span>
+                <span className='material-symbols-outlined'>animated_images</span>
                 <p>Create an image</p>
             </div>
             <div className="tool" onClick={(e)=> {
@@ -43,6 +49,8 @@ const SearchTools = forwardRef(({
                 setToolMode(true)
                 setToolName("code")
                 animState && setAnimactive(true)
+                setCustomePlaceHolder("What do you want to code?")
+
                 }}>
                 <span className='material-symbols-outlined'>code</span>
                 <p>Create a project</p>
@@ -62,6 +70,8 @@ const SearchTools = forwardRef(({
                 setToolMode(true)
                 setToolName("summarise")
                 animState && setAnimactive(true)
+                setCustomePlaceHolder("Enter text to summarise")
+
             }}>
                 <span className='material-symbols-outlined'>assignment</span>
                 <p>Summarise text</p>
@@ -81,6 +91,8 @@ const SearchTools = forwardRef(({
                 setToolMode(true)
                 setToolName("story")
                 animState && setAnimactive(true)
+                setCustomePlaceHolder("Write a story about...")
+
             }} >
                 <span className='material-symbols-outlined'>ink_pen</span>
                 <p>Write a story</p>
@@ -100,8 +112,10 @@ const SearchTools = forwardRef(({
                 setToolMode(true)
                 setToolName("learn")
                 animState && setAnimactive(true)
+                setCustomePlaceHolder("What do you want to learn?")
+
             }} >
-                <span className='material-symbols-outlined'>book_2</span>
+                <span className='material-symbols-outlined'>school</span>
                 <p>Learn a topic</p>
             </div>
         </div>

@@ -1,12 +1,14 @@
 .loading{
   display: flex;
   justify-content: center;
+  /* height: 40px;
+  width: 40px; */
 }
 
 div.spinner {
   position: relative;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   display: inline-block;
   padding: 10px;
   border-radius: 6px;

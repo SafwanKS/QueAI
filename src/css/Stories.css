@@ -1,0 +1,43 @@
+.stories{
+    width: 800px;
+    flex:3;
+    height: 100%;
+    /* display: none; */
+    animation: shows 0.5s ease;
+}
+
+.stories-header{
+    width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  /* position: fixed; */
+}
+
+.stories-header-left .stories-header-left{
+    display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stories.show{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow-y: scroll;
+}
+
+.stories-body{
+    width: 100%;
+  /* max-width: 700px; */
+  height: calc(100% - 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 020px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+

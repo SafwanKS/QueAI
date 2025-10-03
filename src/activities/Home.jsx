@@ -6,7 +6,7 @@ import {
 import { signInWithPopup, GoogleAuthProvider , onAuthStateChanged} from "firebase/auth";
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, sum } from "firebase/firestore";
 import {auth, db} from '../firebase.js'
-import {askai, askaiStream, relatedAI, summariseAI, createImageAI} from '../Gemini.js'
+import {askai, askaiStream, relatedAI, summariseAI, createImageAI, ai, storyWriteAI, genStoryTitle, tutorAI, genLessonName} from '../Gemini.js'
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
 import {
@@ -32,6 +32,10 @@ import Toast from '../components/Toast.jsx';
 import SearchTools from '../components/SearchTools.jsx';
 // import Search from './Search.jsx';
 import Result from './Result.jsx';
+import Canvas from './Canvas.jsx';
+import Gallery from './Gallery.jsx';
+import Stories from './Stories.jsx';
+import Lessons from './Lessons.jsx';
 
 export default function Home() {
   
@@ -45,6 +49,7 @@ export default function Home() {
   const introRef = useRef(null)
   const toolsRef = useRef(null)
   const resultRef = useRef(null)
+  const canvasRef = useRef(null)
   const headerRef = useRef(null)
   const homeWrapperRef = useRef(null)
   const homeContainerRef = useRef(null)
@@ -53,6 +58,9 @@ export default function Home() {
   const rightSidebarRef = useRef(null)
   const introTxt = useRef(null)
   const  searchContainerRef = useRef(null)
+
+
+  const fileInputRef = useRef(null)
 
   const genImageWrapper = useRef(null)
   const customizeWrapper = useRef(null)
@@ -76,7 +84,10 @@ export default function Home() {
   const [customAnimEnabled, setCustomAnimEnabled] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showRecents, setShowRecents] = useState(false)
-  const [showGenImage, setShowGenImage] = useState(false)
+  const [showGenImage, setShowGenImage] = useState({
+    show: false,
+    index: 0
+  })
   const [showCusAI, setShowCusAI] = useState(false)
   const [showSummarise, setShowSummarise] = useState(false)
   const [customPreferences, setCustomPreferences] = useState({})
@@ -95,6 +106,12 @@ export default function Home() {
   const [searched, setSearched] = useState(false)
 
   const [messages, setMessages] = useState([])
+  const [stories, setStories] = useState([])
+  const [lessons, setLessons] = useState([])
+
+  const [showGallery, setShowGallery] = useState(null)
+  const [showStories, setShowStories] = useState(null)
+  const [showLessons, setShowLessons] = useState(null)
 
   const [image, setImage] = useState(null)
 
@@ -107,12 +124,22 @@ export default function Home() {
 
   const [recentsChats, setRecentChats ] = useState([])
 
+  const [canvasImages, setCanvasImages ] = useState([])
+
+
+
+  const [galleryImages, setGalleryImages] = useState([])
+  const [lessonsList, setLessonsList] = useState([])
+
   const [chatID, setChatID] = useState("")
   const [isLoggedIn, setLoginState] = useState(false)
   const [toolMode, setToolMode] = useState(false)
   const [toolName, setToolName] = useState("")
   const [welcomeMsgHead, setWelcomeMsgTxt] = useState("Meet Que AI")
+  const [customePlaceHolder, setCustomePlaceHolder] = useState("")
   const [summarisedText, setSummarisedText] = useState("")
+
+  const [uploadedImage, setUploadedImage] = useState(null)
 
   const [chats, setChats] = useState({})
   const [chatNames, setChatNames] = useState({})
@@ -191,7 +218,7 @@ export default function Home() {
 
   
 
-    useEffect(()=>{
+  useEffect(()=>{
       const unsubscribe = onAuthStateChanged(auth, async (user)=>{
         if(user){
           setLoginState(true)
@@ -214,6 +241,25 @@ export default function Home() {
     setAnimactive(animState)
     setAnimations(animState)
   }, [animState])
+
+  useEffect(()=>{
+    const savedStories = JSON.parse(localStorage.getItem("stories")) || []
+    setStories(savedStories)
+  }, [])
+
+  useEffect(()=>{
+    localStorage.setItem("stories", JSON.stringify(stories))
+  }, [stories])
+
+  // useEffect(()=>{
+  //   const savedLessons = JSON.parse(localStorage.getItem("lessons")) || []
+  //   setLessons(savedLessons)
+  // }, [])
+
+  // useEffect(()=>{
+  //   localStorage.setItem("lessons", JSON.stringify(lessons))
+  // }, [lessons])
+
 
 
   const getRandomString = (length) => {
@@ -262,6 +308,8 @@ export default function Home() {
       return null;
     }
   }
+
+
 
 
   const getResult = async (history, prompt, currentTime, lang, resType, onChunk) => {
@@ -331,12 +379,23 @@ export default function Home() {
 
   const genImage = async(prompt) => {
     try{
-      const img = await createImageAI(prompt)
-
+      let newIndex;
+      setCanvasImages(prev => {
+        newIndex = prev.length;
+        return [...prev, { title: prompt, img: null }];
+      });
+      const img = await createImageAI(prompt);
       if(img && img.base64Data){
-        setImage(img)
+        setCanvasImages(prev => {
+          const updated = [...prev];
+          if (updated[newIndex]) {
+            updated[newIndex] = { ...updated[newIndex], img };
+          }
+          return updated;
+        });
+        console.log("Image generated and set for prompt:", prompt);
+        console.log(canvasImages)
       }
-
     } catch (err) {
       console.log("error fetching image: ", err)
     }
@@ -350,63 +409,167 @@ export default function Home() {
   const [emptyChats, setEmptyChats] = useState(false)
 
 
+  const showStoriesWindow = () =>{
+    setSearched(true)
+    introRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    resultRef.current.classList.add("show")
+    canvasRef.current.classList.remove("show")
+    leftSidebarRef.current.classList.add("show")
+    rightSidebarRef.current.classList.remove("show")
+    homeWrapperRef.current.style.paddingTop = "0"
+    // searchBoxRef.current.classList.add('onsearch')
+    searchContainerRef.current.classList.add('onsearch')
+    searchBoxRef.current.classList.remove('active')
+    homeContainerRef.current.classList.add('onsearch')
+    setDrawerCollapsed(true)
+    setOnSearch(true)
+    setToolMode(true)
+    setToolName("story")
+    // setShowStories(true)
+  } 
+  
+  const showLessonsWindow = () =>{
+    setSearched(true)
+    introRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    resultRef.current.classList.add("show")
+    canvasRef.current.classList.remove("show")
+    leftSidebarRef.current.classList.add("show")
+    rightSidebarRef.current.classList.remove("show")
+    homeWrapperRef.current.style.paddingTop = "0"
+    // searchBoxRef.current.classList.add('onsearch')
+    searchContainerRef.current.classList.add('onsearch')
+    searchBoxRef.current.classList.remove('active')
+    homeContainerRef.current.classList.add('onsearch')
+    setDrawerCollapsed(true)
+    setOnSearch(true)
+    setToolMode(true)
+    setToolName("learn")
+    // setShowStories(true)
+  }
+
+
   const [text, setText] = useState("")
+
+  const [previewImage, setPreviewImage] = useState(null)
 
   const onInputChanged = (e) => {
     const inputBox = inputRef.current
     inputBox.rows = inputBox.value.split('\n').length;
     inputBox.style.height = 'auto';
     inputBox.style.height = inputBox.scrollHeight + 'px';
-    setBtnState(inputBox.value.length > 0)
+    // searchBoxRef.current.style.height = inputBox.scrollHeight + 30 + 'px';
+    setBtnState(inputBox.value.trim().length > 0)
     setQuestion(e.target.value)
   }
 
-  // useEffect(()=>{
-  //   if(toolName !== ""){
-  //     if (introTxt.current) {
-  //     introTxt.current.classList.remove("change");
-  //     setTimeout(() => {
-  //      introTxt.current.classList.add("change");
-  //      setTimeout(() => {
-  //       setWelcomeMsgTxt(
-  //       `${
-  //         toolName ==="draw" && "Describe your image" ||
-  //         toolName ==="code" && "Describe your image"
-  //       }`
-  //      )
-  //      }, 500);
-  //     },);
-  //   }
-  //   }
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedImage(file);
+      setPreviewImage(URL.createObjectURL(file))
+    }
+  }
 
-  //   return () => {
-  //     introTxt.current.classList.add("change");
-  //      setTimeout(() => {
-  //       setWelcomeMsgTxt("Meet Que AI")
-  //      }, 500);
-  //   }
-  // }, [toolName])
-
-
-
-  const downloadImage = () =>{
-    if (!image) return;
-
-    const imageName = question.replaceAll(' ', "-")
-
+  const downloadImage = (obj) =>{
+    if (!obj.img) return;
+    const imageName = obj.title.replaceAll(' ', "-")
     const link = document.createElement("a")
-    link.href = `data:${image.mimeType};base64,${image.base64Data}`;
-    link.download = `${imageName}.${image.mimeType.split('/')[1]}`;
+    link.href = `data:${obj.img.mimeType};base64,${obj.img.base64Data}`;
+    link.download = `${imageName}.${obj.img.mimeType.split('/')[1]}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   }
+
+
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
+  };
+
+
+
+  const generateImage = async (prompt) => {
+    try {
+      const base64Image = await fileToBase64(uploadedImage);
+      let newIndex;
+        setCanvasImages(prev => {
+          newIndex = prev.length;
+          return [...prev, { title: prompt, img: null, previewImg: previewImage }];
+      });
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash-preview-image-generation",
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: prompt },
+              {
+                inlineData: {
+                  mimeType: uploadedImage.type,
+                  data: base64Image,
+                },
+              },
+            ],
+          },
+        ],
+        config: {
+          responseModalities: ["IMAGE", "TEXT"],
+        },
+      });
+
+      // get back AI-generated image
+      const parts = response?.candidates?.[0]?.content?.parts || [];
+      let mimeType = null;
+      let base64Data = null;
+      for (const part of parts) {
+        if (part.inlineData) {
+          mimeType = part.inlineData.mimeType;
+          base64Data = part.inlineData.data;
+          break;
+        }
+      }
+
+      if (base64Data) {
+        try{
+          const img = {
+            mimeType: mimeType,
+            base64Data: base64Data
+          }
+          if(img && img.base64Data){
+            setCanvasImages(prev => {
+              const updated = [...prev];
+              if (updated[newIndex]) {
+                updated[newIndex] = { ...updated[newIndex], img };
+              }
+              return updated;
+            });
+            console.log("Image generated and set for prompt:", prompt);
+            console.log(canvasImages)
+          }
+        } catch (err) {
+          console.log("error fetching image: ", err)
+        }
+      }
+    } catch (err) {
+      console.error("Error generating image:", err);
+    }
+  };
 
   const handleClearChat = () =>{
     introRef.current.classList.remove("hide")
     toolsRef.current.classList.remove("hide")
     headerRef.current.classList.remove("hide")
     resultRef.current.classList.remove("show")
+    canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.remove("show")
     rightSidebarRef.current.classList.remove("show")
     homeContainerRef.current.style.paddingTop = "150px"
@@ -414,7 +577,32 @@ export default function Home() {
     searchBoxRef.current.classList.add('active')
     homeContainerRef.current.classList.remove('onsearch')
     setSearched(false)
+    setToolMode(false)
+    setCustomePlaceHolder("")
+    setToolName("") 
     setMessages([])
+  }
+
+  const showCanvasWindow = () => {
+    setSearched(true)
+    introRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    resultRef.current.classList.remove("show")
+    canvasRef.current.classList.add("show")
+    leftSidebarRef.current.classList.add("show")
+    // rightSidebarRef.current.classList.add("show")
+    homeWrapperRef.current.style.paddingTop = "0"
+    searchBoxRef.current.classList.add('onsearch')
+    searchContainerRef.current.classList.add('onsearch')
+    // searchBoxRef.current.classList.remove('active')
+    searchBoxRef.current.classList.add("canvas")
+    homeContainerRef.current.classList.add('onsearch')
+    setDrawerCollapsed(true)
+    setOnSearch(true)
+
+    setToolMode(true)
+    setToolName("draw")
   }
 
 
@@ -530,10 +718,136 @@ export default function Home() {
 
     }else{
       if(toolMode && toolName === "draw"){
-        if(question !== "") {
-          genImage(question)
-          setImage(null)
-          setShowGenImage(true)
+        if(question.trim() !== "") {
+          if(uploadedImage){
+            generateImage(question)
+          }else{
+            genImage(question)
+          }
+        }
+      }
+      if(toolMode && toolName === "story"){
+        if(question.trim() !== ""){
+
+          (async()=>{
+
+            setAnswering(true);
+
+            const storyTitle = await genStoryTitle(question)
+            setSearched(true)
+            introRef.current.classList.add("hide")
+            toolsRef.current.classList.add("hide")
+            headerRef.current.classList.add("hide")
+            resultRef.current.classList.add("show")
+            leftSidebarRef.current.classList.add("show")
+            homeWrapperRef.current.style.paddingTop = "0"
+            searchContainerRef.current.classList.add('onsearch')
+            homeContainerRef.current.classList.add('onsearch')
+            setDrawerCollapsed(true)
+            setOnSearch(true)
+
+            const history = []
+    
+            stories.map((story, index)=> {
+              history.push(
+                {
+                  role: "user",
+                  parts: [{
+                    text: story.title
+                  }]
+                },
+                {
+                  role: "model",
+                  parts: [{
+                    text: story.content
+                  }]
+                }
+              )
+            });
+        
+            shouldSaveChat.current = true;
+
+              // const img = await createImageAI(storyTitle)
+
+              setStories([...stories, {
+                title: storyTitle,
+                content: "",
+                // image: img || {}
+              }]);
+          
+              
+              
+              let streamedAnswer = "";
+              await storyWriteAI( question, history, (chunk) => {
+                streamedAnswer += chunk;
+                setStories((prev) => {
+                  const updated = [...prev];
+                  updated[updated.length - 1].content += chunk;
+                  return updated;
+                });
+              });
+              
+              setAnswering(false);
+          })()
+        }
+      }
+      if(toolMode && toolName === "learn"){
+        if(question.trim() !== ""){
+          (async () =>{
+            setAnswering(true);
+            const lessonName = lessons[0]?.que ? question : await genLessonName(question) 
+
+            setSearched(true)
+            introRef.current.classList.add("hide")
+            toolsRef.current.classList.add("hide")
+            headerRef.current.classList.add("hide")
+            resultRef.current.classList.add("show")
+            leftSidebarRef.current.classList.add("show")
+            homeWrapperRef.current.style.paddingTop = "0"
+            searchContainerRef.current.classList.add('onsearch')
+            homeContainerRef.current.classList.add('onsearch')
+            setDrawerCollapsed(true)
+            setOnSearch(true)
+  
+            const history = []
+    
+            lessons.map((lesson, index)=> {
+              history.push(
+                {
+                  role: "user",
+                  parts: [{
+                    text: lesson.que
+                  }]
+                },
+                {
+                  role: "model",
+                  parts: [{
+                    text: lesson.ans
+                  }]
+                }
+              )
+            });
+        
+            shouldSaveChat.current = true;
+  
+  
+            setLessons([...lessons, {
+              que: lessonName,
+              ans: ""
+            }]);
+              
+            let streamedAnswer = "";
+            await tutorAI( question, history, (chunk) => {
+              streamedAnswer += chunk;
+              setLessons((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].ans += chunk;
+                return updated;
+              });
+            });
+            
+            setAnswering(false);
+          })()
         }
       }
       if(toolMode && toolName === "code"){
@@ -556,7 +870,6 @@ export default function Home() {
               console.log(err);
             }
           })()
-          
         }
       }
     }
@@ -581,9 +894,12 @@ export default function Home() {
             setMessages={setMessages}
             shouldSaveChat={shouldSaveChat}
             handleClearChat={handleClearChat}
+            showStoriesWindow={showStoriesWindow}
+            showCanvasWindow={showCanvasWindow}
+            showLessonsWindow={showLessonsWindow}
           />
             <div ref={homeContainerRef} style={{
-              padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 80px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
+              padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
             }} className="homeContainer" >
               <Header
                 ref={headerRef}
@@ -619,6 +935,10 @@ export default function Home() {
                 searchBoxRef={searchBoxRef}
                 setSearched={setSearched}
                 messages={messages}
+                stories={stories}
+                lessons={lessons}
+                toolMode={toolMode}
+                toolName={toolName}
                 lastElement={lastElement}
                 chatID={chatID}
                 setChatID={setChatID}
@@ -640,6 +960,31 @@ export default function Home() {
                 // generativeModel={generativeModel}
                 // setGenerativeModel={setGenerativeModel}
               />
+
+              <Canvas 
+                ref={canvasRef}
+                handleClearChat={handleClearChat}
+                canvasImages={canvasImages}
+                setCanvasImages={setCanvasImages}
+                setShowGenImage={setShowGenImage}
+                downloadImage={downloadImage}
+              />
+
+              {
+                showGallery &&
+                <Gallery />
+              }
+              {
+                showStories &&
+                <Stories 
+                  stories={stories}
+                />
+              }
+              {
+                showLessons &&
+                <Lessons />
+              }
+
               <SearchBox
                 ref={searchBoxRef}
                 inputRef={inputRef}
@@ -651,7 +996,7 @@ export default function Home() {
                 setAnimactive={setAnimactive}
                 setOnSearch={setOnSearch}
                 searched={searched}
-                placeHolder= {`${toolMode ? (toolName === "draw" && "Describe your image" || toolName === "code" && "Describe your project" || toolName === "summarise" && "Enter text to summarise " || toolName === "story" && "Write a story about..." || toolName === "learn" && "What is the..." ) : "Ask anything..."}`}
+                placeHolder= {customePlaceHolder !== "" ? customePlaceHolder : "Ask anything..."}
                 onKeyDown={handleButtonClick}
                 setBtnState={setBtnState}
                 onLangChanged={setSearchLang}
@@ -662,6 +1007,12 @@ export default function Home() {
                 proEnabled={proEnabled}
                 setProEnabled={setProEnabled}
                 onSearch={onSearch}
+                fileInputRef={fileInputRef}
+                handleFileChange={handleFileChange}
+                uploadedImage={uploadedImage}
+                previewImage={previewImage}
+                generateImage={generateImage}
+                setCustomePlaceHolder={setCustomePlaceHolder}
               />  
               <SearchTools
                 ref={toolsRef}
@@ -672,6 +1023,9 @@ export default function Home() {
                 setToolName={setToolName}
                 setAnimactive={setAnimactive}
                 animState={animState}
+                showCanvasWindow={showCanvasWindow}      
+                setCustomePlaceHolder={setCustomePlaceHolder}          
+
               />
             </div>
 
@@ -731,22 +1085,24 @@ export default function Home() {
           /> 
         }
         {
-          showGenImage &&
+          showGenImage.show &&
           <div className='genImageContainer' >
             <div className="genImageWrapper" ref={genImageWrapper}>
               <div className="genImageHeader">
                 <h2>Generate image</h2>
                 <div className="btn-container">
                   {
-                    image && <div className="download-btn btn" onClick={downloadImage}>
+                    canvasImages[showGenImage.index].img && <div className="download-btn btn" onClick={()=> downloadImage(canvasImages[showGenImage.index])}>
                     <span className="material-symbols-outlined">download</span>
                   </div>
-                  }
-                  
+                  } 
                   <div className="close-btn btn" onClick={() =>{
                     genImageWrapper.current.classList.add("hide")
                     setTimeout(()=>{
-                      setShowGenImage(false)
+                      setShowGenImage({
+                        show: false,
+                        index: 0
+                      })
                     }, 200)
                     }} >
                       <span className="material-symbols-outlined">close</span>
@@ -754,30 +1110,10 @@ export default function Home() {
                 </div>
               </div>
               <div className="genImageBody">
-                {
-                  image ? <img
-                      src={`data:${image.mimeType};base64,${image.base64Data}`}
-                      alt="Generated"
-                    />
-                  :
-                  <div className="loading">
-                    <div className="spinner">
-                      <div className="bar1"></div>
-                      <div className="bar2"></div>
-                      <div className="bar3"></div>
-                      <div className="bar4"></div>
-                      <div className="bar5"></div>
-                      <div className="bar6"></div>
-                      <div className="bar7"></div>
-                      <div className="bar8"></div>
-                      <div className="bar9"></div>
-                      <div className="bar10"></div>
-                      <div className="bar11"></div>
-                      <div className="bar12"></div>
-                    </div>
-                  </div>
-                }
-                
+                  <img
+                    src={`data:${canvasImages[showGenImage.index].img.mimeType};base64,${canvasImages[showGenImage.index].img.base64Data}`}
+                    alt="Generated"
+                  />
               </div>
             </div>
           </div>
