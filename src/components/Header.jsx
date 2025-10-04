@@ -50,11 +50,11 @@ const Header = forwardRef(({
         <h1>Que AI</h1>
       </div>
       <div className="secondCol">
-        <div className="btn animation" data-title='Toggle animation (Ctrl + u)' onClick={()=>{
+        {/* <div className="btn animation" data-title='Toggle animation (Ctrl + u)' onClick={()=>{
               setAnimState(!animState)
             }} >
               <span className="material-symbols-outlined">animation</span>
-            </div>
+            </div> */}
         {
           !isLoggedIn ?
           <div className='login-btn' onClick={() => setShowLoginDialog(true)}>

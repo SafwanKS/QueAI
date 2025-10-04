@@ -131,7 +131,6 @@
   width: 100%;
   display: flex;
   align-items: center;
-  backdrop-filterr: blur(10px);
   position: absolute;
   top: 0;
   left: 0;
@@ -278,7 +277,6 @@
 
 .actions .bigActions .actionBtn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filterr: blur(5px);
 }
 
 .actions .quickActions{

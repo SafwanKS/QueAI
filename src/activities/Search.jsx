@@ -280,6 +280,8 @@ export default function Search(props) {
 
 
   const languages = [
+    "English",
+    "Malayalam",
     "Afrikaans",
     "Albanian",
     "Amharic",
@@ -295,7 +297,6 @@ export default function Search(props) {
     "Czech",
     "Danish",
     "Dutch",
-    "English",
     "Estonian",
     "Finnish",
     "French",
@@ -326,7 +327,6 @@ export default function Search(props) {
     "Macedonian",
     "Maguindanao",
     "Malay",
-    "Malayalam",
     "Maltese",
     "Mandarin Chinese",
     "Maranao",

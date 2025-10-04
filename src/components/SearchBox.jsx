@@ -72,6 +72,8 @@ const SearchBox = forwardRef(({
   const [showLangDialog,
     setShowLangDialog] = useState(false)
     const languages = [
+    "English",
+    "Malayalam",
     "Afrikaans",
     "Albanian",
     "Amharic",
@@ -87,7 +89,6 @@ const SearchBox = forwardRef(({
     "Czech",
     "Danish",
     "Dutch",
-    "English",
     "Estonian",
     "Finnish",
     "French",
@@ -118,7 +119,6 @@ const SearchBox = forwardRef(({
     "Macedonian",
     "Maguindanao",
     "Malay",
-    "Malayalam",
     "Maltese",
     "Mandarin Chinese",
     "Maranao",

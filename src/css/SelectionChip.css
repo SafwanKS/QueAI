@@ -19,24 +19,29 @@
 }
 
 .chip.active{
-  background-color: rgba(117, 167, 243, 0.15) !important;
-  /* backdrop-filterr: blur(10px); */
+  background-color: rgb(255, 236, 206) !important;
+}
+
+.home.dark .chip.active{
+  background-color: rgb(59, 53, 43) !important;
 }
 
 .chip:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  /* backdrop-filterr: blur(10px); */
 }
 
 .chip span{ 
   font-size: 16px;
-  color: #738ee6;
+  /* color: #738ee6; */
+  color: #a3823a;
+
   padding: 0;
   margin: 0;
 }
 .chip p{
   font-size: 14px;
-  color: #738ee6;
+  /* color: #738ee6; */
+  color: #a3823a;
   padding: 0;
   margin: 0;
 }

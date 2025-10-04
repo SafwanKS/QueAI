@@ -6,11 +6,18 @@
   height: 100%;
   width: 300px;
   flex: 1;
-  /* backdrop-filterr: blur(10px); */
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+  background-color: rgb(255, 243, 228) !important;
+
+  z-index: 1000;
+  
+}
+
+.home.dark .left-sidebar{
+  background-color: rgb(39, 37, 34) !important;
 }
 
 .left-sidebar.collapsed{
@@ -106,7 +113,6 @@
   /* height: 97%; */
   height: 100%;
   width: 250px;
-  backdrop-filterr: blur(10px);
   /* border-radius: 20px; */
   /* animation: rightsideshow 0.5s ease; */
   display: none;
@@ -199,12 +205,11 @@
 
 .sidebar-collapse-btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filterr: blur(10px);
 }
 
 .left-sidebar-header h1{
   font-family: GeneralSans-Medium;
-  color: #fff;
+  /* color: #fff; */
   margin: 0;
 }
 
@@ -216,6 +221,8 @@
   padding: 10px 10px;
   overflow-y: hidden;
   position: relative;
+
+  
 }
 
 .right-sidebar-body{
@@ -235,21 +242,30 @@
   padding: 0 10px;
   gap: 10px;
   border-radius: 10px;
-  color: #fff;
+  /* color: #fff; */
   font-family: GeneralSans-Medium;
   cursor: pointer;
-  backdrop-filterr: blur(10px);
   margin-top: 5px;
 }
 
 .new_chat_button{
   margin-top: 0;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgb(255, 230, 183);
+}
 
+.home.dark .new_chat_button{
+  background-color: rgb(73, 65, 51);
 }
 
 .new_chat_button:hover, .gallery_btn:hover, .lessons_btn:hover, .stories_btn:hover{
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgb(252, 233, 205);
+}
+
+.home.dark .gallery_btn:hover, .home.dark .lessons_btn:hover, .home.dark .stories_btn:hover{
+  background-color: rgb(27, 25, 22);
+}
+.home.dark .new_chat_button:hover{
+  background-color: rgb(59, 55, 49);
 }
 
 .new_chat_button span, .gallery_btn span, .lessons_btn span, .stories_btn span{
@@ -295,8 +311,11 @@
 }
 
 .sidebar-footer .setting-btn:hover{
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filterr: blur(10px);
+  background-color: rgb(255, 207, 135);
+}
+
+.home.dark .setting-btn:hover{
+  background-color: rgb(70, 56, 36);
 }
 
 .sidebar-footer .setting-btn span{
@@ -401,14 +420,14 @@
 
 .no-recents span{
   font-size: 50px;
-  color: rgba(255, 255, 255, 0.5);
+  /* color: rgba(255, 255, 255, 0.5); */
 }
 
 .no-recents h4{
   font-size: 18px;
   font-family: GeneralSans-Regular;
   font-family: "Poppins", sans-serif;
-  color: rgba(255, 255, 255, 0.5);
+  /* color: rgba(255, 255, 255, 0.5); */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;  
