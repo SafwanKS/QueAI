@@ -2,9 +2,7 @@ import {
   defineConfig
 } from 'vite'
 import react from '@vitejs/plugin-react'
-import {
-  VitePWA
-} from "vite-plugin-pwa";
+const host = process.env.TAURI_DEV_HOST;
 
 const manifestForPlugin = {
   registerType: 'autoUpdate',
@@ -21,26 +19,26 @@ const manifestForPlugin = {
       sizes: '192x192',
       type: 'image/png',
     },
-      {
-        src: '/android-chrome-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-      },
-      {
-        src: '/apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
-        purpose: 'apple touch icon',
-      },
-      {
-        src: '/maskable_icon.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      }],
-       workbox: {
-        cleanupOutdatedCaches: true
-      },
+    {
+      src: '/android-chrome-512x512.png',
+      sizes: '512x512',
+      type: 'image/png',
+    },
+    {
+      src: '/apple-touch-icon.png',
+      sizes: '180x180',
+      type: 'image/png',
+      purpose: 'apple touch icon',
+    },
+    {
+      src: '/maskable_icon.png',
+      sizes: '512x512',
+      type: 'image/png',
+      purpose: 'maskable',
+    }],
+    workbox: {
+      cleanupOutdatedCaches: true
+    },
     theme_color: '#101218',
     background_color: '#101218',
     display: "standalone",
@@ -55,9 +53,31 @@ const manifestForPlugin = {
 
 
 // https://vite.dev/config/
-export default defineConfig( {
+export default defineConfig({
   base: "./",
   plugins: [react(),
     // VitePWA(manifestForPlugin)
   ],
+
+  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
+  //
+  // 1. prevent Vite from obscuring rust errors
+  clearScreen: false,
+  // 2. tauri expects a fixed port, fail if that port is not available
+  server: {
+    port: 1420,
+    strictPort: true,
+    host: host || false,
+    hmr: host
+      ? {
+        protocol: "ws",
+        host,
+        port: 1421,
+      }
+      : undefined,
+    watch: {
+      // 3. tell Vite to ignore watching `src-tauri`
+      ignored: ["**/src-tauri/**"],
+    },
+  },
 })
