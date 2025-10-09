@@ -143,12 +143,54 @@ const Result = forwardRef(({
     itemName = messages
   }
 
+  function convertToJson(text) {
+    try {
+      let fixedText = text
+        .replace(/'/g, '"')
+        .replace(/"(\w+?)":/g, '"$1":');
+        console.log(fixedText);
+      let obj = JSON.parse(fixedText);
+      
+      if (obj.data && typeof obj.data === 'string') {
+        try {
+          obj.data = JSON.parse(obj.data);
+        } catch (e) {
+          // console.log(e);
+        }
+      }
+      return obj;
+    } catch (e) {
+      // console.error("Failed to convert text to JSON:", e.message);
+      return null;
+    }
+}
+
+
+  const showResponse = (item) =>{
+    if(item){
+      if(item.type === "chat" || item.type === "lesson"){
+        if(item.ans.startsWith("{")){
+          const ansJson = convertToJson(item.ans)
+          console.log(ansJson);
+          return(item.ans)
+          // return (ansJson.data.content)
+          if(ansJson.data && ansJson.data.content){
+            return (ansJson.data.content)
+          }
+        }else return(item.ans)
+      }
+      if(item.type === "story"){
+        return(item.content)
+      }
+    }
+  }
+
 
   return (
     <div ref={ref} className="result">
       <div className="result-header">
         <div className="result-header-left">
-          <div className="back_btn" onClick={() => {
+          <div className="back_btn btn" onClick={() => {
             handleClearChat()
           }} >
             <span className="material-symbols-outlined">arrow_back</span>
@@ -156,9 +198,9 @@ const Result = forwardRef(({
           <h1 ref={resultTitle} ></h1>
         </div>
         <div className="result-header-right">
-          {/* <div className="more_btn">
+          <div className="more_btn">
             <span className="material-symbols-outlined">more_horiz</span>
-          </div> */}
+          </div>
         </div>
       </div>
 
@@ -188,12 +230,7 @@ const Result = forwardRef(({
                         <div className='resans' >
                           
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {toolMode 
-                              ? toolName === "story" 
-                                ? item.content 
-                                : item.ans
-                              : item.ans
-                            }
+                            {showResponse(item)}
                           </ReactMarkdown>                          
                         </div>
                         <div className={`actions ${answering || "active"}`}>

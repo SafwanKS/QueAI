@@ -1,7 +1,6 @@
 .settings-body{
   display: flex;
   flex-direction: row;
-
   overflow: hidden;
 }
 
@@ -28,11 +27,29 @@
 .settings-menu-item span{
   font-size: 1.2em;
 }
-.settings-menu-item.active, .settings-menu-item:hover{
-  background-color: rgba(255, 255, 255, 0.02);
-  backdrop-filterr: blur(10px);
+.settings-menu-item.active{
+  background-color: rgb(255, 230, 199);
 }
 
+.home.dark .settings-menu-item.active{
+  background-color: rgb(43, 35, 27);
+}
+
+.settings-menu-item:hover{
+  background-color: rgb(255, 236, 211);
+}
+
+.home.dark .settings-menu-item:hover{
+  background-color: rgb(43, 38, 32);
+}
+
+.settings-menu-item.active:hover{
+  background-color: rgb(255, 230, 199);
+}
+
+.home.dark .settings-menu-item.active:hover{
+  background-color: rgb(43, 35, 27);
+}
 
 
 
@@ -53,11 +70,16 @@
   padding: 10px;
   margin-top: 20px;
   display: flex;
-  background-color: rgba(255, 255, 255, 0.02);
-  backdrop-filterr: blur(10px);
+  background-color: rgb(255, 230, 210);
   border-radius: 10px;
   overflow: hidden;
 }
+
+.home.dark .settings-body .general .accountContainer{
+  background-color: rgb(43, 35, 27);
+}
+
+
 
 .settings-body .general .accountContainer .profileContainer{
   height: 50px;
@@ -109,19 +131,18 @@
   width: 55px;
   height: 30px;
   border-radius: 30px;
-  background-color: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(0px);
+  background-color: rgb(255, 233, 215);
   display: flex;
   align-items: center;
   padding: 0 5px;
   cursor: pointer ;
   border: 1px solid #333232;
-  
+  position: relative;
 }
 
 .settings-item .switch.active{
   border: none;
-  background-color: rgba(0, 0, 255, 0.5);
+  background-color: rgb(156, 92, 8);
 }
 
 
@@ -129,17 +150,22 @@
   height: 20px;
   aspect-ratio: 1/1;
   border-radius: 50%;
-  background-color: white;
+  background-color: rgb(92, 68, 37);
   transition: right 0.3s ease;
   position: absolute;
   right: 28px;
   cursor: pointer;
+
+  transition: all 0.3s;
+
 }
 
 .settings-item .switch.active .switch-btn{
   position: absolute;
   right: 5px;
   transition: right 0.3s ease;
+  background-color: bisque;
+  background-color: rgb(255, 233, 215);
 }
 
 
@@ -167,9 +193,16 @@
   }
 }
 
+.settings-back{
+  display: none;
+}
+
 
 
 @media (max-width: 768px) {
+  .settings-header{
+    padding: 20px 10px;
+  }
   .settingsMenuContainer.hide{
     display: none;
   }
@@ -183,15 +216,21 @@
   }
   .settings-menu-item.active{
     background-color: transparent;
-    backdrop-filterr: none;
   }
   .settings-back{
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 10px; 
   }
   .settings-back span{
-    margin-top: 5px;
+    /* margin-top: 5px; */
+    background-color: bisque;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
   }
   .settings-back h2{
     text-transform: capitalize;
@@ -265,14 +304,21 @@
   background-color: transparent;
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgb(255, 222, 161) !important;
   outline: none;
   cursor: text;
   font-size: 0.85em;
 }
 
+.home.dark .customizeAI input, .home.dark .customizeAI textarea{
+  border: 1px solid rgb(54, 47, 35) !important;
+}
+
 .customizeAI input:focus, .customizeAI textarea:focus{
-  border: 1px solid rgba(43, 82, 255, 0.521) !important;
+  border: 1px solid rgb(255, 166, 0) !important;
+}
+.home.dark .customizeAI input:focus,.home.dark .customizeAI textarea:focus{
+  border: 1px solid rgb(78, 64, 36) !important;
 }
 .customizeAI .btn-container{
 width: 100%;
@@ -283,15 +329,21 @@ padding: 10px 0;
 .customizeAI .save-btn{
   padding: 8px 13px;
   border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgb(255, 198, 112);
   cursor: pointer;
   font-size: 0.9em;
 }
 
-.customizeAI .save-btn:hover{
-  background-color: rgba(255, 255, 255, 0.15);
+.home.dark .customizeAI .save-btn{
+  border: 1px solid rgb(66, 44, 10);
 }
 
+.customizeAI .save-btn:hover{
+  background-color: rgb(255, 198, 112);
+}
+.home.dark .customizeAI .save-btn:hover{
+  background-color: rgb(51, 41, 25);
+}
 
 .delete-btn{
   padding: 5px 10px;

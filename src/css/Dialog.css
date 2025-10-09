@@ -13,7 +13,7 @@
 
 .dialog{
   max-height: calc(100% - 100px);
-  background: var(--dialog-bg);
+  background: rgb(255, 236, 211);
   border-radius: 2.6rem;
   width: 340px;
   padding: 20px 25px 15px;
@@ -25,6 +25,10 @@
   opacity: 0;
   scale: 0.9;
   transition: 0.2s ease-in-out;
+}
+
+.home.dark .dialog{
+  background: rgb(39, 35, 29);
 }
 
 .dialog.show{
@@ -87,7 +91,16 @@
 }
 
 .dButton#confirmBtn{
-  background: #682EA6;
+  background: #e49f1f;
+  color: beige;
+}
+.home.dark .dButton#confirmBtn{
+  background: #574119;
+  color: beige;
+}
+
+.home.dark .dButton#cancelBtn{
+  color: beige;
 }
 
 .langmap{

@@ -55,9 +55,7 @@ const LeftSideBar = forwardRef(({
       // display: window.innerWidth < 768 && onSearch ? "none" : "flex",
       position: window.innerWidth < 768 && "absolute",
       left: window.innerWidth < 768 && "0",
-      background: (window.innerWidth < 768 || (searched && drawerCollapsed)) && "var(--dialog-bg)",
-      backdropFilter: window.innerWidth < 768 && "20px",
-      zIndex: "10000",
+      background: (window.innerWidth < 768 || (searched && drawerCollapsed)) && "var(--dialog-bg)"
     }} >
       <div className="left-sidebar-header">
         <img src={Logo} alt="logo" />

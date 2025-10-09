@@ -12,7 +12,7 @@
   font-family: GeneralSans-Regular;
   font-family: "Poppins", sans-serif;
 
-  color: var(--main-text);
+  /* color: var(--main-text); */
   -ms-overflow-style: none;
   scrollbar-width: none; 
   /* cursor: default; */
@@ -21,6 +21,14 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+*::selection{
+  background-color: rgb(255, 230, 201);
+}
+
+.home.dark *::selection{
+  background-color: rgb(77, 68, 57);
 }
 *::-webkit-scrollbar {
   display: none;
@@ -44,6 +52,7 @@ body{
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
+
 }
 main{
   height: 100%;

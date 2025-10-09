@@ -23,7 +23,7 @@
 
 }
 .canvas-header-col:last-child{
-    justify-content: end;
+    /* justify-content: end; */
     padding: 0 60px;
 
 }
@@ -67,7 +67,7 @@
 .canvas-chip p{
   font-size: 14px;
   color: rgb(247, 53, 53);
-  color: white;
+  /* color: white; */
   font-weight: 500;
   padding: 0;
   margin: 0;
@@ -87,7 +87,12 @@
     object-fit: cover;
     border-radius: 20px;
     position: absolute;
-    box-shadow: 0 0 30px 10px black;
+    box-shadow: 0 0 10px 1px rgb(255, 216, 144);
+}
+
+.home.dark .imageStack img{
+    box-shadow: 0 0 10px 1px rgb(46, 39, 27);
+
 }
 
 .imageStack img:nth-child(1){

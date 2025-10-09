@@ -5,8 +5,8 @@ import '../css/Settings.css'
 function Settings({
     animations, 
     setShowSettings, 
-    setAnimState, 
-    animState, 
+    setDarkmode, 
+    darkmode, 
     Logo, 
     isLoggedIn, 
     user, 
@@ -70,16 +70,16 @@ const cusDescRef = useRef(null)
                             {/* <span className="material-symbols-outlined">settings</span> */}
                             <h4>General</h4>
                         </div>
-                    <div className={`settings-menu-item ${selectedSettingsItem === "animation" && "active"}`} onClick={(e)=> {
+                    <div className={`settings-menu-item ${selectedSettingsItem === "appearance" && "active"}`} onClick={(e)=> {
                         e.target.style.opacity = "0.7"
                         setTimeout(() => {
                             e.target.style.opacity = "1"
                         }, 200);
-                        setSelectedSettingsItem("animation")
+                        setSelectedSettingsItem("appearance")
                         window.innerWidth < 768 && setShowSettingsContent(true)
                         }}>
                             {/* <span className="material-symbols-outlined">resume</span> */}
-                            <h4>Animations</h4>
+                            <h4>Appearance</h4>
                         </div>
                     <div className={`settings-menu-item ${selectedSettingsItem === "datacontrols" && "active"}`} onClick={(e)=> {
                         e.target.style.opacity = "0.7"
@@ -208,11 +208,11 @@ const cusDescRef = useRef(null)
                         </div>
                     }
                     {
-                        selectedSettingsItem == "animation" &&  
+                        selectedSettingsItem == "appearance" &&  
                         <div className='animations'>
                             <div className="settings-item">
-                                <p className="item-name">Animations</p>
-                                <div className={`switch ${animations && "active"}`} onClick={() => setAnimState(!animState)} >
+                                <p className="item-name">Dark mode</p>
+                                <div className={`switch ${darkmode && "active"}`} onClick={() => setDarkmode(!darkmode)} >
                                     <div className="switch-btn"></div>
                                 </div>
                             </div>

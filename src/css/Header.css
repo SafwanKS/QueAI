@@ -9,7 +9,6 @@
   align-items: center;
   /* background: rgba(16, 18, 24, 1) */
   z-index: 1;
-  backdrop-filterr: blur(10px);
 }
 
 .header{
@@ -63,9 +62,16 @@
   gap: 10px;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filterr: blur(10px);
+  background-color: rgb(255, 230, 208);
   cursor: pointer;
+}
+
+.home.dark .login-btn{
+  background-color: rgb(36, 32, 29);
+}
+
+.home.dark .login-btn:hover{
+  background-color: rgb(53, 47, 42);
 }
 
 .login-btn p{
@@ -79,7 +85,8 @@
 }
 
 .login-btn:hover{
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgb(253, 232, 214);
+
 }
 
 
@@ -107,6 +114,8 @@
 .header.hide{
   display: none;
 }
+
+
 .home .header .secondCol{
   flex: 1;
   margin-left: auto;
@@ -125,11 +134,11 @@
   justify-content: center;
   border-radius: 50%;
   cursor: pointer;
+
 }
 
 .secondCol .btn:hover, .firstCol .btn:hover{
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filterr: blur(10px);
 }
 
 .secondCol .btn span{
@@ -162,22 +171,23 @@
   width: 300px;
   /* height: 200px; */
   background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filterr: blur(10px);
   border-radius: 20px;
   position: absolute;
-  top: 30px;
+  top: 2px;
   right: -10px;
   display: none;
   flex-direction: column;
-  box-shadow: 10px black;
+  padding: 10px;
+  background-color: rgb(255, 238, 222);
+  /* box-shadow: 10px black; */
+}
+
+.home.dark .profileInfo{
+  background-color: rgb(39, 36, 33);
 }
 
 .secondCol .profile-container:hover .profileInfo{
   display: flex;
-}
-
-.profileInfo{
-  padding: 10px;
 }
 
 .profileInfo .accDetails{
@@ -221,11 +231,12 @@
   cursor: pointer;
 }
 
-.settings-button:hover, .logout-button:hover, .customize-button:hover{
-  
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filterr: blur(20px);
+.settings-button:hover, .logout-button:hover{
+  background-color: rgb(255, 228, 210);
+}
 
+.home.dark .settings-button:hover,.home.dark .logout-button:hover{
+  background-color: rgb(53, 47, 43);
 }
 
 .profileInfo span{

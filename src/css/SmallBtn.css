@@ -19,13 +19,24 @@
   pointer-events: none;
 }
 .smallBtn.inactive{
-  background-color: var(--button-bg);
+  /* background-color: var(--button-bg); */
+  background-color: rgb(255, 240, 209);
   pointer-events: none;
-  
 }
+
+.home.dark .smallBtn.smallBtn.inactive{
+  background-color: rgb(27, 26, 23);
+}
+
 .smallBtn.active{
-  background-color: var(--button-active);
+  /* background-color: var(--button-active); */
+  background-color: rgb(218, 161, 38);
+  color: white;
   pointer-events: auto;
+}
+
+.home.dark .smallBtn.smallBtn.active{
+  background-color: rgb(73, 57, 10);
 }
 
 

@@ -1,4 +1,4 @@
-.loadingBars{
+/* .loadingBars{
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -10,7 +10,7 @@
   overflow: hidden;
   width: 100%;
   height: 15px;
-  background-image: linear-gradient(to right, #2691F3, #682EA6, #2691F3);
+  background-image: linear-gradient(to right, #ffe0bd, #ceb49c, #ffc354);
   border-radius: 6px;
   animation: bag-load 3.6s linear infinite;
 }
@@ -25,4 +25,4 @@
   100% {
     background-position-x: 2000px;
   }
-}
+} */

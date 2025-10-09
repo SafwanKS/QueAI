@@ -42,26 +42,25 @@ const RightSideBar = forwardRef(({
                     
                 </ul>
             </div>
-            <div className="right-sidebar-footer">
+            {/* <div className="right-sidebar-footer">
             <div className="footer-logo">
                 <img src={Logo} alt="" />
                 <p className='logo-txt' >Que AI</p>
                 <p>Beta &nbsp;v0.1</p>
             </div>
             <div className="dvlpr">
-                {/* <p>Designed & Developed by <a href='https://github.com/SafwanKS' onClick={(e)=> {
+                <p>Designed & Developed by <a href='https://github.com/SafwanKS' onClick={(e)=> {
                 e.preventDefault()
                 window.open("https://github.com/SafwanKS")
-                }}>Safwan KS</a></p> */}
+                }}>Safwan KS</a></p>
             </div>
             <div className="social-media-handle-container">
                 <div className="github">
-                
                 </div>
                 <div className="instagram"></div>
                 <div className="gmail"></div>
             </div>
-            </div>
+            </div> */}
         </div>
     </div>
   );

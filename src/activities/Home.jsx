@@ -79,8 +79,6 @@ export default function Home() {
   const navigate = useNavigate()
 
   const [btnState, setBtnState] = useState(false)
-  const [animactive, setAnimactive] = useState(true)
-  const [animations, setAnimations] = useState(true)
   const [customAnimEnabled, setCustomAnimEnabled] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showRecents, setShowRecents] = useState(false)
@@ -125,6 +123,8 @@ export default function Home() {
   const [recentsChats, setRecentChats ] = useState([])
 
   const [canvasImages, setCanvasImages ] = useState([])
+
+  const [darkmode, setDarkmode] = useState(false)
 
 
 
@@ -191,7 +191,7 @@ export default function Home() {
     const handleKeyDown = (event) => {
       if (event.ctrlKey && event.key.toLowerCase() === "u") {
         event.preventDefault();
-        setAnimState(prev => !prev);
+        setDarkmode(prev => !prev);
       }
       if(event.key === "Escape"){
         setShowDialog(false)
@@ -237,10 +237,6 @@ export default function Home() {
       return () => unsubscribe()
     }, [])
 
-  useEffect(() => {
-    setAnimactive(animState)
-    setAnimations(animState)
-  }, [animState])
 
   useEffect(()=>{
     const savedStories = JSON.parse(localStorage.getItem("stories")) || []
@@ -326,8 +322,6 @@ export default function Home() {
           body: JSON.stringify({
             user_input: (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}` ) + (`Current Time: ${currentTime}`) + (`Prompt: ${prompt}`),
             model_name:"gemini-2.5-pro",
-
-            
           }),
       });
 
@@ -526,7 +520,6 @@ export default function Home() {
         },
       });
 
-      // get back AI-generated image
       const parts = response?.candidates?.[0]?.content?.parts || [];
       let mimeType = null;
       let base64Data = null;
@@ -572,9 +565,9 @@ export default function Home() {
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.remove("show")
     rightSidebarRef.current.classList.remove("show")
-    homeContainerRef.current.style.paddingTop = "150px"
+    // homeContainerRef.current.style.paddingTop = "150px"
     searchContainerRef.current.classList.remove('onsearch')
-    searchBoxRef.current.classList.add('active')
+    // searchBoxRef.current.classList.add('active') 
     homeContainerRef.current.classList.remove('onsearch')
     setSearched(false)
     setToolMode(false)
@@ -591,9 +584,10 @@ export default function Home() {
     resultRef.current.classList.remove("show")
     canvasRef.current.classList.add("show")
     leftSidebarRef.current.classList.add("show")
-    // rightSidebarRef.current.classList.add("show")
+    rightSidebarRef.current.classList.remove("show")
     homeWrapperRef.current.style.paddingTop = "0"
     searchBoxRef.current.classList.add('onsearch')
+    searchBoxRef.current.classList.add('active')
     searchContainerRef.current.classList.add('onsearch')
     // searchBoxRef.current.classList.remove('active')
     searchBoxRef.current.classList.add("canvas")
@@ -674,6 +668,7 @@ export default function Home() {
 
 
       setMessages([...messages, {
+        type: "chat",
         que: ques,
         ans: ""
       }]);
@@ -690,6 +685,8 @@ export default function Home() {
 
           await getResult(history, prompt, currentTime, searchLang, "fast", (chunk)=>{
             streamedAnswer += chunk;
+            console.log(chunk);
+            
             setMessages((prev) => {
               const updated = [...prev];
               updated[updated.length - 1].ans += chunk;
@@ -770,6 +767,7 @@ export default function Home() {
               // const img = await createImageAI(storyTitle)
 
               setStories([...stories, {
+                type: "story",
                 title: storyTitle,
                 content: "",
                 // image: img || {}
@@ -832,6 +830,7 @@ export default function Home() {
   
   
             setLessons([...lessons, {
+              type:"lesson",
               que: lessonName,
               ans: ""
             }]);
@@ -877,10 +876,8 @@ export default function Home() {
 
   return (
     <>
-      <div ref={HomeRef} className="home" style={{
-        background: !animations && "var(--main-bg)"
-      }} >
-        <div ref={homeWrapperRef} className={`home-wrapper ${animations && "anim"}`}>
+      <div ref={HomeRef} className={`home ${darkmode && "dark"}`} >
+        <div ref={homeWrapperRef} className={`home-wrapper`}>
           <LeftSideBar
             ref={leftSidebarRef}
             drawerCollapsed={drawerCollapsed}
@@ -899,7 +896,7 @@ export default function Home() {
             showLessonsWindow={showLessonsWindow}
           />
             <div ref={homeContainerRef} style={{
-              padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
+              // padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
             }} className="homeContainer" >
               <Header
                 ref={headerRef}
@@ -914,8 +911,6 @@ export default function Home() {
                 setLoginState={setLoginState}
                 setShowDialog={setShowDialog}
                 setShowCusAI={setShowCusAI}
-                setAnimations={setAnimations}
-                animations={animations}
                 setAnimState={setAnimState}
                 animState={animState}
               />
@@ -992,8 +987,6 @@ export default function Home() {
                 handleButtonClick={handleButtonClick}
                 btnState={btnState}
                 answering={answering}
-                animactive={animactive}
-                setAnimactive={setAnimactive}
                 setOnSearch={setOnSearch}
                 searched={searched}
                 placeHolder= {customePlaceHolder !== "" ? customePlaceHolder : "Ask anything..."}
@@ -1021,7 +1014,6 @@ export default function Home() {
                 setBtnState={setBtnState}
                 setToolMode={setToolMode}
                 setToolName={setToolName}
-                setAnimactive={setAnimactive}
                 animState={animState}
                 showCanvasWindow={showCanvasWindow}      
                 setCustomePlaceHolder={setCustomePlaceHolder}          
@@ -1046,7 +1038,7 @@ export default function Home() {
 
           </div>
 
-        <div className={`bg-wrapper ${toolMode && (toolName == "draw" && "red" || toolName == "code" && "green" || toolName == "summarise" && "blue" || toolName == "story" && "purple" || toolName == "learn" && "yellow" )} ${animations ? "active" : "inactive"}`}>
+        <div className={`bg-wrapper`}>
           <div className="box">
             {/* <div className="neon1"></div> */}
           </div>
@@ -1057,10 +1049,9 @@ export default function Home() {
         {
           showSettings && 
           <Settings
-            animations={animations}
             setShowSettings={setShowSettings} 
-            setAnimState={setAnimState} 
-            animState={animState}
+            setDarkmode={setDarkmode} 
+            darkmode={darkmode}
             Logo={Logo}
             user={user}
             isLoggedIn={isLoggedIn}
@@ -1194,30 +1185,6 @@ export default function Home() {
         }
 
         {
-          showCusAI && 
-          <div className="customizeContainer">
-            <div className="customizeWrapper" ref={customizeWrapper}>
-              <div className="customizeHeader">
-                <h2>Customize Que AI</h2>
-                <div className="close-btn btn" onClick={() =>{
-                  customizeWrapper.current.classList.add("hide")
-                  setTimeout(()=>{
-                    setShowCusAI(false)
-                  }, 200)
-                  }} >
-                    <span className="material-symbols-outlined">close</span>
-                </div>
-              </div>
-              <div className="customizeBody">
-                  <p>Name your AI</p>
-                  <input type="text" placeholder='Name your AI' />
-                  <p>System instructions</p>
-                  <textarea name="" id="" placeholder='System instructions' rows={"1"}></textarea>
-              </div>
-            </div>
-          </div>
-        }
-        {
           showSummarise && 
           <div className="summariseContainer">
             <div className="summariseWrapper" ref={summariseWrapper}>
@@ -1261,9 +1228,6 @@ export default function Home() {
         { showToast &&
           <Toast ref={ToastRef} text={toastText} />
         }
-        
-
-        
 
       </div>
     </>

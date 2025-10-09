@@ -8,7 +8,7 @@ const Stories = forwardRef(({
         <div className='stories'>
             <div className="stories-header">
                 <div className="stories-header-left">
-                    <div className="back_btn" onClick={() => {
+                    <div className="back_btn btn" onClick={() => {
 
                     }} >
                         <span className="material-symbols-outlined">arrow_back</span>

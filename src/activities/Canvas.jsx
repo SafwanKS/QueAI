@@ -36,14 +36,14 @@ const Canvas = forwardRef(({
     return(
         <div className="canvas" ref={ref}>
             <div className="canvas-header">
-                <div className="canvas-header-col">
+                {/* <div className="canvas-header-col">
                     <div className="back_btn" onClick={() => {
                         handleClearChat()
                     }} >
                     <span className="material-symbols-outlined">arrow_back</span>
                     </div>
                     <h1></h1>
-                </div>
+                </div> */}
                 <div className="canvas-header-col">
                     {
                         showList && 
@@ -54,11 +54,11 @@ const Canvas = forwardRef(({
                     }
                     
                 </div>
-                <div className="canvas-header-col">
-                    {/* <div className="more_btn">
+                {/* <div className="canvas-header-col">
+                    <div className="more_btn">
                         <span className="material-symbols-outlined">more_horiz</span>
-                    </div> */}
-                </div>
+                    </div>
+                </div> */}
             </div>
             <div className="canvas-body" >
                 {
