@@ -1,6 +1,5 @@
 import {GoogleGenerativeAI} from "@google/generative-ai"
 import { GoogleGenAI, Modality } from "@google/genai"
-import { createClient } from 'pexels';
 
 // const genAI = new GoogleGenerativeAI(import.meta.env.VITE_AI_API_KEY);
 
