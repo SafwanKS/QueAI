@@ -320,7 +320,7 @@ const SearchBox = forwardRef(({
         </div>
         <div className='searchBoxButtonContainer'>
           {
-            !animactive &&
+            !toolMode &&
             <>
             
             <div className="btn-wrapper">

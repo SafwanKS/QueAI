@@ -24,7 +24,7 @@
 }
 
 *::selection{
-  background-color: rgb(255, 230, 201);
+  background-color: rgb(235, 235, 235);
 }
 
 .home.dark *::selection{

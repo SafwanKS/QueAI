@@ -30,7 +30,8 @@ const LeftSideBar = forwardRef(({
   handleClearChat,
   showStoriesWindow,
   showCanvasWindow,
-  showLessonsWindow
+  showLessonsWindow,
+  setDrawerOpened
 }, ref) =>{
 
   const [emptyChats, setEmptyChats] = useState(false)
@@ -51,18 +52,21 @@ const LeftSideBar = forwardRef(({
   
  
   return (
-    <div ref={ref} className={`left-sidebar ${!(window.innerWidth < 768) ? (drawerCollapsed && "collapsed") : "closed"}`} style={{
+    <div ref={ref} className={`left-sidebar ${!(window.innerWidth < 768) ? (drawerCollapsed && "collapsed") : ""}`} style={{
       // display: window.innerWidth < 768 && onSearch ? "none" : "flex",
       position: window.innerWidth < 768 && "absolute",
       left: window.innerWidth < 768 && "0",
-      background: (window.innerWidth < 768 || (searched && drawerCollapsed)) && "var(--dialog-bg)"
+      background: (window.innerWidth < 768 || (searched && drawerCollapsed)) && ""
     }} >
       <div className="left-sidebar-header">
         <img src={Logo} alt="logo" />
         <div className="sidebar-collapse-btn btn" title={`${drawerCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}`} onClick={()=> {
-          window.innerWidth > 768 ?
-          setDrawerCollapsed(!drawerCollapsed)
-          : ref.current.classList.add("closed")
+          if(window.innerWidth > 768){
+            setDrawerCollapsed(!drawerCollapsed)
+           } else{
+            ref.current.classList.remove("open")
+            setDrawerOpened(false)
+           }
           }} >
           <span className="material-symbols-outlined">{drawerCollapsed ? "left_panel_open" : "left_panel_close"}</span>
         </div>

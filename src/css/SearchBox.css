@@ -7,6 +7,18 @@
   gap: 10px;
   z-index: 100;
   pointer-events: none;
+
+}
+
+
+@media (max-width: 768px){
+  .searchBoxContainer{
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .searchBox{
@@ -28,16 +40,22 @@
   pointer-events: auto;
   /* background-color: rgb(255, 247, 222) ; */
 
-  background-color: #fffcf6;
+  /* background-color: #fffcf6; */
 
   /* border: 1px solid rgb(255, 214, 165) ; */
-  box-shadow: 0 0 5px 0px rgb(247, 208, 157);
+  /* box-shadow: 0 0 10px 0px rgb(247, 208, 157); */
+  border: 1px solid rgb(226, 226, 226);
+  box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.082);
+  background-color: rgba(255, 255, 255, 0.699);
+  backdrop-filter: blur(10px);
   
 }
 
 .home.dark .searchBox{
-  background-color: #221e19;
+  background-color: #292929;
   box-shadow: 0 0 5px 0px rgb(104, 87, 65);
+  border: 1px solid rgb(78, 78, 78);
+  box-shadow: none;
 
 }
 
@@ -49,6 +67,7 @@
 .searchBox.toolmode{
   height: unset;
 }
+
 
 .searchBoxContainer.onsearch{
   position: fixed;
@@ -171,7 +190,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #E9EFF7;
   border-radius: 30px;
   padding: 10px 15px;
   position: relative;
@@ -212,7 +231,8 @@
   position: absolute;
   top: -5px;
   right: 0;
-  background-color: rgba(255, 255, 255, 0.25);
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.164);
 }
 
 
@@ -252,7 +272,7 @@
   align-items: center;
   cursor: text;
   /* color: #201a19; */
-  color: #413418;
+  /* color: #413418; */
 }
 
 .home.dark .searchBox .searchBoxInputContainer textarea{
@@ -312,7 +332,9 @@
   bottom: 15px;
 }
 
-
+.searchBox.toolmode .add-btn{
+  /* display: none; */
+}
 
 
 .searchBox.onsearch .chip{
@@ -335,7 +357,9 @@
 .add-btn span{
   font-size: 20px;
   transition: all 0.3s;
-  color: #a3823a;
+  color: #3d3d3d;
+
+  /* color: #a3823a; */
 
 }
 
@@ -346,11 +370,13 @@
 
 
 .add-btn:hover{
-  background-color: rgb(255, 238, 212);
+  background-color: rgb(245, 245, 245);
 }
-
+.home.dark .add-btn span{
+  color: white;
+}
 .home.dark .add-btn:hover{
-  background-color: rgb(49, 46, 41);
+  background-color: #ffffff15;
 }
 
 .home.dark .add-btn.active{
@@ -358,7 +384,7 @@
 }
 
 .add-btn.active{
-  background-color: rgb(255, 229, 191);
+  background-color: rgb(228, 228, 228);
 }
 
 .btn-wrapper {
@@ -369,7 +395,10 @@
 
 .searchAddOnes {
   width: 200px;
-  background-color: rgb(255, 237, 222);
+  /* background-color: rgb(255, 237, 222); */
+  /* background-color: #E9EFF7; */
+  background-color: white;
+  border: 1px solid rgb(240, 240, 240);
   position: absolute;
   bottom: 100%; /* stick it above the button */
   left: 0;
@@ -377,14 +406,15 @@
   border-radius: 15px;
   pointer-events: auto;
   margin-bottom: 5px; /* small gap */
-  box-shadow: 0px 0px 5px 1px rgba(255, 207, 119, 0.562);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.137);
   padding: 5px;
   display: flex;
   flex-direction: column;
 }
 .home.dark .searchAddOnes{
-  background-color: rgb(39, 36, 34);
-  box-shadow: 0px 0px 5px 1px rgba(48, 39, 24, 0.562);
+  background-color: #2b2b2b;
+  box-shadow: 0px 0px 5px 1px rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.11);
 }
 .searchAddOne{
   width: 100%;
@@ -396,10 +426,10 @@
   border-radius: 10px;
 }
 .searchAddOne:hover{
-  background-color: rgb(255, 201, 139);
+  background-color: rgb(247, 247, 247);
 }
 .home.dark .searchAddOne:hover{
-  background-color: rgb(70, 57, 42);
+  background-color: rgba(255, 255, 255, 0.089);
 }
 .searchAddOne span{
   font-size: 20px;

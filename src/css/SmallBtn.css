@@ -20,23 +20,29 @@
 }
 .smallBtn.inactive{
   /* background-color: var(--button-bg); */
-  background-color: rgb(255, 240, 209);
+  /* background-color: rgb(255, 240, 209); */
+  background-color: rgb(223, 223, 223) ;
+
+  opacity: 0.5;
   pointer-events: none;
 }
 
 .home.dark .smallBtn.smallBtn.inactive{
   background-color: rgb(27, 26, 23);
+  
 }
 
 .smallBtn.active{
   /* background-color: var(--button-active); */
-  background-color: rgb(218, 161, 38);
+  /* background-color: rgb(212, 212, 212); */
+  background-color: rgb(70, 70, 255) ;
+
   color: white;
   pointer-events: auto;
 }
 
 .home.dark .smallBtn.smallBtn.active{
-  background-color: rgb(73, 57, 10);
+  background-color: rgb(33, 30, 192);
 }
 
 

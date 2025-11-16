@@ -9,6 +9,7 @@ import SmallBtn from './SmallBtn.jsx'
 import GlobalTooltip from "./GlobalTooltip";
 
 const Header = forwardRef(({
+  searched,
   headerRef,
   drawerCollapsed,
   setDrawerCollapsed,
@@ -24,7 +25,9 @@ const Header = forwardRef(({
   setAnimations,
   animations,
   setAnimState,
-  animState
+  animState,
+  handleClearChat,
+  setDrawerOpened
 }, ref)=>{
   const navigate = useNavigate()
   const [route,
@@ -33,6 +36,8 @@ const Header = forwardRef(({
   useEffect(()=>{
     setRoute(location.pathname)
   }, [location])
+
+  const [showProfileInfo, setShowProfileInfo] = useState(false)
   
   return(
     
@@ -42,12 +47,24 @@ const Header = forwardRef(({
       <GlobalTooltip />
       <div className="firstCol">
         {
-          window.innerWidth < 768 &&
-          <div className='btn menu-btn' onClick={()=> leftSidebarRef.current.classList.remove("closed")}>
+          window.innerWidth < 768 && !searched &&
+          <div className='btn menu-btn' onClick={()=>{ 
+            leftSidebarRef.current.classList.add("open")
+            setDrawerOpened(true)
+          }}>
             <span className="material-symbols-outlined">menu</span>
           </div>
         }
-        <h1>Que AI</h1>
+        {/* <h1>Que AI</h1> */}
+        {/* <h2>Que AI</h2> */}
+        {
+          !searched &&
+            <p style={{
+              fontSize: "26px",
+              fontWeight: "600"
+            }}>Que AI</p>
+        }
+        
       </div>
       <div className="secondCol">
         {/* <div className="btn animation" data-title='Toggle animation (Ctrl + u)' onClick={()=>{
@@ -59,21 +76,28 @@ const Header = forwardRef(({
           !isLoggedIn ?
           <div className='login-btn' onClick={() => setShowLoginDialog(true)}>
             {/* <img src={Avatar} alt="" /> */}
-            <span className="material-symbols-outlined">account_circle</span>
+            {/* <span className="material-symbols-outlined">account_circle</span> */}
             <p>Sign in</p>
           </div>
           :
           <>
             
-            <div className="btn recents" data-title='Recents' onClick={()=>{
+            {/* <div className="btn recents" data-title='Recents' onClick={()=>{
               setShowDialog(true)
                setShowRecents(true)
             }} >
               <span className="material-symbols-outlined">history</span>
-            </div>
+            </div> */}
             <div className="profile-container">
-              <img src={user.photoURL} alt="profile" />
-              <div className="profileInfo">
+              <img src={user.photoURL} alt="profile" onClick={() => setShowProfileInfo(!showProfileInfo)}/>
+              {
+                showProfileInfo &&
+                <div className="profileInfo">
+                  <div className="profileInfoHeader">
+                    <div className="closeBtn" onClick={() => setShowProfileInfo(!showProfileInfo)}>
+                      <span className="material-symbols-outlined">close</span>
+                    </div>
+                  </div>
                 <div className='accDetails'>
                   <div className='profilePic'>
                     <img src={user.photoURL} alt="" style={{
@@ -104,6 +128,9 @@ const Header = forwardRef(({
                     <p>Sign out</p>
                   </div>
               </div>
+
+              }
+              
             </div>
           </>
           

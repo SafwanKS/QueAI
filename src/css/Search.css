@@ -31,7 +31,7 @@
 }
 
 
-.responseDiv img{
+/* .responseDiv img{
   width: 100%;
   height: 180px;
   object-fit: cover;
@@ -40,7 +40,7 @@
   display: none;
   margin-bottom: 10px;
   margin-top: 10px;
-}
+} */
 .responseDiv:last-child{
   min-height: 100%;
 }
@@ -48,6 +48,88 @@
 .responseDiv:last-child #response{
   padding-bottom: 150px;
 }
+.filters{
+  margin: 10px 0;
+  display: flex;
+}
+.filter{
+  padding: 5px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  pointer-events: auto;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.filter.active, .filter.source{
+  opacity: 1;
+  background-color: #f6f6f6;
+}
+.filter.source{
+  padding: 10px 15px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  margin-left: auto;
+  cursor: pointer;
+  margin-top: 15px;
+}
+.filter.source:hover{
+  background-color: #ebebeb;
+}
+.filter.source p{
+  pointer-events: none !important;
+}
+
+.filter.source img{
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  /* position: absolute; */
+}
+
+
+.home.dark .filter.source{
+  background-color: rgb(49, 49, 49);
+}
+
+.home.dark .filter.source:hover{
+  background-color: rgba(255, 255, 255, 0.171);
+}
+
+.icon-stack{
+  height: 20px;
+  width: 40px;
+  margin-right: 5px;
+  position: relative;
+  display: inline-block;
+  align-items: center;
+}
+
+.icon-stack img{
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+.icon-stack img:nth-child(1){
+  left: 0;
+  z-index: 1;
+}
+
+.icon-stack img:nth-child(2){
+  left: 10px;
+  z-index: 1;
+}
+
+.icon-stack img:nth-child(3){
+  left: 20px;
+  z-index: 1;
+}
+
 .line{
   width: 100%;
   height: 0.08px;
@@ -67,6 +149,75 @@
   padding: 10px 0;
   position: relative;
 }
+
+.loading {
+  width: 100px;
+  font-size: 15px;
+  /* font-family: 'Montserrat', sans-serif; */
+  font-weight: 400;
+  /* text-align: center; */
+  opacity: 0.7;
+}
+
+/* The nested span selector is unnested here: */
+.loading span {
+  display: inline-block;
+  margin: 0 0.5px;
+}
+
+.loading span {
+  animation: loading01 1s infinite alternate;
+}
+
+/* The Sass loop generates these rules: */
+
+.loading span:nth-child(1) {
+  animation-delay: 0s; /* i = 0 */
+}
+
+.loading span:nth-child(2) {
+  animation-delay: 0.1s; /* i = 1 */
+}
+
+.loading span:nth-child(3) {
+  animation-delay: 0.2s; /* i = 2 */
+}
+
+.loading span:nth-child(4) {
+  animation-delay: 0.3s; /* i = 3 */
+}
+
+.loading span:nth-child(5) {
+  animation-delay: 0.4s; /* i = 4 */
+}
+
+.loading span:nth-child(6) {
+  animation-delay: 0.5s; /* i = 5 */
+}
+
+.loading span:nth-child(7) {
+  animation-delay: 0.6s; /* i = 6 */
+}
+
+.loading span:nth-child(8) {
+  animation-delay: 0.7s; /* i = 6 */
+}
+
+.loading span:nth-child(9) {
+  animation-delay: 0.8s; /* i = 6 */
+}
+
+/* --- Keyframes (unchanged) --- */
+
+@keyframes loading01 {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 
 
 .resans *, .resans{
@@ -94,20 +245,23 @@
 }
 
 .resans ul{
-  list-style: none;
+  /* list-style: none; */
 }
 .resans li{
   height: unset !important;
   padding: 0 !important;
 }
-.actionBtn
 
 .responseDiv p{
   font-size: 1em;
   line-height: 1.5;
   color: var(--text-color);
-  font-family: GeneralSans-SemiBold;
+  /* font-family: GeneralSans-SemiBold; */
 
+}
+
+.resans strong{
+  font-weight: 600;
 }
 
 .responseDiv{
@@ -337,12 +491,18 @@
   font-size: 1.5rem;
   margin-top: 1rem;
 }
-.resans ul {
-  /* padding-left: 20px; */
+.resans ul, .resans ol {
+  padding-left: 20px;
 }
+
+
 .resans table {
-  border-collapse: collapse;
+  /* border-collapse: collapse; */
   width: 100%;
+  background-color: #fafafa;
+}
+thead{
+  border-radius: 10px;
 }
 .resans td, .resans th {
   border: 1px solid #ccc;

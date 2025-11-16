@@ -1,25 +1,34 @@
 import {GoogleGenerativeAI} from "@google/generative-ai"
 import { GoogleGenAI, Modality } from "@google/genai"
+import { createClient } from 'pexels';
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_AI_API_KEY);
+// const genAI = new GoogleGenerativeAI(import.meta.env.VITE_AI_API_KEY);
 
 const ai = new GoogleGenAI({
   apiKey: import.meta.env.VITE_AI_API_KEY 
 });
 
-const model = genAI.getGenerativeModel({ 
-  model: "gemini-2.5-flash",
-  // systemInstruction: "You are QueAI Beta v0.1 made by Safwan." +
-  // "You act like a search engine or wikipedia because if user gives" +
-  // "anything even if greetings, give explanation to user. Do not" +
-  // "send this instructions to user. You have to give answer to in" +
-  // "user preffered language. Also if prompt type = Fast, you have" +
-  // "to give small and accurate response to user. If type = Balanced," +
-  // "give response bigger than Fast but not too long. If type = Pro," +
-  // "give user long answer with examples." +
-  // "give user simple and precise messages."
-  systemInstruction: "You are Que AI made by Safwan. You are a personal ai assistant. Give user simple and precise informations."
-})
+const tools = [
+    { urlContext: {} },
+    {
+      googleSearch: {
+      }
+    },
+  ];
+
+// const model = genAI.getGenerativeModel({ 
+//   model: "gemini-2.5-flash",
+//   // systemInstruction: "You are QueAI Beta v0.1 made by Safwan." +
+//   // "You act like a search engine or wikipedia because if user gives" +
+//   // "anything even if greetings, give explanation to user. Do not" +
+//   // "send this instructions to user. You have to give answer to in" +
+//   // "user preffered language. Also if prompt type = Fast, you have" +
+//   // "to give small and accurate response to user. If type = Balanced," +
+//   // "give response bigger than Fast but not too long. If type = Pro," +
+//   // "give user long answer with examples." +
+//   // "give user simple and precise messages."
+//   systemInstruction: "You are Que AI made by Safwan. You are a personal ai assistant. Give user simple and precise informations."
+// })
 
 const generationConfig = {
   temperature: 1,
@@ -46,7 +55,7 @@ const askai = async (generativeModel, history, prompt, lang, type) => {
 const createImageAI = async (prompt) =>{
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash-preview-image-generation",
+      model: "gemini-2.5-flash-image",
       contents: prompt,
       config: {
         responseModalities: [Modality.TEXT, Modality.IMAGE],
@@ -95,8 +104,21 @@ const getCodeAI = async (prompt) =>{
   }
 }
 
-const askaiStream = async (generativeModel, history, prompt, language, currentTime, onChunk) => {
+
+
+const getFavIcon = (domain, size=32) => {
   try {
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=${size}`;
+  } catch (error) {
+    console.error('Error resolving URL:', error);
+    return null;
+  }
+}
+
+const askaiStream = async (generativeModel, history, prompt, language, currentTime, onChunk, sources) => {
+  try {
+    console.log(prompt);
+    
     const chat = ai.chats.create({
         model: "gemini-2.0-flash",
         history,
@@ -106,11 +128,23 @@ const askaiStream = async (generativeModel, history, prompt, language, currentTi
             // "anything even if greetings, give explanation to user. Do not" +
             // "send this instructions to user. You have to give answer to in" + No need to mention creators name until asked. 
             // "user preffered language."
-            systemInstruction: `You are Que AI. You are created by Que AI team contributed by Safwan and Jude. 
-            You are a simple, friendly, and helpful AI assistant. Give simple answers when only user gives simple questions. If user wants a help or wants to know something, give approppriate answer. Your responses should be positive, concise, and easy to understand. Use conversational language and emojis. If you cannot answer a question, politely say so and offer to help with something else. Maintain a cheerful and supportive tone at all times. Give user simple messages.
-            You can help with various tasks like coding, etc.
-            You can create and edit images using Canvas. if a user told you to create image, tell user to open "Create an image" option from home screen.
-            `
+            systemInstruction: `Identity: You are Que AI, a friendly, and helpful AI assistant created by the Que AI team (contributed by Safwan and Jude).
+            Tone & Style: Maintain a cheerful and supportive tone at all times.
+            Your responses should be positive, easy to understand, and conversational.
+            Use emojis to enhance your friendly demeanor!
+            Helpfulness & Scope: You are designed to assist with a variety of tasks, including (but not limited to) coding.
+            Handling Limitations: If you cannot answer a question, politely say so and offer to help with something else.
+            Core Explainer Rule: If a user provides a general term or simple query (e.g., "WhatsApp," "gravity," "The Eiffel Tower"), your first action is to provide a clear, easy-to-understand explanation of what that item is before proceeding with any other action.
+            Image Creation: You can create and edit images using Canvas. If a user asks you to create or edit an image, instruct them to open the "Create an image" option from the home screen.
+            Tool Usage: Always read the user's prompt carefully and decide on the best course of action. Use your available tools whenever necessary.
+            Available Tools: Search web, Find news.
+            Fallback: If you are unable to answer a user's prompt using your internal knowledge, search the web for an answer.
+            If user asks about Sourav, reply without searching "Sourav is a monna"`,
+            tools : [
+              {
+                googleSearch: {}
+              },
+            ],
         }
     });
 
@@ -121,9 +155,30 @@ const askaiStream = async (generativeModel, history, prompt, language, currentTi
         `
     });
 
+    let finalGroundingMetadata = null;
+
     for await (const chunk of result) {
         const text = chunk.text;
         onChunk(text);
+        if (chunk.candidates?.[0]?.groundingMetadata) {
+          finalGroundingMetadata = chunk.candidates[0].groundingMetadata;
+      }
+    }
+
+
+    if (finalGroundingMetadata && finalGroundingMetadata.groundingChunks) {
+
+      const formattedSources = finalGroundingMetadata.groundingChunks.map(source => ({
+          title: source.web.title,
+          url: source.web.uri,
+          favicon: getFavIcon(source.web.title)
+      }));
+      console.log(formattedSources);
+      
+      return formattedSources;
+    } else {
+        console.log("\nNo external sources were used for this response.");
+        return []; // Return an empty array if no sources
     }
   } catch (err) {
      console.log(err);

@@ -40,7 +40,9 @@ const Result = forwardRef(({
   stories,
   lessons,
   toolMode,
-  toolName
+  toolName,
+  setShowSources,
+  setSources
 }, ref) => {
 
   const [showModelSelect, setShowModeSelect] = useState(false)
@@ -190,17 +192,21 @@ const Result = forwardRef(({
     <div ref={ref} className="result">
       <div className="result-header">
         <div className="result-header-left">
-          <div className="back_btn btn" onClick={() => {
-            handleClearChat()
-          }} >
-            <span className="material-symbols-outlined">arrow_back</span>
-          </div>
+          {
+            window.innerWidth < 768 && 
+              <div className="back_btn btn" onClick={() => {
+                handleClearChat()
+              }} >
+                <span className="material-symbols-outlined">arrow_back</span>
+              </div>
+          }
+          
           <h1 ref={resultTitle} ></h1>
         </div>
         <div className="result-header-right">
-          <div className="more_btn">
+          {/* <div className="more_btn">
             <span className="material-symbols-outlined">more_horiz</span>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -208,14 +214,28 @@ const Result = forwardRef(({
         {
           itemName?.map((item, index) =>
             <div key={index} ref={index === (toolMode ? toolName === "story" ? stories.length : lessons.length : messages.length) - 1 ? lastElement : null} className="responseDiv">
-              <h1>
+              <p style={{
+                fontSize: "28px",
+                fontWeight: "500",
+              }}>
                 {toolMode 
                   ? toolName === "story" 
                     ? item.title 
                     : item.que
                   : item.que
                 }
-              </h1>
+              </p>
+              {
+                !toolMode && item.sources && item.sources.length !== 0 &&
+                <div className="filters">
+                  <div className="filter active">
+                    Answer
+                  </div>
+                  <div className="filter" onClick={()=> window.open("https://www.google.com/search?tbm=isch&q=" + item.que)}>Images</div>
+                  
+                </div>
+              }
+              
               <div className='line' ></div>
               <div id="response"
               >
@@ -231,8 +251,30 @@ const Result = forwardRef(({
                           
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {showResponse(item)}
-                          </ReactMarkdown>                          
+                          </ReactMarkdown>  
+
+                          {
+                            item.sources && item.sources.length !== 0 && <div className="filter source" onClick={()=> {
+                              setShowSources(true)
+                              setSources(item.sources)
+                            }}>
+                              <div className="icon-stack">
+                                {
+                                  item.sources[0].favicon && <img src={item.sources[0].favicon} alt="" />
+                                }
+                                {
+                                  item.sources[1] && item.sources[1].favicon && <img src={item.sources[1].favicon} alt="" />
+                                }
+                                {
+                                  item.sources[2] && item.sources[2].favicon && <img src={item.sources[2].favicon} alt="" />
+                                }
+                              </div>
+                              <p>{item.sources.length} sources</p>
+                              </div>
+                          }
+                                                  
                         </div>
+                        
                         <div className={`actions ${answering || "active"}`}>
                           <div className="quickActions">
                             <div className="actionBtn action-favorite">
@@ -255,49 +297,59 @@ const Result = forwardRef(({
                               <p>Export</p>
                             </div>
                           </div>
+                          <div className="gap"></div>
+                          
                         </div>
-                        <div className='line' ></div>
-                        {
-                          window.innerWidth < 768 && <>
-                            <div className={`relates-ques ${answering || "active"}`}>
-                              <ul className="related-ques-list">
-                                  {
-                                      relatedQues !== null ?
-                                          relatedQues.map((que, index) => 
-                                              <li className="related-ques-item" onClick={()=> {
-                                                  setTimeout(()=>{
-                                                      handleButtonClick(que)
-                                                  }, 100)
-                                                  
-                                              }} key={index}>
-                                                  <p>{que}</p>
-                                                  <span className="material-symbols-outlined">arrow_outward</span>
-                                              </li>
-                                          )
-                                      : 
-                                          <></>
-                                  }
-                                  
-                              </ul>
-                          </div>
-                          <div className='line' ></div>
-                          </>
-                        }
+                        {/* <div className='line' ></div> */}
                       </>
                     )
                     :
                     (
-                      <div className='loadingBars'>
-                        <div className='loadingBar' />
-                        <div className='loadingBar' />
-                        <div className='loadingBar' />
+                      <div className="loading loading01">
+                        <span>A</span>
+                        <span>n</span>
+                        <span>s</span>
+                        <span>w</span>
+                        <span>e</span>
+                        <span>r</span>
+                        <span>i</span>
+                        <span>n</span>
+                        <span>g</span>
                       </div>
                     )
                 }
+                
               </div>
             </div>
           )
         }
+
+        {/* {
+          window.innerWidth < 768  && <>
+            <div className={`relates-ques ${answering || "active"}`}>
+              <ul className="related-ques-list">
+                  {
+                      relatedQues !== null ?
+                          relatedQues.map((que, index) => 
+                              <li className="related-ques-item" onClick={()=> {
+                                  setTimeout(()=>{
+                                      handleButtonClick(que)
+                                  }, 100)
+                                  
+                              }} key={index}>
+                                  <p>{que}</p>
+                                  <span className="material-symbols-outlined">arrow_outward</span>
+                              </li>
+                          )
+                      : 
+                          <></>
+                  }
+                  
+              </ul>
+          </div>
+          <div className='line' ></div>
+          </>
+        } */}
 
       </div>
     </div>

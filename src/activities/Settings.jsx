@@ -40,7 +40,7 @@ const cusDescRef = useRef(null)
                     window.innerWidth < 768 && (showSettingsContent && 
                     <div className='settings-back'>
                         <div className="back-btn" onClick={()=> setShowSettingsContent(false)}>
-                            <span className="material-symbols-outlined">arrow_back</span>
+                            <span className="material-symbols-outlined">arrow_back_ios_new</span>
                         </div>
                         <h2>{selectedSettingsItem}</h2>
                     </div>)
@@ -51,7 +51,7 @@ const cusDescRef = useRef(null)
                         settingsWrapper.current.classList.add("hide")
                         setTimeout(() => {
                             setShowSettings(false) 
-                        }, 200);
+                        }, 290);
                         
                     }} >
                     <span className="material-symbols-outlined">close</span>
@@ -63,7 +63,7 @@ const cusDescRef = useRef(null)
                         e.target.style.opacity = "0.7"
                         setTimeout(() => {
                             e.target.style.opacity = "1"
-                        }, 200);
+                        }, 300);
                         setSelectedSettingsItem("general")
                         window.innerWidth < 768 && setShowSettingsContent(true)
                         }} >

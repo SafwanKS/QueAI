@@ -65,6 +65,8 @@ export default function Home() {
   const genImageWrapper = useRef(null)
   const customizeWrapper = useRef(null)
   const summariseWrapper = useRef(null)
+  const sourcesWrapper = useRef(null)
+  
 
   const loginWrapper = useRef(null)
   
@@ -88,6 +90,8 @@ export default function Home() {
   })
   const [showCusAI, setShowCusAI] = useState(false)
   const [showSummarise, setShowSummarise] = useState(false)
+  const [showSources, setShowSources] = useState(false)
+  
   const [customPreferences, setCustomPreferences] = useState({})
 
   const [showLoginDialog, setShowLoginDialog] = useState(false)
@@ -117,6 +121,8 @@ export default function Home() {
   const [placeHolder, setPlaceHolder] = useState("")
 
   const [onSearch, setOnSearch] = useState(false)
+
+  const [drawerOpened, setDrawerOpened] = useState(false)
 
   const [answering, setAnswering] = useState(false)
 
@@ -148,6 +154,8 @@ export default function Home() {
 
   const [streamedAnswer, setStreamedAnswer] = useState("")
 
+  const [sources, setSources] = useState([])
+
   const getChats = async (user) =>{
     const chatsRef = collection(db, "users", user.uid, "chats");
       const chatDocs = await getDocs(chatsRef);
@@ -174,7 +182,7 @@ export default function Home() {
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-    headerRef.current.classList.add("hide")
+//headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     leftSidebarRef.current.classList.add("show")
     rightSidebarRef.current.classList.add("show")
@@ -314,7 +322,7 @@ export default function Home() {
 
       setStreamedAnswer("")
       
-      const response = await fetch('https://jude7733-queai.hf.space/chat/stream', {
+      const response = await fetch('http://127.0.0.1:8000/chat/stream', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -407,7 +415,7 @@ export default function Home() {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-    headerRef.current.classList.add("hide")
+//headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
@@ -428,7 +436,7 @@ export default function Home() {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-    headerRef.current.classList.add("hide")
+//headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
@@ -580,7 +588,7 @@ export default function Home() {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-    headerRef.current.classList.add("hide")
+//headerRef.current.classList.add("hide")
     resultRef.current.classList.remove("show")
     canvasRef.current.classList.add("show")
     leftSidebarRef.current.classList.add("show")
@@ -612,8 +620,7 @@ export default function Home() {
 
     HomeRef.current.focus()
 
-    let prompt = que || (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}` ) + question
-
+    let prompt = que || question
 
     let ques = que || (question);
 
@@ -628,7 +635,7 @@ export default function Home() {
         introRef.current.classList.add("hide")
         toolsRef.current.classList.add("hide")
         toolsRef.current.classList.add("hide")
-        headerRef.current.classList.add("hide")
+        // headerRef.current.classList.add("hide")
         resultRef.current.classList.add("show")
         leftSidebarRef.current.classList.add("show")
         rightSidebarRef.current.classList.add("show")
@@ -670,7 +677,8 @@ export default function Home() {
       setMessages([...messages, {
         type: "chat",
         que: ques,
-        ans: ""
+        ans: "",
+        sources: []
       }]);
   
       setAnswering(true);
@@ -699,13 +707,19 @@ export default function Home() {
 
          (async ()=>{
             let streamedAnswer = "";
-            await askaiStream("2.0 Flash", history, prompt, searchLang, currentTime, (chunk) => {
+            const sources = await askaiStream("2.0 Flash", history, prompt, searchLang, currentTime, (chunk) => {
               streamedAnswer += chunk;
               setMessages((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1].ans += chunk;
                 return updated;
               });
+            });
+
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].sources = sources; // <-- KEY CHANGE: Add sources here
+              return updated;
             });
             
             setAnswering(false);
@@ -734,7 +748,7 @@ export default function Home() {
             setSearched(true)
             introRef.current.classList.add("hide")
             toolsRef.current.classList.add("hide")
-            headerRef.current.classList.add("hide")
+        //headerRef.current.classList.add("hide")
             resultRef.current.classList.add("show")
             leftSidebarRef.current.classList.add("show")
             homeWrapperRef.current.style.paddingTop = "0"
@@ -798,10 +812,10 @@ export default function Home() {
             setSearched(true)
             introRef.current.classList.add("hide")
             toolsRef.current.classList.add("hide")
-            headerRef.current.classList.add("hide")
+        //headerRef.current.classList.add("hide")
             resultRef.current.classList.add("show")
             leftSidebarRef.current.classList.add("show")
-            homeWrapperRef.current.style.paddingTop = "0"
+            // homeWrapperRef.current.style.paddingTop = "0"
             searchContainerRef.current.classList.add('onsearch')
             homeContainerRef.current.classList.add('onsearch')
             setDrawerCollapsed(true)
@@ -894,10 +908,11 @@ export default function Home() {
             showStoriesWindow={showStoriesWindow}
             showCanvasWindow={showCanvasWindow}
             showLessonsWindow={showLessonsWindow}
+            setDrawerOpened={setDrawerOpened}
           />
             <div ref={homeContainerRef} style={{
               // padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
-            }} className="homeContainer" >
+            }} className={`homeContainer ${drawerOpened && "drawer"}`} >
               <Header
                 ref={headerRef}
                 drawerCollapsed={drawerCollapsed}
@@ -913,10 +928,37 @@ export default function Home() {
                 setShowCusAI={setShowCusAI}
                 setAnimState={setAnimState}
                 animState={animState}
+                searched={searched}
+                handleClearChat={handleClearChat}
+                setDrawerOpened={setDrawerOpened}
               />
               <div ref={introRef} className="intro">
-                <h1 ref={introTxt} className='introTxt' >{welcomeMsgHead}</h1>
-                <p>Your personal AI, ready to help you think better and move faster.</p>
+                <h1>Welcome, Safwan</h1>
+                  {/* <p style={{
+                    fontSize: "20px"
+                  }}>How can i help you today?</p> */}
+                  {/* <div className="selectionButtonContainer">
+                    <div className="selectionButton">
+                      <span className='material-symbols-outlined'>animated_images</span>
+                        <p>Create</p>
+                    </div>
+                    <div className="selectionButton">
+                      <span className='material-symbols-outlined'>code</span>
+                      <p>Code</p>
+                    </div>
+                    <div className="selectionButton">
+                      <span className='material-symbols-outlined'>assignment</span>
+                      <p>Summarise</p>
+                    </div>
+                    <div className="selectionButton">
+                       <span className='material-symbols-outlined'>ink_pen</span>
+                       <p>Write</p>
+                    </div>
+                    <div className="selectionButton">
+                      <span className='material-symbols-outlined'>school</span>
+                      <p>Learn</p>
+                    </div>
+                  </div> */}
               </div>
               <Result 
                 ref={resultRef}
@@ -952,6 +994,8 @@ export default function Home() {
                 relatedQues={relatedQues}
                 handleButtonClick={handleButtonClick}
                 handleClearChat={handleClearChat}
+                setShowSources={setShowSources}
+                setSources={setSources}
                 // generativeModel={generativeModel}
                 // setGenerativeModel={setGenerativeModel}
               />
@@ -1019,9 +1063,7 @@ export default function Home() {
                 setCustomePlaceHolder={setCustomePlaceHolder}          
 
               />
-            </div>
-
-            <RightSideBar
+              <RightSideBar
               ref={rightSidebarRef}
               drawerCollapsed
               setDrawerCollapsed
@@ -1035,6 +1077,9 @@ export default function Home() {
               handleButtonClick={handleButtonClick}
               question={question}
             />
+            </div>
+
+            
 
           </div>
 
@@ -1112,7 +1157,7 @@ export default function Home() {
 
         {
           showLoginDialog && 
-          <div className="loginContainer">
+          <div className="loginContainer" >
             <div className="loginWrapper" ref={loginWrapper}>
               <div className="loginHeader">
                 <h2> </h2>
@@ -1121,7 +1166,7 @@ export default function Home() {
                     loginWrapper.current.classList.add("hide")
                     setTimeout(()=>{
                       setShowLoginDialog(false)
-                    }, 200)
+                    }, 300)
                     }} >
                       <span className="material-symbols-outlined">close</span>
                   </div>
@@ -1148,7 +1193,7 @@ export default function Home() {
                   justifyContent: "center",
                   alignItems: "center"
                 }}>
-                  <div className="googlLoginBox" onClick={async (e) =>{
+                  <div className="googleLoginBox" onClick={async (e) =>{
                     e.target.style.opacity = "0.7"
                         setTimeout(() => {
                             e.target.style.opacity = "1"
@@ -1220,6 +1265,40 @@ export default function Home() {
                   )
                 }
                 
+              </div>
+            </div>
+          </div>
+        }
+
+        {
+          showSources &&
+          <div className="sourcesContainer">
+            <div className="sourcesWrapper" ref={sourcesWrapper}>
+              <div className="sourcesHeader">
+                <h3>Sources</h3>
+                <div className="close-btn btn" onClick={() =>{
+                  sourcesWrapper.current.classList.add("hide")
+                  setTimeout(()=>{
+                    setShowSources(false)
+                  }, 200)
+                  }} >
+                    <span className="material-symbols-outlined">close</span>
+                </div>
+              </div>
+              <div className="sourcesBody">
+                <div className="sourcesList">
+                  {sources.map((source, index)=>
+                  <a href={source.url}>
+                    <div className="source" onClick={(e)=>{
+                      e.preventDefault()
+                      window.open(source.url) 
+                    }}>
+                      <img src={source.favicon} alt="" />
+                      <p>{source.title}</p>
+                    </div>
+                  </a>
+                    )}
+                </div>
               </div>
             </div>
           </div>
