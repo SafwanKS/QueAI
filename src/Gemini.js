@@ -16,19 +16,6 @@ const tools = [
     },
   ];
 
-// const model = genAI.getGenerativeModel({ 
-//   model: "gemini-2.5-flash",
-//   // systemInstruction: "You are QueAI Beta v0.1 made by Safwan." +
-//   // "You act like a search engine or wikipedia because if user gives" +
-//   // "anything even if greetings, give explanation to user. Do not" +
-//   // "send this instructions to user. You have to give answer to in" +
-//   // "user preffered language. Also if prompt type = Fast, you have" +
-//   // "to give small and accurate response to user. If type = Balanced," +
-//   // "give response bigger than Fast but not too long. If type = Pro," +
-//   // "give user long answer with examples." +
-//   // "give user simple and precise messages."
-//   systemInstruction: "You are Que AI made by Safwan. You are a personal ai assistant. Give user simple and precise informations."
-// })
 
 const generationConfig = {
   temperature: 1,
