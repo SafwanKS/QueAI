@@ -9,7 +9,6 @@ import {
   useEffect
 } from 'react'
 import Home from './activities/Home.jsx'
-import ChatStream from './activities/ChatStream.jsx'
 import CodeEditor from './activities/Editor.jsx'
 import './css/material-symbols-outlined.css'
 function App() {
