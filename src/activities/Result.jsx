@@ -285,7 +285,7 @@ const Result = forwardRef(({
           {/* <h1 ref={resultTitle} ></h1> */}
         </div>
         <div className="result-header-center">
-          {window.innerWidth < 768 && <p>{title}</p>}
+          {/* {window.innerWidth < 768 && <p>{title}</p>} */}
         </div>
         <div className="result-header-right">
           <div className="more_btn">
