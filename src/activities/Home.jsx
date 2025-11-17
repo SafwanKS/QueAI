@@ -1,7 +1,7 @@
 import {
   useState,
   useRef,
-  useEffect
+  useEffect,
 } from 'react'
 import { signInWithPopup, GoogleAuthProvider , onAuthStateChanged} from "firebase/auth";
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, sum } from "firebase/firestore";
@@ -72,7 +72,7 @@ export default function Home() {
   
 
   const lastElement = useRef(null)
-  const ToastRef = useRef(null)
+  const toastRef = useRef(null)
 
 
   const shouldSaveChat = useRef(false);
@@ -96,6 +96,7 @@ export default function Home() {
 
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [drawerCollapsed, setDrawerCollapsed] = useState(true)
+  const [rightSideBarCollapsed, setRightSideBarCollapsed] = useState(false)
   const [showDialog, setShowDialog] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const [toastText, setToastText] = useState("")
@@ -156,6 +157,13 @@ export default function Home() {
 
   const [sources, setSources] = useState([])
 
+
+  useEffect(()=>{
+    setDarkmode(JSON.parse(localStorage.getItem("darkmode")))
+    setUser(JSON.parse(localStorage.getItem("userData")))
+    setLoginState(JSON.parse(localStorage.getItem("userState")))
+  }, [])
+
   const getChats = async (user) =>{
     const chatsRef = collection(db, "users", user.uid, "chats");
       const chatDocs = await getDocs(chatsRef);
@@ -182,7 +190,7 @@ export default function Home() {
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-//headerRef.current.classList.add("hide")
+headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     leftSidebarRef.current.classList.add("show")
     rightSidebarRef.current.classList.add("show")
@@ -200,6 +208,7 @@ export default function Home() {
       if (event.ctrlKey && event.key.toLowerCase() === "u") {
         event.preventDefault();
         setDarkmode(prev => !prev);
+        localStorage.setItem("darkmode", JSON.stringify(!darkmode))
       }
       if(event.key === "Escape"){
         setShowDialog(false)
@@ -207,9 +216,13 @@ export default function Home() {
         setShowRecents(false)
         setShowSettings(false)
       }
-      if (event.ctrlKey && event.key.toLowerCase() === "b") {
+      if (event.ctrlKey && !event.altKey && event.key.toLowerCase() === "b") {
         event.preventDefault();
         setDrawerCollapsed(prev => !prev)
+      }
+      if(event.ctrlKey && event.altKey && event.key.toLowerCase() === "b"){
+        event.preventDefault();
+        setRightSideBarCollapsed(prev => !prev)
       }
       if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "s") {
         event.preventDefault();
@@ -224,6 +237,15 @@ export default function Home() {
     };
   }, []);
 
+
+  useEffect(()=>{
+    rightSidebarRef.current.classList.toggle("collapsed", rightSideBarCollapsed)
+  }, [rightSideBarCollapsed])
+
+  
+
+
+
   
 
   useEffect(()=>{
@@ -231,15 +253,18 @@ export default function Home() {
         if(user){
           setLoginState(true)
           setUser(user)
-
+          localStorage.setItem("userState", JSON.stringify(true))
+          localStorage.setItem("userData", JSON.stringify(user))
           await getChats(user)
-
           if (loginWrapper.current) loginWrapper.current.classList.add("hide")
           setTimeout(()=>{
             setShowLoginDialog(false)
           }, 200)
-
-        
+        }else{
+          setLoginState(false)
+          setUser(null)
+          localStorage.setItem("userState", JSON.stringify(false))
+          localStorage.setItem("userData", JSON.stringify(null))
         }
       })
       return () => unsubscribe()
@@ -415,7 +440,7 @@ export default function Home() {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-//headerRef.current.classList.add("hide")
+headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
@@ -436,7 +461,7 @@ export default function Home() {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-//headerRef.current.classList.add("hide")
+headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
@@ -588,7 +613,7 @@ export default function Home() {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-//headerRef.current.classList.add("hide")
+headerRef.current.classList.add("hide")
     resultRef.current.classList.remove("show")
     canvasRef.current.classList.add("show")
     leftSidebarRef.current.classList.add("show")
@@ -635,7 +660,7 @@ export default function Home() {
         introRef.current.classList.add("hide")
         toolsRef.current.classList.add("hide")
         toolsRef.current.classList.add("hide")
-        // headerRef.current.classList.add("hide")
+        headerRef.current.classList.add("hide")
         resultRef.current.classList.add("show")
         leftSidebarRef.current.classList.add("show")
         rightSidebarRef.current.classList.add("show")
@@ -748,7 +773,7 @@ export default function Home() {
             setSearched(true)
             introRef.current.classList.add("hide")
             toolsRef.current.classList.add("hide")
-        //headerRef.current.classList.add("hide")
+        headerRef.current.classList.add("hide")
             resultRef.current.classList.add("show")
             leftSidebarRef.current.classList.add("show")
             homeWrapperRef.current.style.paddingTop = "0"
@@ -812,7 +837,7 @@ export default function Home() {
             setSearched(true)
             introRef.current.classList.add("hide")
             toolsRef.current.classList.add("hide")
-        //headerRef.current.classList.add("hide")
+        headerRef.current.classList.add("hide")
             resultRef.current.classList.add("show")
             leftSidebarRef.current.classList.add("show")
             // homeWrapperRef.current.style.paddingTop = "0"
@@ -933,7 +958,14 @@ export default function Home() {
                 setDrawerOpened={setDrawerOpened}
               />
               <div ref={introRef} className="intro">
-                <h1>Welcome, Safwan</h1>
+                <h1>
+                  {
+                    user && user !== null && user.displayName && user.displayName !== null ?
+                    "Welcome, " + user.displayName.split(" ")[0]
+                    :
+                    "Meet Que AI"
+                  }
+                </h1>
                   {/* <p style={{
                     fontSize: "20px"
                   }}>How can i help you today?</p> */}
@@ -985,7 +1017,7 @@ export default function Home() {
                 searchContainerRef={searchContainerRef}
                 setShowToast={setShowToast}
                 setToastText={setToastText}
-                ToastRef={ToastRef}
+                toastRef={toastRef}
                 answering={answering}
                 user={user}
                 getChats={getChats}
@@ -1076,6 +1108,8 @@ export default function Home() {
               setQuestion={setQuestion}
               handleButtonClick={handleButtonClick}
               question={question}
+              setRightSideBarCollapsed={setRightSideBarCollapsed}
+              rightSideBarCollapsed={rightSideBarCollapsed}
             />
             </div>
 
@@ -1305,7 +1339,7 @@ export default function Home() {
         }
 
         { showToast &&
-          <Toast ref={ToastRef} text={toastText} />
+          <Toast ref={toastRef} text={toastText} />
         }
 
       </div>

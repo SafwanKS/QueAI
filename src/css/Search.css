@@ -461,8 +461,14 @@
 }
 
 .quickActions .actionBtn:hover{
-  background-color: var(--header-onscroll);
+  background-color: #f3f3f3;
 }
+
+
+.home.dark .quickActions .actionBtn:hover{
+  background-color: #3f3f3f;
+}
+
 
 
 @media (min-width: 768px){
@@ -527,3 +533,25 @@ thead{
 
 
 
+
+
+
+
+
+
+
+pre{
+  padding: 20px 20px;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 10px;
+  background-color: #f3f3f3;
+  position: relative;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.home.dark pre{
+  background-color: #313131;
+}

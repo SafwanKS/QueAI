@@ -212,7 +212,10 @@ const cusDescRef = useRef(null)
                         <div className='animations'>
                             <div className="settings-item">
                                 <p className="item-name">Dark mode</p>
-                                <div className={`switch ${darkmode && "active"}`} onClick={() => setDarkmode(!darkmode)} >
+                                <div className={`switch ${darkmode && "active"}`} onClick={() => { 
+                                    setDarkmode(!darkmode)
+                                    localStorage.setItem("darkmode", JSON.stringify(!darkmode))
+                                }}>
                                     <div className="switch-btn"></div>
                                 </div>
                             </div>

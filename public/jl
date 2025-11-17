@@ -1,0 +1,142 @@
+const [visible, setVisible] = useState(false);
+  const headingsRef = useRef([]);
+  const tickingRef = useRef(false);
+  const domObserverRef = useRef(null);
+  const headingTextObserversRef = useRef([]);
+
+  let showWhenNone = false
+  
+  const containerSelector = ".result-body"
+  const topbarHeight = 150
+  const titleSelector = ".list-title"
+
+
+  function refreshHeadings() {
+    const container = document.querySelector(containerSelector);
+    const found = Array.from(container.querySelectorAll(titleSelector));
+    headingsRef.current = found;
+  }
+
+  function onScrollOrResize() {
+if (!tickingRef.current) {
+window.requestAnimationFrame(() => {
+updateCurrentFromScroll();
+tickingRef.current = false;
+});
+tickingRef.current = true;
+}
+}
+
+
+function updateCurrentFromScroll() {
+  const headings = headingsRef.current;
+  if (!headings || headings.length === 0) {
+    setTitle('');
+    setVisible(false);
+    return;
+  }
+
+  // find the heading that is just ABOVE the topbar
+  let candidate = null;
+  let bestTop = -Infinity;
+
+  // also detect if ANY heading is visible in viewport
+  let anyVisible = false;
+
+  for (const h of headings) {
+    const rect = h.getBoundingClientRect();
+
+    // If the big title is visible anywhere in viewport → hide topbar title
+    if (rect.top >= 0 && rect.bottom > 0) {
+      anyVisible = true;
+    }
+
+    // heading has passed above the top bar
+    if (rect.top <= topbarHeight + 1) {
+      if (rect.top > bestTop) {
+        bestTop = rect.top;
+        candidate = h;
+      }
+    }
+  }
+
+  // if any big title is visible: hide top bar title
+  if (anyVisible) {
+    setVisible(false);
+    setTitle('');
+    return;
+  }
+
+  // otherwise show the last-passed title
+  if (candidate) {
+    setTitle(candidate.textContent.trim());
+    setVisible(true);
+  } else {
+    setVisible(false);
+    setTitle('');
+  }
+}
+
+
+  function observeHeadingTextChanges() {
+    headingTextObserversRef.current.forEach(obs => obs.disconnect());
+    headingTextObserversRef.current = [];
+
+
+    for (const h of headingsRef.current) {
+      const mo = new MutationObserver(() => {
+      // if the changed heading is currently shown, update immediately
+      // easiest: recalc the current candidate
+      updateCurrentFromScroll();
+      });
+      mo.observe(h, { childList: true, subtree: true, characterData: true });
+      headingTextObserversRef.current.push(mo);
+    }
+  }
+
+
+
+  useEffect(() => {
+// initial collection
+    refreshHeadings();
+    observeHeadingTextChanges();
+    updateCurrentFromScroll();
+
+
+    // add scroll/resize listeners
+    const scrollContainer = document.querySelector(containerSelector) || window;
+
+    scrollContainer.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize);
+
+
+    // DOM changes under the container should refresh headings
+    const container = document.querySelector(containerSelector) || document.body;
+    const domObserver = new MutationObserver((mutations) => {
+    // refresh on structural changes (children added/removed)
+    let shouldRefresh = false;
+    for (const m of mutations) {
+    if (m.type === 'childList') { shouldRefresh = true; break; }
+    }
+    if (shouldRefresh) {
+    refreshHeadings();
+    observeHeadingTextChanges();
+    updateCurrentFromScroll();
+    }
+    });
+
+
+      domObserver.observe(container, { childList: true, subtree: true });
+      domObserverRef.current = domObserver;
+
+
+      return () => {
+        scrollContainer.removeEventListener('scroll', onScrollOrResize);
+        window.removeEventListener('resize', onScrollOrResize);
+        domObserver.disconnect();
+        headingTextObserversRef.current.forEach(obs => obs.disconnect());
+      };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [titleSelector, containerSelector, topbarHeight, showWhenNone]);
+
+

@@ -5,6 +5,7 @@ import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
 import { auth, db } from '../firebase.js'
 import {getTitle} from '../Gemini.js'
 import '../css/LoadingBar.css'
+import { useRef } from "react";
 const Result = forwardRef(({
   introRef,
   toolsRef,
@@ -46,6 +47,13 @@ const Result = forwardRef(({
 }, ref) => {
 
   const [showModelSelect, setShowModeSelect] = useState(false)
+
+  const [title, setTitle] = useState('');
+
+  const titlesObserverRef = useRef(null)
+
+
+
 
   // useEffect(()=>{
   //   if(messages[0]){
@@ -118,7 +126,12 @@ const Result = forwardRef(({
         console.log("error while sharing " + err)
       }
     } else {
-      alert("Sharing is not available on your browser/device")
+      setShowToast(true)
+      setToastText("Sharing is not available in your browser")
+      setTimeout(() => {
+        if (toastRef && toastRef.current) toastRef.current.classList.add("hide")
+        setShowToast(false)
+      }, 4000);
     }
   }
 
@@ -128,9 +141,13 @@ const Result = forwardRef(({
       setShowToast(true)
       setToastText("Copied to clipboard")
       setTimeout(() => {
-        if (toastRef && toastRef.current) toastRef.current.classList.add("hide")
-        setShowToast(false)
-      }, 2000);
+        if (toastRef && toastRef.current){
+          toastRef.current.classList.add("hide")
+          setTimeout(() => {
+            setShowToast(false)
+          }, 1000);
+        } 
+      }, 3000);
     } catch (err) {
       console.log(err)
     }
@@ -188,10 +205,74 @@ const Result = forwardRef(({
   }
 
 
+
+    useEffect(() => {
+      // disconnect previous observer if present
+      if (titlesObserverRef.current) {
+        titlesObserverRef.current.disconnect()
+        titlesObserverRef.current = null
+      }
+
+      // get all titles inside this component's DOM (scoped to result element if needed)
+      // using document is ok here because this component structure is unique; if you have multiple instances consider scoping to a container ref
+      const titleNodes = Array.from(document.querySelectorAll('.result .list-title'))
+      if (!titleNodes || titleNodes.length === 0) return
+
+      const observer = new IntersectionObserver((entries) => {
+        // pick the entry with the largest intersectionRatio that isIntersecting
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
+
+        if (visible.length > 0) {
+          const best = visible[0].target
+          const newTitle = best.dataset.title || best.textContent || ''
+          setTitle(prev => {
+            if (prev !== newTitle) return newTitle
+            return prev
+          })
+        }
+        // If nothing is intersecting we keep previous title (you can clear it by else setTitle(''))
+      }, {
+        // tweak thresholds / rootMargin to change when titles are considered "in view"
+        threshold: [0, 0.25, 0.5, 0.75, 1]
+      })
+
+      // observe each node
+      titleNodes.forEach(node => observer.observe(node))
+
+      titlesObserverRef.current = observer
+
+      // cleanup
+      return () => {
+        if (titlesObserverRef.current) {
+          titlesObserverRef.current.disconnect()
+          titlesObserverRef.current = null
+        }
+      }
+      // re-run effect whenever the underlying items change
+    }, [itemName?.length, toolMode, toolName, messages.length, lessons.length, stories.length])
+
+    // keep the h1 ref text in sync if you want direct DOM update (optional — state already drives UI)
+    useEffect(() => {
+      if (resultTitle && resultTitle.current) {
+        resultTitle.current.innerText = title
+      }
+    }, [title, resultTitle])
+
+
+
+
+
+
+
   return (
     <div ref={ref} className="result">
       <div className="result-header">
         <div className="result-header-left">
+
+          {window.innerWidth > 768 && title}
+
           {
             window.innerWidth < 768 && 
               <div className="back_btn btn" onClick={() => {
@@ -201,12 +282,15 @@ const Result = forwardRef(({
               </div>
           }
           
-          <h1 ref={resultTitle} ></h1>
+          {/* <h1 ref={resultTitle} ></h1> */}
+        </div>
+        <div className="result-header-center">
+          {window.innerWidth < 768 && <p>{title}</p>}
         </div>
         <div className="result-header-right">
-          {/* <div className="more_btn">
+          <div className="more_btn">
             <span className="material-symbols-outlined">more_horiz</span>
-          </div> */}
+          </div>
         </div>
       </div>
 
@@ -214,7 +298,7 @@ const Result = forwardRef(({
         {
           itemName?.map((item, index) =>
             <div key={index} ref={index === (toolMode ? toolName === "story" ? stories.length : lessons.length : messages.length) - 1 ? lastElement : null} className="responseDiv">
-              <p style={{
+              <p className="list-title" style={{
                 fontSize: "28px",
                 fontWeight: "500",
               }}>
@@ -227,13 +311,22 @@ const Result = forwardRef(({
               </p>
               {
                 !toolMode && item.sources && item.sources.length !== 0 &&
-                <div className="filters">
-                  <div className="filter active">
-                    Answer
-                  </div>
-                  <div className="filter" onClick={()=> window.open("https://www.google.com/search?tbm=isch&q=" + item.que)}>Images</div>
+                // <div className="filters">
+                //   <div className="filter active">
+                //     Answer
+                //   </div>
+                //   <div className="filter" onClick={()=> window.open("https://www.google.com/search?tbm=isch&q=" + item.que)}>Images</div>
                   
-                </div>
+                // </div>
+                <p style={{
+                  display: "flex",
+                  gap: "5px",
+                  alignItems: "center",
+                  opacity: "0.4",
+                  marginTop: "10px"
+                }}><span className="material-symbols-outlined" style={{
+                  fontSize: "16px"
+                }}>language</span>Searched Web</p>
               }
               
               <div className='line' ></div>

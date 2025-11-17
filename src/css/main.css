@@ -21,6 +21,13 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+
+}
+
+
+:root {
+  /* --vh set by JS as 1% of window.innerHeight */
+  --vh: 1vh;
 }
 
 *::selection{
@@ -32,6 +39,14 @@
 }
 *::-webkit-scrollbar {
   display: none;
+}
+
+
+#root{
+  height: calc(var(--vh, 1vh) * 100);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important; /* Important: prevent document scrolling */
 }
 
 h1, h2, h3, h4, h5, h6, p, span{

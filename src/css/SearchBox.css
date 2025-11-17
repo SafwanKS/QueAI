@@ -7,7 +7,6 @@
   gap: 10px;
   z-index: 100;
   pointer-events: none;
-
 }
 
 
@@ -51,6 +50,7 @@
   
 }
 
+
 .home.dark .searchBox{
   background-color: #292929;
   box-shadow: 0 0 5px 0px rgb(104, 87, 65);
@@ -70,11 +70,19 @@
 
 
 .searchBoxContainer.onsearch{
-  position: fixed;
+  position: absolute;
   bottom: 20px;
   left: 0;
   width: 100%;
   justify-content: center;
+}
+
+.searchBoxContainer.onsearch::after{
+  content: "QueAI can make mistakes, so double check it.";
+  position: absolute;
+  font-size: 10px;
+  bottom: -20px;
+  opacity: 0.5;
 }
 
 @media (max-width: 768px) {
