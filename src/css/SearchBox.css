@@ -52,11 +52,11 @@
 
 
 .home.dark .searchBox{
-  background-color: #292929;
+  background-color: #292929a2;
   box-shadow: 0 0 5px 0px rgb(104, 87, 65);
   border: 1px solid rgb(78, 78, 78);
   box-shadow: none;
-
+  backdrop-filter: blue(10px);
 }
 
 
@@ -94,6 +94,11 @@
   }
 }
 
+.searchBox.active{
+  background-color: red;
+  z-index: 10;
+}
+
 .searchBox.active::after, .searchBox.active::before{
   content: "";
   position: absolute;
@@ -103,7 +108,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50px;
-  /* background-image: conic-gradient(from var(--angle), transparent 50%, blue); */
+  background-image: conic-gradient(from var(--angle), transparent 50%, blue);
   z-index: -1;
   animation: spinBox 3s linear infinite;
 }

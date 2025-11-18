@@ -643,6 +643,8 @@ headerRef.current.classList.add("hide")
     setBtnState(false)
     setQuestion("")
 
+    setDrawerOpened(false)
+
     HomeRef.current.focus()
 
     let prompt = que || question

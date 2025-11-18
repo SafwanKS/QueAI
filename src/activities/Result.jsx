@@ -306,6 +306,8 @@ const Result = forwardRef(({
               <p className="list-title" style={{
                 fontSize: "28px",
                 fontWeight: "500",
+                userSelect: "text",
+                pointerEvents: "auto"
               }}>
                 {toolMode 
                   ? toolName === "story" 

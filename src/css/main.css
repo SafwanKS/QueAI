@@ -36,7 +36,7 @@
 }
 
 .home.dark *::selection{
-  background-color: rgb(77, 68, 57);
+  background-color: rgb(66, 66, 66);
 }
 *::-webkit-scrollbar {
   display: none;
