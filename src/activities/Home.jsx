@@ -956,9 +956,12 @@ headerRef.current.classList.add("hide")
                 searched={searched}
                 handleClearChat={handleClearChat}
                 setDrawerOpened={setDrawerOpened}
+                setShowToast={setShowToast}
+                setToastText={setToastText}
+                toastRef={toastRef}
               />
               <div ref={introRef} className="intro">
-                <h1>
+                <h1 className={user && user !== null && "loggedin"}>
                   {
                     user && user !== null && user.displayName && user.displayName !== null ?
                     "Welcome, " + user.displayName.split(" ")[0]
@@ -966,6 +969,13 @@ headerRef.current.classList.add("hide")
                     "Meet Que AI"
                   }
                 </h1>
+                {
+                  !user && user == null &&
+                    <p>
+                      Your personal AI, ready to help you think better and move faster.
+                    </p>
+                }
+                
                   {/* <p style={{
                     fontSize: "20px"
                   }}>How can i help you today?</p> */}

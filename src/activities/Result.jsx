@@ -271,7 +271,12 @@ const Result = forwardRef(({
       <div className="result-header">
         <div className="result-header-left">
 
-          {window.innerWidth > 768 && title}
+          {window.innerWidth > 768 && <p style={{
+            width: "180px",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis"
+          }}>{title}</p>}
 
           {
             window.innerWidth < 768 && 
@@ -342,7 +347,9 @@ const Result = forwardRef(({
                       <>
                         <div className='resans' >
                           
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
+
+                          }}>
                             {showResponse(item)}
                           </ReactMarkdown>  
 

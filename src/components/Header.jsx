@@ -27,7 +27,10 @@ const Header = forwardRef(({
   setAnimState,
   animState,
   handleClearChat,
-  setDrawerOpened
+  setDrawerOpened,
+  setShowToast,
+  setToastText,
+  toastRef,
 }, ref)=>{
   const navigate = useNavigate()
   const [route,
@@ -58,7 +61,7 @@ const Header = forwardRef(({
         {/* <h1>Que AI</h1> */}
         {/* <h2>Que AI</h2> */}
         {
-          !searched &&
+          !searched && user && user !== null &&
             <p style={{
               fontSize: "26px",
               fontWeight: "600"
@@ -121,8 +124,31 @@ const Header = forwardRef(({
                     <p>Settings</p>
                   </div>
                   <div className="logout-button pbtn" onClick={ async ()=>{
-                    await signOut(auth)
-                    setLoginState(false)
+                    try{
+                      await signOut(auth)
+                      setLoginState(false)
+                      setShowToast(true)
+                      setToastText("Logged out successfully.")
+                      setTimeout(() => {
+                      if (toastRef && toastRef.current){
+                          toastRef.current.classList.add("hide")
+                          setTimeout(() => {
+                            setShowToast(false)
+                          }, 1000);
+                        } 
+                      }, 3000);
+                    } catch(err) {
+                      setShowToast(true)
+                      setToastText("Could not logout. Try again.")
+                      setTimeout(() => {
+                      if (toastRef && toastRef.current){
+                          toastRef.current.classList.add("hide")
+                          setTimeout(() => {
+                            setShowToast(false)
+                          }, 1000);
+                        } 
+                      }, 3000);
+                    }
                   }}>
                     <span className="material-symbols-outlined">logout</span>
                     <p>Sign out</p>

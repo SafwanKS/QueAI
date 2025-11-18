@@ -168,22 +168,26 @@
 }
 
 .home .intro h1{
-  font-size: 40px;
+  font-size: 50px;
   font-family: GeneralSans-Medium;
   font-family: "Poppins";
   color: #424242;
   color: blue;
   /* text-align: center; */
   margin: 0;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+.home .intro h1.loggedin{
+  font-size: 35px;
   font-weight: 400;
   margin-bottom: 25px;
 }
-
 .home .intro p{
-  /* font-size: 20px; */
+  font-size: 20px;
   font-family: GeneralSans-Medium;
   font-family: "Poppins";
-  /* margin-bottom: 25px; */
+  margin-bottom: 25px;
   color: #797979;
 }
 

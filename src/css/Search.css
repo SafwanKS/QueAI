@@ -555,3 +555,14 @@ pre{
 .home.dark pre{
   background-color: #313131;
 }
+
+
+code{
+  font-family: "Fira Code", monospace;
+  background-color: #f3f3f3;
+}
+
+
+.home.dark code{
+  background-color: #313131;
+}
