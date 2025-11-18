@@ -19,7 +19,7 @@
 }
 
 .home.dark .left-sidebar{
-  background-color: #292929;
+  background-color: #252525;
   border: 0;
 }
 
@@ -336,6 +336,10 @@
 }
 .recent-chats h3{
   font-family: GeneralSans-Medium;
+  /* position: sticky;
+  top: 0;
+  left: 0;
+  background-color: #292929; */
 }
 
 
@@ -465,6 +469,7 @@
   pointer-events: auto;
   cursor: pointer;
   font-weight: 600;
+  color: unset;
 }
 
 

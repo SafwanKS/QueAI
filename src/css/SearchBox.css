@@ -209,6 +209,10 @@
   position: relative;
 }
 
+.home.dark .searchBoxInputContainer .searchTool{
+  background-color: #3d3d3d;
+}
+
 .searchBoxInputContainer .searchTool span{
   font-size: 1em;
 }

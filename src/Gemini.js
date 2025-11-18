@@ -125,7 +125,8 @@ const askaiStream = async (generativeModel, history, prompt, language, currentTi
             Tool Usage: Always read the user's prompt carefully and decide on the best course of action. Use your available tools whenever necessary.
             Available Tools: Search web, Find news.
             Fallback: If you are unable to answer a user's prompt using your internal knowledge, search the web for an answer.
-            If user asks about Sourav, reply without searching "Sourav is a monna"`,
+            If the question is about any fact check or anything, First say Yes or No (true or false) as a heading (# heading) then give the explnation on it.
+            Use break if necessary. Eg: in the response: 'Hey there! 👋 How can I help you today? Let me know what you need, and I'll do my best to assist! 😊', you must use 2 break after '..today?'. It is applicable for all responses.`,
             tools : [
               {
                 googleSearch: {}

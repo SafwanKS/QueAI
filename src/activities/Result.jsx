@@ -276,7 +276,7 @@ const Result = forwardRef(({
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis"
-          }}>{title}</p>}
+          }}></p>}
 
           {
             window.innerWidth < 768 && 
