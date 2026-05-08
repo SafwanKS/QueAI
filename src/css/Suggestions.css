@@ -1,0 +1,80 @@
+.suggestionList {
+    width: 680px;
+    max-width: 90vw;
+    height: fit-content;
+    /* padding: 10px 20px; */
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.suggestionList .suggestionItem {
+    width: 100%;
+    height: fit-content;
+    padding: 12px 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    opacity: 0;
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+.suggestionList .suggestionItem:hover {
+    background-color: #0000001e;
+}
+
+.home.dark .suggestionList .suggestionItem:hover {
+    background-color: #ffffff1e;
+}
+
+.suggestionList .suggestionItem span {
+    font-size: 20px;
+    color: rgb(56, 56, 56);
+}
+
+.home.dark .suggestionItem span {
+    color: rgb(185, 185, 185);
+}
+
+.suggestionList .suggestionItem p {
+    font-size: 0.9em;
+    color: rgb(56, 56, 56);
+}
+
+.home.dark .suggestionItem p {
+    color: rgb(185, 185, 185);
+}
+
+.suggestionList .suggestionItem:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.suggestionItem:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.suggestionItem:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.suggestionItem:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.suggestionItem:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

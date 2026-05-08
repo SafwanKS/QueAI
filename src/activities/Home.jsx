@@ -3,21 +3,19 @@ import {
   useRef,
   useEffect,
 } from 'react'
-import { signInWithPopup, GoogleAuthProvider , onAuthStateChanged} from "firebase/auth";
+import { useParams, useLocation } from 'react-router'
+import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, sum } from "firebase/firestore";
-import {auth, db} from '../firebase.js'
-import {askai, askaiStream, relatedAI, summariseAI, createImageAI, ai, storyWriteAI, genStoryTitle, tutorAI, genLessonName} from '../Gemini.js'
+import { auth, db } from '../firebase.js'
+import { askaiStream, relatedAI, summariseAI, storyWriteAI, genStoryTitle, tutorAI, genLessonName } from '../Gemini.js'
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from "remark-gfm";
 import {
   useNavigate
 } from 'react-router'
-import axios from 'axios'
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
-import { Link } from 'react-router'
 import Logo from '../assets/logosmall.png'
-import Gemini from "../assets/gemini.png"
+import animation from '../assets/animation.gif'
 import '../css/Home.css'
 import '../css/Search.css'
 import '../css/loader.css'
@@ -25,51 +23,67 @@ import SearchBox from '../components/SearchBox.jsx'
 import Header from '../components/Header.jsx';
 import GLogo from '../assets/google-logo.png'
 import LeftSideBar from '../components/LeftSideBar.jsx';
-import RightSideBar from '../components/RightSideBar.jsx';
 import Settings from './Settings.jsx';
 import Recents from '../components/Recents.jsx';
 import Toast from '../components/Toast.jsx';
 import SearchTools from '../components/SearchTools.jsx';
-// import Search from './Search.jsx';
 import Result from './Result.jsx';
 import Canvas from './Canvas.jsx';
 import Gallery from './Gallery.jsx';
 import Stories from './Stories.jsx';
 import Lessons from './Lessons.jsx';
+import Library from './Library.jsx';
+import BottomNav from '../components/BottomNav.jsx';
+import Suggestions from '../components/Suggessions.jsx';
+import SearchChats from '../components/SearchChats.jsx';
 
 export default function Home() {
-  
-  const HomeRef = useRef(null)
-  const titleRef = useRef(null)
-  const smallTitleRef = useRef(null)
-  const recentsTitle = useRef(null)
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setLoginState(true)
+        setUser(user)
+        localStorage.setItem("userState", JSON.stringify(true))
+        localStorage.setItem("userData", JSON.stringify(user))
+        await getChats(user)
+        if (loginWrapper.current) loginWrapper.current.classList.add("hide")
+        setTimeout(() => {
+          setShowLoginDialog(false)
+        }, 200)
+      } else {
+        setLoginState(false)
+        setUser(null)
+        localStorage.setItem("userState", JSON.stringify(false))
+        localStorage.setItem("userData", JSON.stringify(null))
+      }
+      setAuthLoading(false)
+    })
+    return () => unsubscribe()
+  }, [])
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  const HomeRef = useRef(null)
   const inputRef = useRef(null)
   const searchBoxRef = useRef(null)
   const introRef = useRef(null)
   const toolsRef = useRef(null)
   const resultRef = useRef(null)
   const canvasRef = useRef(null)
+  const libraryRef = useRef(null)
   const headerRef = useRef(null)
   const homeWrapperRef = useRef(null)
   const homeContainerRef = useRef(null)
   const resultTitle = useRef(null)
   const leftSidebarRef = useRef(null)
-  const rightSidebarRef = useRef(null)
-  const introTxt = useRef(null)
-  const  searchContainerRef = useRef(null)
+  const searchContainerRef = useRef(null)
 
-
-  const fileInputRef = useRef(null)
-
-  const genImageWrapper = useRef(null)
-  const customizeWrapper = useRef(null)
-  const summariseWrapper = useRef(null)
-  const sourcesWrapper = useRef(null)
-  
 
   const loginWrapper = useRef(null)
-  
+  const projectCreateWrapper = useRef(null)
+
 
   const lastElement = useRef(null)
   const toastRef = useRef(null)
@@ -77,31 +91,35 @@ export default function Home() {
 
   const shouldSaveChat = useRef(false);
 
+  const welcomeMsgTitle = useRef(null)
+  const welcomeMsgSubtitle = useRef(null)
 
-  const navigate = useNavigate()
+  const [openedChatID, setOpenedChatID] = useState("")
 
-  const [btnState, setBtnState] = useState(false)
-  const [customAnimEnabled, setCustomAnimEnabled] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const [showRecents, setShowRecents] = useState(false)
-  const [showGenImage, setShowGenImage] = useState({
-    show: false,
-    index: 0
-  })
-  const [showCusAI, setShowCusAI] = useState(false)
+  const fileInputRef = useRef(null)
+
+  const genImageWrapper = useRef(null)
+  const customizeWrapper = useRef(null)
+  const summariseWrapper = useRef(null)
+  const sourcesWrapper = useRef(null)
+
+  const [user, setUser] = useState(null)
+
+  const [authLoading, setAuthLoading] = useState(true)
+
+  const [isLoggedIn, setLoginState] = useState(false)
+
   const [showSummarise, setShowSummarise] = useState(false)
   const [showSources, setShowSources] = useState(false)
-  
+
   const [customPreferences, setCustomPreferences] = useState({})
 
   const [showLoginDialog, setShowLoginDialog] = useState(false)
   const [drawerCollapsed, setDrawerCollapsed] = useState(true)
-  const [rightSideBarCollapsed, setRightSideBarCollapsed] = useState(false)
   const [showDialog, setShowDialog] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const [toastText, setToastText] = useState("")
   const [relatedQues, setRelatedQues] = useState([])
-  // const [generativeModel, setGenerativeModel] = useState("2.0 Flash")
   const [proEnabled, setProEnabled] = useState(false)
 
   const [animState, setAnimState] = useState(true)
@@ -112,14 +130,14 @@ export default function Home() {
   const [stories, setStories] = useState([])
   const [lessons, setLessons] = useState([])
 
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [suggestionsList, setSuggestionsList] = useState([])
+
   const [showGallery, setShowGallery] = useState(null)
   const [showStories, setShowStories] = useState(null)
   const [showLessons, setShowLessons] = useState(null)
 
-  const [image, setImage] = useState(null)
-
   const [question, setQuestion] = useState("")
-  const [placeHolder, setPlaceHolder] = useState("")
 
   const [onSearch, setOnSearch] = useState(false)
 
@@ -127,81 +145,181 @@ export default function Home() {
 
   const [answering, setAnswering] = useState(false)
 
-  const [recentsChats, setRecentChats ] = useState([])
+  const [recentsChats, setRecentChats] = useState([])
 
-  const [canvasImages, setCanvasImages ] = useState([])
+  const [canvasImages, setCanvasImages] = useState([])
 
   const [darkmode, setDarkmode] = useState(false)
+  const [useBlack, setUseBlack] = useState(false)
 
 
+  const [selectedModel, setSelectedModel] = useState("smart")
 
   const [galleryImages, setGalleryImages] = useState([])
   const [lessonsList, setLessonsList] = useState([])
 
   const [chatID, setChatID] = useState("")
-  const [isLoggedIn, setLoginState] = useState(false)
+
+  const [chatTitle, setChatTitle] = useState("")
+
+  const isNewChat = useRef(false)
+
   const [toolMode, setToolMode] = useState(false)
   const [toolName, setToolName] = useState("")
-  const [welcomeMsgHead, setWelcomeMsgTxt] = useState("Meet Que AI")
   const [customePlaceHolder, setCustomePlaceHolder] = useState("")
   const [summarisedText, setSummarisedText] = useState("")
 
   const [uploadedImage, setUploadedImage] = useState(null)
 
   const [chats, setChats] = useState({})
-  const [chatNames, setChatNames] = useState({})
+  const [searchLang, setSearchLang] = useState('English')
 
-  const [user, setUser] = useState(null)
-
-  const [streamedAnswer, setStreamedAnswer] = useState("")
-
+  const [previewImage, setPreviewImage] = useState(null)
   const [sources, setSources] = useState([])
 
 
-  useEffect(()=>{
+
+  const [btnState, setBtnState] = useState(false)
+  const [customAnimEnabled, setCustomAnimEnabled] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showRecents, setShowRecents] = useState(false)
+  const [showProjectCreation, setShowProjectCreation] = useState(false)
+  const [showGenImage, setShowGenImage] = useState({
+    show: false,
+    index: 0
+  })
+
+  const [showSearchChats, setShowSearchChats] = useState(false)
+  const [knowledgeAvailable, setKnowledgeAvailable] = useState([])
+
+  useEffect(() => {
+
+    if (!user || knowledgeAvailable.length === 0) return
+
+    const saveKnowledge = async () => {
+      const docRef = doc(db, "users", user.uid, "profile", "knowledge")
+      await setDoc(docRef, {
+        knowledge: knowledgeAvailable,
+        updatedAt: Date.now()
+      }, { merge: true })
+    }
+    saveKnowledge()
+  }, [knowledgeAvailable])
+
+  useEffect(() => {
+    if (!user || !isLoggedIn) return
+    const fetchKnowledge = async () => {
+      const docRef = doc(db, "users", user.uid, "profile", "knowledge")
+      const docSnap = await getDoc(docRef)
+      if (docSnap.exists()) {
+        setKnowledgeAvailable(docSnap.data().knowledge)
+      }
+    }
+    fetchKnowledge()
+  }, [user, isLoggedIn])
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      handleClearChat()
+      introRef.current.classList.remove("invisible")
+      toolsRef.current.classList.remove("invisible")
+      headerRef.current.classList.remove("invisible")
+    }
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (location.hash === "#settings") {
+      setShowSettings(true)
+    } else if (location.hash === "#login") {
+      if (isLoggedIn) {
+        navigate("/")
+        location.hash = ""
+      } else {
+        setShowLoginDialog(true)
+      }
+    } else {
+      // setShowSettings(false)
+    }
+  }, [location.hash])
+
+  useEffect(() => {
     setDarkmode(JSON.parse(localStorage.getItem("darkmode")))
+    setUseBlack(JSON.parse(localStorage.getItem("useBlack")))
     setUser(JSON.parse(localStorage.getItem("userData")))
     setLoginState(JSON.parse(localStorage.getItem("userState")))
   }, [])
 
-  const getChats = async (user) =>{
+  const getChats = async (user) => {
     const chatsRef = collection(db, "users", user.uid, "chats");
-      const chatDocs = await getDocs(chatsRef);
-      const allChats = [];
-      chatDocs.forEach(doc => {
-        allChats.push({ id: doc.id, ...doc.data() });
-      });
-      allChats.sort((a, b) => {
-        if (!a.timestamp || !b.timestamp) return 0;
-        return b.timestamp - a.timestamp
-      });
-      const formattedChats = allChats.map((chat, index) => ({
-        title: chat.title,
-        messages: chat.messages,
-        index: index,
-        timestamp: chat.timestamp
-      }));
-      setRecentChats(formattedChats);
+    const chatDocs = await getDocs(chatsRef);
+    const allChats = [];
+    chatDocs.forEach(doc => {
+      allChats.push({ id: doc.id, ...doc.data() });
+    });
+    allChats.sort((a, b) => {
+      if (!a.timestamp || !b.timestamp) return 0;
+      return b.timestamp - a.timestamp
+    });
+    const formattedChats = allChats.map((chat, index) => ({
+      id: chat.id,
+      title: chat.title,
+      messages: chat.messages,
+      index: index,
+      timestamp: chat.timestamp
+    }));
+    setRecentChats(formattedChats);
   }
 
-  const setChatMessages = (messages) =>{
+  const setChatMessages = (chat) => {
     setSearched(true)
-    setMessages(messages)
+    setMessages(chat.messages)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-headerRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    libraryRef.current.classList.remove("show")
     resultRef.current.classList.add("show")
     leftSidebarRef.current.classList.add("show")
-    rightSidebarRef.current.classList.add("show")
     homeWrapperRef.current.style.paddingTop = "0"
-    // searchBoxRef.current.classList.add('onsearch')
     searchContainerRef.current.classList.add('onsearch')
     searchBoxRef.current.classList.remove('active')
     homeContainerRef.current.classList.add('onsearch')
     // setDrawerCollapsed(true)
+    setChatTitle(chat.title)
     setOnSearch(true)
   }
+
+  const welcomeMsg = {
+    code: `What do you want to <span class="material-symbols-outlined"> code </span> code today?`,
+    summarise: `What do you want to <span class="material-symbols-outlined"> assignment </span> Summarise?`,
+    story: `Write a <span class="material-symbols-outlined"> ink_pen </span> Story`,
+    learn: `What do you want to <span class="material-symbols-outlined"> school </span> Learn today?`
+  }
+
+  useEffect(() => {
+    if (toolMode) {
+      welcomeMsgSubtitle.current?.classList.add("fadeOut")
+      setTimeout(() => {
+        welcomeMsgSubtitle.current.classList.remove("fadeOut")
+        welcomeMsgSubtitle.current.innerHTML = welcomeMsg[toolName]
+        welcomeMsgSubtitle.current.classList.add("fadeIn")
+        setTimeout(() => {
+          welcomeMsgSubtitle.current.classList.remove("fadeIn")
+        }, 100);
+      }, 300);
+    } else {
+      welcomeMsgSubtitle.current?.classList.add("fadeOut")
+      setTimeout(() => {
+        welcomeMsgSubtitle.current?.classList.remove("fadeOut")
+        welcomeMsgSubtitle.current.textContent = user && isLoggedIn ? "How can i help you today?" : "Your personal AI, ready to help you think better and move faster."
+        welcomeMsgSubtitle.current?.classList.add("fadeIn")
+        setTimeout(() => {
+          welcomeMsgSubtitle.current?.classList.remove("fadeIn")
+        }, 100);
+      }, 300);
+
+    }
+  }, [toolMode, toolName, user])
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -209,24 +327,45 @@ headerRef.current.classList.add("hide")
         event.preventDefault();
         setDarkmode(prev => !prev);
         localStorage.setItem("darkmode", JSON.stringify(!darkmode))
+        return
       }
-      if(event.key === "Escape"){
+      if (event.key === "Escape") {
         setShowDialog(false)
         setShowLoginDialog(false)
         setShowRecents(false)
         setShowSettings(false)
       }
+      if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === "o") {
+        event.preventDefault();
+        handleClearChat()
+        navigate('/')
+        return
+      }
       if (event.ctrlKey && !event.altKey && event.key.toLowerCase() === "b") {
         event.preventDefault();
         setDrawerCollapsed(prev => !prev)
+        return
       }
-      if(event.ctrlKey && event.altKey && event.key.toLowerCase() === "b"){
+      if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "b") {
         event.preventDefault();
-        setRightSideBarCollapsed(prev => !prev)
+        // setRightSideBarCollapsed(prev => !prev)
+        return
       }
       if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "s") {
         event.preventDefault();
-        setShowSettings(true)
+        navigate('/#settings')
+        return
+      }
+      if (event.ctrlKey && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (!user || !isLoggedIn) return;
+        setShowSearchChats(true)
+        return
+      }
+      if (event.key && event.key.length === 1 && !showSearchChats && document.activeElement !== inputRef.current) {
+        event.preventDefault();
+        inputRef.current.focus();
+        inputRef.current.value = (inputRef.current.value || "") + event.key;
       }
     };
 
@@ -235,59 +374,8 @@ headerRef.current.classList.add("hide")
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [isLoggedIn, user, showSearchChats]);
 
-
-  useEffect(()=>{
-    rightSidebarRef.current.classList.toggle("collapsed", rightSideBarCollapsed)
-  }, [rightSideBarCollapsed])
-
-  
-
-
-
-  
-
-  useEffect(()=>{
-      const unsubscribe = onAuthStateChanged(auth, async (user)=>{
-        if(user){
-          setLoginState(true)
-          setUser(user)
-          localStorage.setItem("userState", JSON.stringify(true))
-          localStorage.setItem("userData", JSON.stringify(user))
-          await getChats(user)
-          if (loginWrapper.current) loginWrapper.current.classList.add("hide")
-          setTimeout(()=>{
-            setShowLoginDialog(false)
-          }, 200)
-        }else{
-          setLoginState(false)
-          setUser(null)
-          localStorage.setItem("userState", JSON.stringify(false))
-          localStorage.setItem("userData", JSON.stringify(null))
-        }
-      })
-      return () => unsubscribe()
-    }, [])
-
-
-  useEffect(()=>{
-    const savedStories = JSON.parse(localStorage.getItem("stories")) || []
-    setStories(savedStories)
-  }, [])
-
-  useEffect(()=>{
-    localStorage.setItem("stories", JSON.stringify(stories))
-  }, [stories])
-
-  // useEffect(()=>{
-  //   const savedLessons = JSON.parse(localStorage.getItem("lessons")) || []
-  //   setLessons(savedLessons)
-  // }, [])
-
-  // useEffect(()=>{
-  //   localStorage.setItem("lessons", JSON.stringify(lessons))
-  // }, [lessons])
 
 
 
@@ -300,10 +388,10 @@ headerRef.current.classList.add("hide")
     return result
   }
 
-  const getDate = () =>{
+  const getDate = () => {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const month = String(now.getMonth() + 1).padStart(2, '0');
     const year = now.getFullYear();
 
     const hours = String(now.getHours()).padStart(2, '0');
@@ -325,10 +413,8 @@ headerRef.current.classList.add("hide")
     console.log("All chats deleted.");
   };
 
-  const genApiEndpoint = "https://queai-backend.vercel.app/api/genImage"
-
   const extractJsonFromText = (text) => {
-    const match = text.match(/{[^]*}/); // grabs the first { ... } block
+    const match = text.match(/{[^]*}/);
     if (!match) return null;
     try {
       return JSON.parse(match[0]);
@@ -338,24 +424,19 @@ headerRef.current.classList.add("hide")
     }
   }
 
-
-
-
-  const getResult = async (history, prompt, currentTime, lang, resType, onChunk) => {
-
+  const getResult = async (chatID, history, prompt, currentTime, lang, resType, onChunk) => {
     try {
-
-      setStreamedAnswer("")
-      
-      const response = await fetch('http://127.0.0.1:8000/chat/stream', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_input: (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}` ) + (`Current Time: ${currentTime}`) + (`Prompt: ${prompt}`),
-            model_name:"gemini-2.5-pro",
-          }),
+      // setStreamedAnswer("")
+      setAnswering(true)
+      const response = await fetch("https://jude7733-queai.hf.space/chat/stream", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_input: (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}`) + (`Current Time: ${currentTime}`) + (`Prompt: ${prompt}`),
+          thread_id: chatID
+        }),
       });
 
       if (!response.ok || !response.body) {
@@ -367,52 +448,38 @@ headerRef.current.classList.add("hide")
 
       while (true) {
         const { done, value } = await reader.read();
-        if (done) {
-          break; 
-        }
+        if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        setStreamedAnswer((prev) => prev + chunk)
-        onChunk(chunk)
+
+        const recievedChunk = JSON.parse(chunk)
+
+        const message = recievedChunk.messages
+          .filter(m => m.type === "ai")
+          .pop()?.content
+
+        onChunk(message)
+        console.log(chunk);
+
       }
 
       setAnswering(false);
-      getRelatedQues(streamedAnswer);
 
     } catch (err) {
-      console.log(err)
+      console.error(err)
       setAnswering(false)
       onChunk("An error occured. Please try again.")
     }
   }
 
-
-
-
-  const getRelatedQues = async(ans)=>{
+  const genImage = async (prompt) => {
     try {
-      const response = await relatedAI(ans)
-
-      const parsed = extractJsonFromText(response)  
-
-      if(parsed){
-        setRelatedQues([parsed.que1, parsed.que2, parsed.que3])
-      }
-   
-    } catch (err) {
-      console.log(err)
-    }
-  }
-
-
-  const genImage = async(prompt) => {
-    try{
       let newIndex;
       setCanvasImages(prev => {
         newIndex = prev.length;
         return [...prev, { title: prompt, img: null }];
       });
       const img = await createImageAI(prompt);
-      if(img && img.base64Data){
+      if (img && img.base64Data) {
         setCanvasImages(prev => {
           const updated = [...prev];
           if (updated[newIndex]) {
@@ -428,25 +495,16 @@ headerRef.current.classList.add("hide")
     }
   }
 
-  const [searchText, setSearchText] = useState('')
-  const [searchLang, setSearchLang] = useState('English')
-  const [searchMode, setSearchMode] = useState('Balanced')
 
-  const [showLoading, setShowLoading] = useState(true)
-  const [emptyChats, setEmptyChats] = useState(false)
-
-
-  const showStoriesWindow = () =>{
+  const showStoriesWindow = () => {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-headerRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
-    rightSidebarRef.current.classList.remove("show")
     homeWrapperRef.current.style.paddingTop = "0"
-    // searchBoxRef.current.classList.add('onsearch')
     searchContainerRef.current.classList.add('onsearch')
     searchBoxRef.current.classList.remove('active')
     homeContainerRef.current.classList.add('onsearch')
@@ -455,19 +513,18 @@ headerRef.current.classList.add("hide")
     setToolMode(true)
     setToolName("story")
     // setShowStories(true)
-  } 
-  
-  const showLessonsWindow = () =>{
+  }
+
+
+  const showLessonsWindow = () => {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-headerRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
-    rightSidebarRef.current.classList.remove("show")
     homeWrapperRef.current.style.paddingTop = "0"
-    // searchBoxRef.current.classList.add('onsearch')
     searchContainerRef.current.classList.add('onsearch')
     searchBoxRef.current.classList.remove('active')
     homeContainerRef.current.classList.add('onsearch')
@@ -479,16 +536,13 @@ headerRef.current.classList.add("hide")
   }
 
 
-  const [text, setText] = useState("")
 
-  const [previewImage, setPreviewImage] = useState(null)
 
   const onInputChanged = (e) => {
     const inputBox = inputRef.current
     inputBox.rows = inputBox.value.split('\n').length;
     inputBox.style.height = 'auto';
     inputBox.style.height = inputBox.scrollHeight + 'px';
-    // searchBoxRef.current.style.height = inputBox.scrollHeight + 30 + 'px';
     setBtnState(inputBox.value.trim().length > 0)
     setQuestion(e.target.value)
   }
@@ -501,7 +555,7 @@ headerRef.current.classList.add("hide")
     }
   }
 
-  const downloadImage = (obj) =>{
+  const downloadImage = (obj) => {
     if (!obj.img) return;
     const imageName = obj.title.replaceAll(' ', "-")
     const link = document.createElement("a")
@@ -528,9 +582,9 @@ headerRef.current.classList.add("hide")
     try {
       const base64Image = await fileToBase64(uploadedImage);
       let newIndex;
-        setCanvasImages(prev => {
-          newIndex = prev.length;
-          return [...prev, { title: prompt, img: null, previewImg: previewImage }];
+      setCanvasImages(prev => {
+        newIndex = prev.length;
+        return [...prev, { title: prompt, img: null, previewImg: previewImage }];
       });
       const response = await ai.models.generateContent({
         model: "gemini-2.0-flash-preview-image-generation",
@@ -565,12 +619,12 @@ headerRef.current.classList.add("hide")
       }
 
       if (base64Data) {
-        try{
+        try {
           const img = {
             mimeType: mimeType,
             base64Data: base64Data
           }
-          if(img && img.base64Data){
+          if (img && img.base64Data) {
             setCanvasImages(prev => {
               const updated = [...prev];
               if (updated[newIndex]) {
@@ -590,48 +644,97 @@ headerRef.current.classList.add("hide")
     }
   };
 
-  const handleClearChat = () =>{
+  const handleClearChat = () => {
+    navigate('/')
     introRef.current.classList.remove("hide")
     toolsRef.current.classList.remove("hide")
     headerRef.current.classList.remove("hide")
     resultRef.current.classList.remove("show")
     canvasRef.current.classList.remove("show")
+    libraryRef.current.classList.remove("show")
     leftSidebarRef.current.classList.remove("show")
-    rightSidebarRef.current.classList.remove("show")
+    // rightSidebarRef.current.classList.remove("show")
     // homeContainerRef.current.style.paddingTop = "150px"
     searchContainerRef.current.classList.remove('onsearch')
+    searchContainerRef.current.classList.remove('hide')
     // searchBoxRef.current.classList.add('active') 
     homeContainerRef.current.classList.remove('onsearch')
     setSearched(false)
     setToolMode(false)
     setCustomePlaceHolder("")
-    setToolName("") 
+    setToolName("")
+    setChatTitle("")
     setMessages([])
+    setOpenedChatID("")
+    setShowSuggestions(false)
+    setSuggestionsList([])
   }
 
   const showCanvasWindow = () => {
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
-headerRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
     resultRef.current.classList.remove("show")
     canvasRef.current.classList.add("show")
+    libraryRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
-    rightSidebarRef.current.classList.remove("show")
     homeWrapperRef.current.style.paddingTop = "0"
     searchBoxRef.current.classList.add('onsearch')
-    searchBoxRef.current.classList.add('active')
     searchContainerRef.current.classList.add('onsearch')
-    // searchBoxRef.current.classList.remove('active')
     searchBoxRef.current.classList.add("canvas")
     homeContainerRef.current.classList.add('onsearch')
     setDrawerCollapsed(true)
     setOnSearch(true)
-
     setToolMode(true)
     setToolName("draw")
   }
 
+  const showLibraryWindow = () => {
+    setSearched(true)
+    introRef.current.classList.add("hide")
+    toolsRef.current.classList.add("hide")
+    headerRef.current.classList.add("hide")
+    resultRef.current.classList.remove("show")
+    libraryRef.current.classList.add("show")
+    canvasRef.current.classList.remove("show")
+    leftSidebarRef.current.classList.add("show")
+    homeWrapperRef.current.style.paddingTop = "0"
+    searchBoxRef.current.classList.add('hide')
+    searchContainerRef.current.classList.add('hide')
+    // searchBoxRef.current.classList.add("canvas")
+    homeContainerRef.current.classList.add('onsearch')
+    // setDrawerCollapsed(true)
+    // setOnSearch(true)
+    setToolMode(false)
+  }
+
+  const { chatID: urlChatID } = useParams()
+
+  useEffect(() => {
+
+    if (isNewChat.current) {
+      return
+    }
+
+    if (authLoading) return
+
+    if (urlChatID && user) {
+      const loadChat = async () => {
+        const docRef = doc(db, "users", user.uid, "chats", urlChatID)
+        const docSnap = await getDoc(docRef)
+        if (docSnap.exists()) {
+          const chat = docSnap.data()
+          setChatMessages(chat)
+          setChatID(urlChatID)
+        } else {
+          console.log("Chat not found")
+          navigate('/')
+        }
+      }
+      loadChat()
+    } else if (!user) navigate("/")
+  }, [urlChatID, user, authLoading])
 
   const handleButtonClick = (que) => {
 
@@ -651,13 +754,10 @@ headerRef.current.classList.add("hide")
 
     let ques = que || (question);
 
-
-
-    if(!toolMode){
+    if (!toolMode) {
 
       if (!searched) {
 
-        
         setSearched(true)
         introRef.current.classList.add("hide")
         toolsRef.current.classList.add("hide")
@@ -665,9 +765,7 @@ headerRef.current.classList.add("hide")
         headerRef.current.classList.add("hide")
         resultRef.current.classList.add("show")
         leftSidebarRef.current.classList.add("show")
-        rightSidebarRef.current.classList.add("show")
         homeWrapperRef.current.style.paddingTop = "0"
-        // searchBoxRef.current.classList.add('onsearch')
         searchContainerRef.current.classList.add('onsearch')
         searchBoxRef.current.classList.remove('active')
         homeContainerRef.current.classList.add('onsearch')
@@ -675,13 +773,16 @@ headerRef.current.classList.add("hide")
         setOnSearch(true)
       }
 
-      if(!(messages[0])){
-        setChatID(getRandomString(10))
+      if (!(messages[0])) {
+        const newChatID = getRandomString(16)
+        setChatID(newChatID)
+        isNewChat.current = true
+        navigate(`/chat/${newChatID}`)
       }
 
       const history = []
-  
-      messages.map((message, index)=> {
+
+      messages.map((message, index) => {
         history.push(
           {
             role: "user",
@@ -697,7 +798,7 @@ headerRef.current.classList.add("hide")
           }
         )
       });
-  
+
       shouldSaveChat.current = true;
 
 
@@ -705,9 +806,13 @@ headerRef.current.classList.add("hide")
         type: "chat",
         que: ques,
         ans: "",
-        sources: []
+        reasoning: "",
+        sources: [],
+        model: "",
+        steps: []
+
       }]);
-  
+
       setAnswering(true);
       setRelatedQues(null);
 
@@ -718,10 +823,8 @@ headerRef.current.classList.add("hide")
 
           let streamedAnswer = ""
 
-          await getResult(history, prompt, currentTime, searchLang, "fast", (chunk)=>{
+          await getResult(chatID, history, prompt, currentTime, searchLang, "fast", (chunk) => {
             streamedAnswer += chunk;
-            console.log(chunk);
-            
             setMessages((prev) => {
               const updated = [...prev];
               updated[updated.length - 1].ans += chunk;
@@ -732,42 +835,87 @@ headerRef.current.classList.add("hide")
         })()
       } else {
 
-         (async ()=>{
-            let streamedAnswer = "";
-            const sources = await askaiStream("2.0 Flash", history, prompt, searchLang, currentTime, (chunk) => {
+        (async () => {
+          let streamedAnswer = "";
+          await askaiStream(selectedModel, history, knowledgeAvailable, prompt, searchLang, currentTime,
+            (chunk) => {
               streamedAnswer += chunk;
               setMessages((prev) => {
                 const updated = [...prev];
                 updated[updated.length - 1].ans += chunk;
                 return updated;
               });
-            });
+            },
+            (reasoningChunk) => {
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].reasoning += reasoningChunk;
+                return updated;
+              });
+            },
+            (model) => {
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].model = model;
+                return updated;
+              });
+            },
+            (knowledge) => {
+              setKnowledgeAvailable((prev) => {
+                const updated = [...prev];
+                updated.push(knowledge);
+                return updated;
+              });
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].infoSaved = {
+                  saved: true,
+                  data: knowledge
+                }
+                return updated;
+              })
+            },
+            (images) => {
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].images = JSON.parse(images);
+                return updated;
+              });
+            },
+            (step) => {
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].steps.push(step)
+                return updated;
+              });
+            },
+            (sources) => {
+              setMessages((prev) => {
+                const updated = [...prev]
+                updated[updated.length - 1].sources = sources
+                return updated
+              })
+            }
+          );
 
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1].sources = sources; // <-- KEY CHANGE: Add sources here
-              return updated;
-            });
-            
-            setAnswering(false);
-            getRelatedQues(streamedAnswer);
+          setAnswering(false);
         })()
       }
 
-    }else{
-      if(toolMode && toolName === "draw"){
-        if(question.trim() !== "") {
-          if(uploadedImage){
+    } else {
+      if (toolMode && toolName === "draw") {
+        if (question.trim() !== "") {
+          if (uploadedImage) {
             generateImage(question)
-          }else{
+          } else {
             genImage(question)
           }
         }
       }
-      if(toolMode && toolName === "story"){
-        if(question.trim() !== ""){
+      if (toolMode && toolName === "story") {
+        if (question.trim() !== "") {
 
-          (async()=>{
+          (async () => {
 
             setAnswering(true);
 
@@ -775,71 +923,52 @@ headerRef.current.classList.add("hide")
             setSearched(true)
             introRef.current.classList.add("hide")
             toolsRef.current.classList.add("hide")
-        headerRef.current.classList.add("hide")
+            headerRef.current.classList.add("hide")
             resultRef.current.classList.add("show")
             leftSidebarRef.current.classList.add("show")
             homeWrapperRef.current.style.paddingTop = "0"
-            searchContainerRef.current.classList.add('onsearch')
+            searchContainerRef.current.classList.add('hide')
             homeContainerRef.current.classList.add('onsearch')
             setDrawerCollapsed(true)
             setOnSearch(true)
 
-            const history = []
-    
-            stories.map((story, index)=> {
-              history.push(
-                {
-                  role: "user",
-                  parts: [{
-                    text: story.title
-                  }]
-                },
-                {
-                  role: "model",
-                  parts: [{
-                    text: story.content
-                  }]
-                }
-              )
-            });
-        
             shouldSaveChat.current = true;
 
-              // const img = await createImageAI(storyTitle)
+            // const img = await createImageAI(storyTitle)
 
-              setStories([...stories, {
-                type: "story",
-                title: storyTitle,
-                content: "",
-                // image: img || {}
-              }]);
-          
-              
-              
-              let streamedAnswer = "";
-              await storyWriteAI( question, history, (chunk) => {
-                streamedAnswer += chunk;
-                setStories((prev) => {
-                  const updated = [...prev];
-                  updated[updated.length - 1].content += chunk;
-                  return updated;
-                });
+            setStories([{
+              type: "story",
+              title: storyTitle,
+              content: "",
+              // image: img || {}
+            }]);
+
+
+
+            let streamedAnswer = "";
+            await storyWriteAI(question, (chunk) => {
+              streamedAnswer += chunk;
+              setStories((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1].content += chunk;
+                return updated;
               });
-              
-              setAnswering(false);
+            });
+
+            setAnswering(false);
           })()
         }
       }
-      if(toolMode && toolName === "learn"){
-        if(question.trim() !== ""){
-          (async () =>{
+      if (toolMode && toolName === "learn") {
+        if (question.trim() !== "") {
+          (async () => {
             setAnswering(true);
-            const lessonName = lessons[0]?.que ? question : await genLessonName(question) 
+            const lessonName = lessons[0]?.que ? question : await genLessonName(question)
 
             setSearched(true)
             introRef.current.classList.add("hide")
             toolsRef.current.classList.add("hide")
-        headerRef.current.classList.add("hide")
+            headerRef.current.classList.add("hide")
             resultRef.current.classList.add("show")
             leftSidebarRef.current.classList.add("show")
             // homeWrapperRef.current.style.paddingTop = "0"
@@ -847,10 +976,10 @@ headerRef.current.classList.add("hide")
             homeContainerRef.current.classList.add('onsearch')
             setDrawerCollapsed(true)
             setOnSearch(true)
-  
+
             const history = []
-    
-            lessons.map((lesson, index)=> {
+
+            lessons.map((lesson, index) => {
               history.push(
                 {
                   role: "user",
@@ -866,18 +995,18 @@ headerRef.current.classList.add("hide")
                 }
               )
             });
-        
+
             shouldSaveChat.current = true;
-  
-  
+
+
             setLessons([...lessons, {
-              type:"lesson",
+              type: "lesson",
               que: lessonName,
               ans: ""
             }]);
-              
+
             let streamedAnswer = "";
-            await tutorAI( question, history, (chunk) => {
+            await tutorAI(question, history, (chunk) => {
               streamedAnswer += chunk;
               setLessons((prev) => {
                 const updated = [...prev];
@@ -885,22 +1014,22 @@ headerRef.current.classList.add("hide")
                 return updated;
               });
             });
-            
+
             setAnswering(false);
           })()
         }
       }
-      if(toolMode && toolName === "code"){
-        if(question !== "") {
-          navigate(`/createProject?prompt=${question}`)
+      if (toolMode && toolName === "code") {
+        if (question !== "") {
+          setAnswering(true)
         }
       }
-      if(toolMode && toolName === "summarise"){
-        if(question !== "") {
+      if (toolMode && toolName === "summarise") {
+        if (question !== "") {
           setShowSummarise(true);
-          (async()=>{
+          (async () => {
             try {
-              await summariseAI(question, (chunk)=>{
+              await summariseAI(question, (chunk) => {
                 setSummarisedText((prev) => {
                   const text = prev + chunk
                   return text
@@ -917,7 +1046,7 @@ headerRef.current.classList.add("hide")
 
   return (
     <>
-      <div ref={HomeRef} className={`home ${darkmode && "dark"}`} >
+      <div ref={HomeRef} className={`home ${darkmode && "dark"} ${useBlack && darkmode ? "black" : ""}`} >
         <div ref={homeWrapperRef} className={`home-wrapper`}>
           <LeftSideBar
             ref={leftSidebarRef}
@@ -936,52 +1065,63 @@ headerRef.current.classList.add("hide")
             showCanvasWindow={showCanvasWindow}
             showLessonsWindow={showLessonsWindow}
             setDrawerOpened={setDrawerOpened}
+            showLibraryWindow={showLibraryWindow}
+            setShowLoginDialog={setShowLoginDialog}
+            openedChatID={openedChatID}
+            setOpenedChatID={setOpenedChatID}
           />
-            <div ref={homeContainerRef} style={{
-              // padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
-            }} className={`homeContainer ${drawerOpened && "drawer"}`} >
-              <Header
-                ref={headerRef}
-                drawerCollapsed={drawerCollapsed}
-                setDrawerCollapsed={setDrawerCollapsed}
-                leftSidebarRef={leftSidebarRef}
-                isLoggedIn={isLoggedIn}
-                setShowRecents={setShowRecents}
-                setShowLoginDialog={setShowLoginDialog}
-                user={user}
-                setShowSettings={setShowSettings}
-                setLoginState={setLoginState}
-                setShowDialog={setShowDialog}
-                setShowCusAI={setShowCusAI}
-                setAnimState={setAnimState}
-                animState={animState}
-                searched={searched}
-                handleClearChat={handleClearChat}
-                setDrawerOpened={setDrawerOpened}
-                setShowToast={setShowToast}
-                setToastText={setToastText}
-                toastRef={toastRef}
-              />
-              <div ref={introRef} className="intro">
-                <h1 className={user && user !== null && "loggedin"}>
+          <div ref={homeContainerRef} style={{
+            // padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
+          }} className={`homeContainer ${drawerOpened && "drawer"}`} >
+            <Header
+              ref={headerRef}
+              drawerCollapsed={drawerCollapsed}
+              setDrawerCollapsed={setDrawerCollapsed}
+              leftSidebarRef={leftSidebarRef}
+              isLoggedIn={isLoggedIn}
+              setShowRecents={setShowRecents}
+              setShowLoginDialog={setShowLoginDialog}
+              user={user}
+              setShowSettings={setShowSettings}
+              setLoginState={setLoginState}
+              setShowDialog={setShowDialog}
+              setAnimState={setAnimState}
+              animState={animState}
+              searched={searched}
+              handleClearChat={handleClearChat}
+              setDrawerOpened={setDrawerOpened}
+              setShowToast={setShowToast}
+              setToastText={setToastText}
+              toastRef={toastRef}
+              homeContainerRef={homeContainerRef}
+              setShowSearchChats={setShowSearchChats}
+            />
+            <div ref={introRef} className="intro invisible">
+              <img className='sirianim' src={animation} alt="" />
+              <div className='introTxtContainer'>
+                <h1 className={` welcomeMsgTitle ${user && user !== null && "loggedin"}`} ref={welcomeMsgTitle}>
                   {
                     user && user !== null && user.displayName && user.displayName !== null ?
-                    "Welcome, " + user.displayName.split(" ")[0]
-                    :
-                    "Meet Que AI"
+                      "Welcome, " + user.displayName.split(" ")[0]
+                      :
+                      "Meet Que AI"
                   }
                 </h1>
-                {
-                  !user && user == null &&
-                    <p>
-                      Your personal AI, ready to help you think better and move faster.
-                    </p>
-                }
-                
-                  {/* <p style={{
+                <p className='welcomeMsgSubtitle' ref={welcomeMsgSubtitle}>
+                  {
+                    user && user !== null && user.displayName && user.displayName !== null ?
+                      "How can i help you today?"
+                      :
+                      "Your personal AI, ready to help you think better and move faster."
+                  }
+                </p>
+
+              </div>
+
+              {/* <p style={{
                     fontSize: "20px"
                   }}>How can i help you today?</p> */}
-                  {/* <div className="selectionButtonContainer">
+              {/* <div className="selectionButtonContainer">
                     <div className="selectionButton">
                       <span className='material-symbols-outlined'>animated_images</span>
                         <p>Create</p>
@@ -1003,146 +1143,152 @@ headerRef.current.classList.add("hide")
                       <p>Learn</p>
                     </div>
                   </div> */}
-              </div>
-              <Result 
-                ref={resultRef}
-                introRef={introRef}
-                toolsRef={toolsRef}
-                headerRef={headerRef}
-                resultTitle={resultTitle}
-                leftSidebarRef={leftSidebarRef}
-                rightSidebarRef={rightSidebarRef}
-                homeContainerRef={homeContainerRef}
-                searchBoxRef={searchBoxRef}
-                setSearched={setSearched}
-                messages={messages}
-                stories={stories}
-                lessons={lessons}
-                toolMode={toolMode}
-                toolName={toolName}
-                lastElement={lastElement}
-                chatID={chatID}
-                setChatID={setChatID}
-                setChats={setChats}
-                getRandomString={getRandomString}
-                chats={chats}
-                searchContainerRef={searchContainerRef}
-                setShowToast={setShowToast}
-                setToastText={setToastText}
-                toastRef={toastRef}
-                answering={answering}
-                user={user}
-                getChats={getChats}
-                shouldSaveChat={shouldSaveChat}
-                setMessages={setMessages}
-                relatedQues={relatedQues}
-                handleButtonClick={handleButtonClick}
-                handleClearChat={handleClearChat}
-                setShowSources={setShowSources}
-                setSources={setSources}
-                // generativeModel={generativeModel}
-                // setGenerativeModel={setGenerativeModel}
-              />
-
-              <Canvas 
-                ref={canvasRef}
-                handleClearChat={handleClearChat}
-                canvasImages={canvasImages}
-                setCanvasImages={setCanvasImages}
-                setShowGenImage={setShowGenImage}
-                downloadImage={downloadImage}
-              />
-
-              {
-                showGallery &&
-                <Gallery />
-              }
-              {
-                showStories &&
-                <Stories 
-                  stories={stories}
-                />
-              }
-              {
-                showLessons &&
-                <Lessons />
-              }
-
-              <SearchBox
-                ref={searchBoxRef}
-                inputRef={inputRef}
-                handleInputChange={onInputChanged}
-                handleButtonClick={handleButtonClick}
-                btnState={btnState}
-                answering={answering}
-                setOnSearch={setOnSearch}
-                searched={searched}
-                placeHolder= {customePlaceHolder !== "" ? customePlaceHolder : "Ask anything..."}
-                onKeyDown={handleButtonClick}
-                setBtnState={setBtnState}
-                onLangChanged={setSearchLang}
-                toolMode={toolMode}
-                toolName={toolName}
-                setToolMode={setToolMode}
-                searchContainerRef={searchContainerRef}
-                proEnabled={proEnabled}
-                setProEnabled={setProEnabled}
-                onSearch={onSearch}
-                fileInputRef={fileInputRef}
-                handleFileChange={handleFileChange}
-                uploadedImage={uploadedImage}
-                previewImage={previewImage}
-                generateImage={generateImage}
-                setCustomePlaceHolder={setCustomePlaceHolder}
-              />  
-              <SearchTools
-                ref={toolsRef}
-                setQuestion={setQuestion}
-                inputRef={inputRef}
-                setBtnState={setBtnState}
-                setToolMode={setToolMode}
-                setToolName={setToolName}
-                animState={animState}
-                showCanvasWindow={showCanvasWindow}      
-                setCustomePlaceHolder={setCustomePlaceHolder}          
-
-              />
-              <RightSideBar
-              ref={rightSidebarRef}
-              drawerCollapsed
-              setDrawerCollapsed
-              searched
-              onSearch
-              isLoggedIn
-              setShowSettings
-              Logo={Logo}
-              relatedQues={relatedQues}
-              setQuestion={setQuestion}
-              handleButtonClick={handleButtonClick}
-              question={question}
-              setRightSideBarCollapsed={setRightSideBarCollapsed}
-              rightSideBarCollapsed={rightSideBarCollapsed}
-            />
             </div>
+            <Result
+              ref={resultRef}
+              introRef={introRef}
+              toolsRef={toolsRef}
+              headerRef={headerRef}
+              resultTitle={resultTitle}
+              leftSidebarRef={leftSidebarRef}
+              // rightSidebarRef={rightSidebarRef}
+              drawerCollapsed={drawerCollapsed}
+              homeContainerRef={homeContainerRef}
+              searchBoxRef={searchBoxRef}
+              setSearched={setSearched}
+              messages={messages}
+              stories={stories}
+              lessons={lessons}
+              toolMode={toolMode}
+              toolName={toolName}
+              lastElement={lastElement}
+              chatID={chatID}
+              setChatID={setChatID}
+              setChats={setChats}
+              chatTitle={chatTitle}
+              setChatTitle={setChatTitle}
+              getRandomString={getRandomString}
+              chats={chats}
+              searchContainerRef={searchContainerRef}
+              setShowToast={setShowToast}
+              setToastText={setToastText}
+              toastRef={toastRef}
+              answering={answering}
+              user={user}
+              getChats={getChats}
+              shouldSaveChat={shouldSaveChat}
+              setMessages={setMessages}
+              relatedQues={relatedQues}
+              handleButtonClick={handleButtonClick}
+              handleClearChat={handleClearChat}
+              setShowSources={setShowSources}
+              setSources={setSources}
+              selectedModel={selectedModel}
+              setSelectedModel={setSelectedModel}
+              darkmode={darkmode}
+            // generativeModel={generativeModel}
+            // setGenerativeModel={setGenerativeModel}
+            />
 
-            
+            <Canvas
+              ref={canvasRef}
+              handleClearChat={handleClearChat}
+              canvasImages={canvasImages}
+              setCanvasImages={setCanvasImages}
+              setShowGenImage={setShowGenImage}
+              downloadImage={downloadImage}
+              drawerCollapsed={drawerCollapsed}
+            />
 
+            <Library
+              ref={libraryRef}
+              drawerCollapsed={drawerCollapsed}
+              handleClearChat={handleClearChat}
+            />
+
+            {/* {
+              window.innerWidth < 768 &&
+              <BottomNav />
+            } */}
+
+            {
+              showGallery &&
+              <Gallery />
+            }
+            {
+              showStories &&
+              <Stories
+                stories={stories}
+              />
+            }
+            {
+              showLessons &&
+              <Lessons />
+            }
+
+            <SearchBox
+              ref={searchBoxRef}
+              inputRef={inputRef}
+              handleInputChange={onInputChanged}
+              handleButtonClick={handleButtonClick}
+              btnState={btnState}
+              answering={answering}
+              setOnSearch={setOnSearch}
+              searched={searched}
+              placeHolder={customePlaceHolder !== "" ? customePlaceHolder : "Ask anything..."}
+              onKeyDown={handleButtonClick}
+              setBtnState={setBtnState}
+              onLangChanged={setSearchLang}
+              toolMode={toolMode}
+              toolName={toolName}
+              setToolMode={setToolMode}
+              searchContainerRef={searchContainerRef}
+              proEnabled={proEnabled}
+              setProEnabled={setProEnabled}
+              onSearch={onSearch}
+              fileInputRef={fileInputRef}
+              handleFileChange={handleFileChange}
+              uploadedImage={uploadedImage}
+              previewImage={previewImage}
+              generateImage={generateImage}
+              setCustomePlaceHolder={setCustomePlaceHolder}
+              selectedModel={selectedModel}
+              setSelectedModel={setSelectedModel}
+              setShowSuggestions={setShowSuggestions}
+              setSuggestionsList={setSuggestionsList}
+              toolsRef={toolsRef}
+            />
+            <SearchTools
+              ref={toolsRef}
+              setQuestion={setQuestion}
+              inputRef={inputRef}
+              setBtnState={setBtnState}
+              setToolMode={setToolMode}
+              setToolName={setToolName}
+              animState={animState}
+              showCanvasWindow={showCanvasWindow}
+              setCustomePlaceHolder={setCustomePlaceHolder}
+              setShowProjectCreation={setShowProjectCreation}
+              setShowSuggestions={setShowSuggestions}
+              setSuggestionsList={setSuggestionsList}
+            />
+            {
+              showSuggestions &&
+              <Suggestions
+                suggestions={suggestionsList}
+                toolName={toolName}
+              />
+            }
           </div>
-
-        <div className={`bg-wrapper`}>
-          <div className="box">
-            {/* <div className="neon1"></div> */}
-          </div>
-          {/* <div className="box2">
-            <div className="neon2"></div>
-          </div> */}
         </div>
         {
-          showSettings && 
+          showSettings &&
           <Settings
-            setShowSettings={setShowSettings} 
-            setDarkmode={setDarkmode} 
+            setShowSettings={setShowSettings}
+            setDarkmode={setDarkmode}
             darkmode={darkmode}
+            useBlack={useBlack}
+            setUseBlack={setUseBlack}
             Logo={Logo}
             user={user}
             isLoggedIn={isLoggedIn}
@@ -1159,12 +1305,12 @@ headerRef.current.classList.add("hide")
         }
         {
           showRecents &&
-          <Recents 
+          <Recents
             setShowRecents={setShowRecents}
             setShowDialog={setShowDialog}
             recentsChats={recentsChats}
             setChatMessages={setChatMessages}
-          /> 
+          />
         }
         {
           showGenImage.show &&
@@ -1174,60 +1320,71 @@ headerRef.current.classList.add("hide")
                 <h2>Generate image</h2>
                 <div className="btn-container">
                   {
-                    canvasImages[showGenImage.index].img && <div className="download-btn btn" onClick={()=> downloadImage(canvasImages[showGenImage.index])}>
-                    <span className="material-symbols-outlined">download</span>
-                  </div>
-                  } 
-                  <div className="close-btn btn" onClick={() =>{
+                    canvasImages[showGenImage.index].img && <div className="download-btn btn" onClick={() => downloadImage(canvasImages[showGenImage.index])}>
+                      <span className="material-symbols-outlined">download</span>
+                    </div>
+                  }
+                  <div className="close-btn btn" onClick={() => {
                     genImageWrapper.current.classList.add("hide")
-                    setTimeout(()=>{
+                    setTimeout(() => {
                       setShowGenImage({
                         show: false,
                         index: 0
                       })
                     }, 200)
-                    }} >
-                      <span className="material-symbols-outlined">close</span>
+                  }} >
+                    <span className="material-symbols-outlined">close</span>
                   </div>
                 </div>
               </div>
               <div className="genImageBody">
-                  <img
-                    src={`data:${canvasImages[showGenImage.index].img.mimeType};base64,${canvasImages[showGenImage.index].img.base64Data}`}
-                    alt="Generated"
-                  />
+                <img
+                  src={`data:${canvasImages[showGenImage.index].img.mimeType};base64,${canvasImages[showGenImage.index].img.base64Data}`}
+                  alt="Generated"
+                />
               </div>
             </div>
           </div>
         }
 
         {
-          showLoginDialog && 
+          showSearchChats &&
+          <SearchChats
+            recentsChats={recentsChats}
+            setShowSearchChats={setShowSearchChats}
+            setOpenedChatID={setOpenedChatID}
+            shouldSaveChat={shouldSaveChat}
+            setChatMessages={setChatMessages}
+          />
+        }
+
+        {
+          showLoginDialog &&
           <div className="loginContainer" >
             <div className="loginWrapper" ref={loginWrapper}>
               <div className="loginHeader">
                 <h2> </h2>
-                <div className="btn-container">                  
-                  <div className="close-btn btn" onClick={() =>{
+                <div className="btn-container">
+                  <div className="close-btn btn" onClick={() => {
                     loginWrapper.current.classList.add("hide")
-                    setTimeout(()=>{
+                    setTimeout(() => {
                       setShowLoginDialog(false)
                     }, 300)
-                    }} >
-                      <span className="material-symbols-outlined">close</span>
+                  }} >
+                    <span className="material-symbols-outlined">close</span>
                   </div>
                 </div>
               </div>
               <div className="loginBody">
                 <h1 style={{
-                  textAlign: "center", 
-                  fontSize: "2.4em", 
+                  textAlign: "center",
+                  fontSize: "2.4em",
                   fontFamily: "GeneralSans-SemiBold",
                   fontWeight: "100"
                 }}>Sign in into Que AI</h1>
                 <p style={{
-                  textAlign: "center", 
-                  marginTop: "15px", 
+                  textAlign: "center",
+                  marginTop: "15px",
                   fontSize: "18px",
                   fontFamily: "GeneralSans-Medium",
                   opacity: "0.8"
@@ -1235,36 +1392,36 @@ headerRef.current.classList.add("hide")
 
                 <div className="loginBox" style={{
                   height: "200px",
-                  display: "flex", 
+                  display: "flex",
                   justifyContent: "center",
                   alignItems: "center"
                 }}>
-                  <div className="googleLoginBox" onClick={async (e) =>{
+                  <div className="googleLoginBox" onClick={async (e) => {
                     e.target.style.opacity = "0.7"
-                        setTimeout(() => {
-                            e.target.style.opacity = "1"
-                        }, 200);
+                    setTimeout(() => {
+                      e.target.style.opacity = "1"
+                    }, 200);
                     const provider = new GoogleAuthProvider()
 
-                    try{
+                    try {
                       const result = await signInWithPopup(auth, provider)
                       const user = result.user;
                       try {
                         const docRef = doc(db, "users", user.uid)
                         const docSnap = await getDoc(docRef)
-                        if(docSnap.exists){
+                        if (docSnap.exists) {
                           console.log("Doc data: ", docSnap.data())
                         }
                       } catch (err) {
                         console.log(err)
-                      } 
+                      }
                       setLoginState(true)
-                    } catch (err){
+                    } catch (err) {
                       console.log("error signin:", err)
                     }
                   }}>
                     <img src={GLogo} alt="" style={{
-                      width: "20px", 
+                      width: "20px",
                       height: "20px"
                     }} />
                     <p>Continue with Google</p>
@@ -1276,19 +1433,47 @@ headerRef.current.classList.add("hide")
         }
 
         {
-          showSummarise && 
+          showProjectCreation &&
+          <div className="projectCreateContainer" >
+            <div className="projectCreateWrapper" ref={projectCreateWrapper}>
+              <div className="projectCreateHeader">
+                <h2> </h2>
+                <div className="btn-container">
+                  <div className="close-btn btn" onClick={() => {
+                    projectCreateWrapper.current.classList.add("hide")
+                    setTimeout(() => {
+                      setShowProjectCreation(false)
+                    }, 300)
+                  }} >
+                    <span className="material-symbols-outlined">close</span>
+                  </div>
+                </div>
+              </div>
+              <div className="projectCreateBody">
+                <div>
+
+                </div>
+                <h2><span className="material-symbols-outlined">code</span> Create a new Project</h2>
+                <p>Tell me what do you want to create today</p>
+              </div>
+            </div>
+          </div>
+        }
+
+        {
+          showSummarise &&
           <div className="summariseContainer">
             <div className="summariseWrapper" ref={summariseWrapper}>
               <div className="summariseHeader">
                 <h2>Summarise text</h2>
-                <div className="close-btn btn" onClick={() =>{
+                <div className="close-btn btn" onClick={() => {
                   summariseWrapper.current.classList.add("hide")
-                  setTimeout(()=>{
+                  setTimeout(() => {
                     setShowSummarise(false)
                     setSummarisedText("")
                   }, 200)
-                  }} >
-                    <span className="material-symbols-outlined">close</span>
+                }} >
+                  <span className="material-symbols-outlined">close</span>
                 </div>
               </div>
               <div className="summariseBody">
@@ -1299,9 +1484,9 @@ headerRef.current.classList.add("hide")
                         {summarisedText}
                       </ReactMarkdown>
                     </div>
-                   
+
                   ) : (
-                   <>
+                    <>
                       <div className='loadingBars'>
                         <div className='loadingBar' />
                         <div className='loadingBar' />
@@ -1310,11 +1495,13 @@ headerRef.current.classList.add("hide")
                     </>
                   )
                 }
-                
+
               </div>
             </div>
           </div>
         }
+
+
 
         {
           showSources &&
@@ -1322,38 +1509,56 @@ headerRef.current.classList.add("hide")
             <div className="sourcesWrapper" ref={sourcesWrapper}>
               <div className="sourcesHeader">
                 <h3>Sources</h3>
-                <div className="close-btn btn" onClick={() =>{
+                <div className="close-btn btn" onClick={() => {
                   sourcesWrapper.current.classList.add("hide")
-                  setTimeout(()=>{
+                  setTimeout(() => {
                     setShowSources(false)
                   }, 200)
-                  }} >
-                    <span className="material-symbols-outlined">close</span>
+                }} >
+                  <span className="material-symbols-outlined">close</span>
                 </div>
               </div>
               <div className="sourcesBody">
                 <div className="sourcesList">
-                  {sources.map((source, index)=>
-                  <a href={source.url}>
-                    <div className="source" onClick={(e)=>{
-                      e.preventDefault()
-                      window.open(source.url) 
-                    }}>
-                      <img src={source.favicon} alt="" />
-                      <p>{source.title}</p>
-                    </div>
-                  </a>
-                    )}
+                  {/* {sources.map((source, index) =>
+                    <a href={source.url}>
+                      <div className="source" onClick={(e) => {
+                        e.preventDefault()
+                        window.open(source.url)
+                      }}>
+                        <img src={source.favicon} alt="" />
+                        <p>{source.title}</p>
+                      </div>
+                    </a>
+                  )} */}
+
+                  {
+                    sources.map((source, index) => (
+                      <a href={source.url} onClick={(e) => {
+                        e.preventDefault()
+                        window.open(source.url)
+                      }}>
+                        <div className="source">
+                          <div className="siteInfo">
+                            <img src={source.favicon} alt="" />
+                            <p>{source.site}</p>
+                          </div>
+                          <p className='site-title'>{source.title}</p>
+                          <p className='site-body'>{source.snippet}</p>
+                        </div>
+
+                      </a>
+                    ))
+                  }
                 </div>
               </div>
             </div>
           </div>
         }
 
-        { showToast &&
+        {showToast &&
           <Toast ref={toastRef} text={toastText} />
         }
-
       </div>
     </>
   )

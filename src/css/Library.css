@@ -1,0 +1,208 @@
+.library {
+    height: 100%;
+    width: 100%;
+}
+
+.library-body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+
+
+.library-title {
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+
+.library-title .searchBar {
+    width: 300px;
+}
+
+.library h1 {
+    font-size: 35px;
+    font-weight: 500;
+}
+
+.stories-container,
+.lessons-container,
+.saved-container {
+    width: 100%;
+}
+
+.stories-head,
+.lessons-head,
+.saved-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.stories-head p,
+.lessons-head p,
+.saved-head p {
+    font-size: 20px;
+    font-weight: 500;
+    color: rgb(157, 157, 189);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+.next-btn {
+    height: 35px;
+    width: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.home.dark .next-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.next-btn:hover {
+    background-color: var(--main-color) !important;
+}
+
+.next-btn span {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--main-color);
+    filter: grayscale(1);
+    margin: 0 0 0px 2px;
+}
+
+
+
+.stories-list,
+.lessons-list,
+.saved-list {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+    overflow-x: scroll;
+    margin-bottom: 20px;
+}
+
+.library-list-item {
+    /* height: 150px; */
+    min-width: 250px !important;
+    max-width: 250px !important;
+    background-color: var(--secondary-bg);
+    border-radius: 15px;
+    padding: 15px 20px;
+}
+
+.library-list-item p {
+    font-size: 18px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
+
+    color: rgb(225, 225, 225);
+}
+
+
+.library-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.library-item-footer .left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.library-item-footer .left p {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgb(157, 157, 189);
+}
+
+.library-item-footer .right {
+    display: flex;
+    align-items: center;
+}
+
+.library-item-footer .library-item-footer-btn {
+    height: 35px;
+    width: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.home.dark .library-item-footer .library-item-footer-btn {}
+
+.library-item-footer .library-item-footer-btn:hover {
+    background-color: rgba(255, 255, 255, 0.064) !important;
+}
+
+.library-item-footer .library-item-footer-btn span {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--main-color);
+    filter: grayscale(1);
+}
+
+
+
+
+@media (max-width: 768px) {
+    .library-body {
+        padding: 20px 20px 0px 20px !important;
+    }
+
+    .library-title .searchBar {
+        display: none;
+    }
+
+    .library-title {
+        margin-bottom: 20px !important;
+    }
+
+    /* 
+    .stories-list,
+    .lessons-list,
+    .saved-list {
+        margin-bottom: 10px !important;
+        flex-direction: column;
+        padding: 0 !important;
+    }
+
+    .library-list-item {
+        min-width: 100% !important;
+        max-width: 100% !important;
+    } */
+
+    .library-list-item p {
+        font-size: 17px;
+        -webkit-line-clamp: 2;
+
+    }
+
+
+
+}

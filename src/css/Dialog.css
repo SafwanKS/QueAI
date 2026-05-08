@@ -1,4 +1,4 @@
-.overlay{
+.overlay {
   z-index: 1000;
   height: 100vh;
   width: 100%;
@@ -8,12 +8,13 @@
   position: fixed;
   top: 0;
   left: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
 }
 
-.dialog{
+.dialog {
   max-height: calc(100% - 100px);
-  background: rgb(255, 236, 211);
+  background: rgb(255, 255, 255);
   border-radius: 2.6rem;
   width: 340px;
   padding: 20px 25px 15px;
@@ -27,24 +28,25 @@
   transition: 0.2s ease-in-out;
 }
 
-.home.dark .dialog{
-  background: rgb(39, 35, 29);
+.home.dark .dialog {
+  background-color: #01050daa;
 }
 
-.dialog.show{
+.dialog.show {
   opacity: 1;
   scale: 1;
   transition: 0.2s ease-in-out;
 }
 
-.dialog.selection{
+.dialog.selection {
   padding: 20px 10px 15px;
 }
 
-.dialog span{
+.dialog span {
   text-align: center;
 }
-.dMessage{
+
+.dMessage {
   max-height: 400px;
   overflow-y: scroll;
   line-height: 24px;
@@ -54,12 +56,12 @@
   font-size: 18px;
 }
 
-.dialog.selection .dTitle{
+.dialog.selection .dTitle {
   text-align: center;
   font-size: 22px;
 }
 
-.dButton-container{
+.dButton-container {
   height: 40px;
   min-width: 100%;
   display: flex;
@@ -67,11 +69,13 @@
   align-items: center;
   gap: 10px;
 }
-.dialog.selection .dButton-container{
+
+.dialog.selection .dButton-container {
   padding: 0 15px;
 }
-.dButton{
-   padding: 10px 20px;
+
+.dButton {
+  padding: 10px 20px;
   border-radius: 20px;
   border: 0;
   outline: 0;
@@ -82,33 +86,34 @@
   cursor: pointer;
 }
 
-.dButton#cancelBtn:hover{
-  background: rgba(0,0,0,0.1);
+.dButton#cancelBtn:hover {
+  background: rgba(0, 0, 0, 0.1);
 }
 
-.dButton#confirmBtn:hover{
+.dButton#confirmBtn:hover {
   filter: brightness(1.2);
 }
 
-.dButton#confirmBtn{
-  background: #e49f1f;
-  color: beige;
-}
-.home.dark .dButton#confirmBtn{
-  background: #574119;
+.dButton#confirmBtn {
+  background: #15177f;
   color: beige;
 }
 
-.home.dark .dButton#cancelBtn{
+.home.dark .dButton#confirmBtn {
+  background: #1a2275;
   color: beige;
 }
 
-.langmap{
+.home.dark .dButton#cancelBtn {
+  color: beige;
+}
+
+.langmap {
   max-height: 300px;
   overflow-y: auto;
 }
 
-.langmap li{
+.langmap li {
   list-style: none;
   display: flex;
   justify-content: space-between;
@@ -118,14 +123,15 @@
   padding: 0 15px;
 }
 
-.langmap li:hover{
-  background: rgba(0,0,0,0.1);
+.langmap li:hover {
+  background: rgba(0, 0, 0, 0.1);
 }
 
-.typeSelector-container{
+.typeSelector-container {
   overflow-y: scroll;
 }
-.typeSelector{
+
+.typeSelector {
   width: 100%;
   display: flex;
   padding: 25px 10px;
@@ -133,11 +139,11 @@
   border-radius: 20px;
 }
 
-.typeSelector:hover{
-  background: rgba(0,0,0,0.3);
+.typeSelector:hover {
+  background: rgba(0, 0, 0, 0.3);
 }
 
-.typeSelector-body{
+.typeSelector-body {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -145,13 +151,13 @@
   gap: 10px;
 }
 
-.typeSelector-body .typeSelector-title-container{
+.typeSelector-body .typeSelector-title-container {
   display: flex;
   gap: 10px;
   align-items: center;
 }
 
-.typeSelector-body .typeSelector-title-container p{
+.typeSelector-body .typeSelector-title-container p {
   font-size: 20px;
   font-weight: 800;
 }

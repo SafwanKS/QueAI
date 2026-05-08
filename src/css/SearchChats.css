@@ -1,0 +1,118 @@
+.searchChatsContainer {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(10px);
+}
+
+.searchChats {
+    width: 700px;
+    max-width: 100%;
+    height: 400px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: shows 0.2s ease;
+    margin: 0 10px;
+    overflow: scroll;
+}
+
+.home.dark .searchChats {
+    background-color: #090d16;
+}
+
+.searchChatsHeader {
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e5e5e5;
+    gap: 10px;
+}
+
+.home.dark .searchChatsHeader {
+    border-bottom: 1px solid #1e1e1e;
+}
+
+.searchChatsHeader span {
+    font-size: 18px;
+    color: #797979;
+}
+
+.searchChatsHeader .close {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.searchChatsHeader .close:hover {
+    background-color: rgba(0, 0, 0, 0.161);
+}
+
+.home.dark .searchChatsHeader .close:hover {
+    background-color: rgba(255, 255, 255, 0.055);
+}
+
+.searchChatsHeader input {
+    /* width: 100%; */
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: rgb(42, 42, 42);
+    background-color: transparent;
+    max-width: fit-content;
+}
+
+.home.dark .searchChatsHeader input {
+    color: rgb(255, 255, 255);
+}
+
+
+
+.searchChatsList {
+    padding: 10px 5px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+.searchChatsList .searchChatsListItem {
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.searchChatsListItem:hover {
+    background-color: rgb(243, 243, 243);
+}
+
+.home.dark .searchChatsListItem:hover {
+    background-color: rgba(255, 255, 255, 0.069);
+}
+
+.searchChatsListItem span {
+    font-size: 18px;
+}
+
+.searchChatsListItem p {
+    font-size: 15px;
+}
+
+
+.home.dark .searchChatsList div {}

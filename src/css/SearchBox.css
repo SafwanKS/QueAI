@@ -1,4 +1,4 @@
-.searchBoxContainer{
+.searchBoxContainer {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -9,24 +9,28 @@
   pointer-events: none;
 }
 
+.searchBoxContainer.hide {
+  display: none;
+}
 
-@media (max-width: 768px){
-  .searchBoxContainer{
+
+@media (max-width: 768px) {
+  .searchBoxContainer {
     position: fixed;
-    bottom: 20px;
+    bottom: 30px !important;
     left: 0;
     width: 100%;
     justify-content: center;
   }
 }
 
-.searchBox{
+.searchBox {
   width: 90%;
   min-height: 110px;
   /* height: 110px; */
   max-height: ;
-  max-width: 600px;
-  display: flex;  
+  max-width: 670px;
+  display: flex;
   flex-direction: column;
   gap: 20px;
   align-items: center;
@@ -35,7 +39,7 @@
   position: relative;
   margin: 0 10px;
   transition: min-height 0.3s ease, flex-direction 0.3s ease;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.435);
   pointer-events: auto;
   /* background-color: rgb(255, 247, 222) ; */
 
@@ -45,31 +49,83 @@
   /* box-shadow: 0 0 10px 0px rgb(247, 208, 157); */
   border: 1px solid rgb(226, 226, 226);
   box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.082);
-  background-color: rgba(255, 255, 255, 0.699);
-  backdrop-filter: blur(10px);
-  
+  background-color: rgb(255, 255, 255);
+  /* backdrop-filter: blur(10px); */
 }
 
 
-.home.dark .searchBox{
-  background-color: #292929a2;
-  box-shadow: 0 0 5px 0px rgb(104, 87, 65);
-  border: 1px solid rgb(78, 78, 78);
+.home.dark .searchBox {
+  background-color: var(--secondary-bg);
+  background-color: #0c1019fc;
+  background-color: #121722fc;
+  /* box-shadow: 0 0 5px 0px rgb(104, 8s7, 65); */
+  border: 1px solid rgb(33, 34, 60);
   box-shadow: none;
-  backdrop-filter: blue(10px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.517);
+
+  /* backdrop-filter: blur(10px); */
 }
 
 
 
-.searchBox.onsearch{
+.searchBox::after,
+.searchBox::before {
+  --angle: 0deg;
+  content: "";
+  position: absolute;
+  height: calc(100% + 5px);
+  width: calc(100% + 5px);
+  background-image: conic-gradient(from var(--angle), red, blue, green, red);
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: -1;
+  border-radius: 32px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  animation: 4s spin linear infinite;
+
+}
+
+.searchBox.toolmode::before,
+.searchBox.toolmode::after {
+  border-radius: 50px;
+}
+
+
+.searchBox::after {
+  filter: blur(0.5rem);
+}
+
+
+
+.searchBox.anim::after,
+.searchBox.anim::before {
+  opacity: 1;
+}
+
+.searchBox.anim {
+  box-shadow: none !important;
+}
+
+.searchBox.anim::after {
+  opacity: 0.7;
+}
+
+.home.dark .searchBox.anim::after {
+  opacity: 1;
+}
+
+.searchBox.onsearch {
   max-width: 650px;
 }
-.searchBox.toolmode{
+
+.searchBox.toolmode {
   height: unset;
 }
 
 
-.searchBoxContainer.onsearch{
+.searchBoxContainer.onsearch {
   position: absolute;
   bottom: 20px;
   left: 0;
@@ -77,8 +133,8 @@
   justify-content: center;
 }
 
-.searchBoxContainer.onsearch::after{
-  content: "QueAI can make mistakes, so double check it.";
+.searchBoxContainer.onsearch::after {
+  /* content: "QueAI can make mistakes, so double check it."; */
   position: absolute;
   font-size: 10px;
   bottom: -20px;
@@ -86,20 +142,21 @@
 }
 
 @media (max-width: 768px) {
-  
-  .searchBoxContainer.onsearch{
-    
+
+  .searchBoxContainer.onsearch {
+
     position: absolute;
     bottom: 25px;
   }
 }
 
-.searchBox.active{
+.searchBox.active {
   background-color: red;
   z-index: 10;
 }
 
-.searchBox.active::after, .searchBox.active::before{
+.searchBox.active::after,
+.searchBox.active::before {
   content: "";
   position: absolute;
   height: 105%;
@@ -113,14 +170,22 @@
   animation: spinBox 3s linear infinite;
 }
 
-@media (max-width: 768px){
+
+@media (max-width: 768px) {
   /* .searchBox.active::after, .searchBox.active::before{
     height: 106%;
     width: 102%;
     background-image: conic-gradient(from var(--angle), transparent 50%, rgb(40, 40, 255));
     animation: spinBox 3s linear infinite ;
   } */
+
+  .searchBox.anim::after,
+  .searchBox.anim::before {
+    height: 104%;
+    width: 101%;
+  }
 }
+
 /* 
 .searchBox.active.red{
   background-color: #2f1a1a;
@@ -156,50 +221,180 @@
 
 .searchBox.yellow.active::after, .searchBox.yellow.active::before{
   background-image: conic-gradient(from var(--angle), transparent 50%,  rgb(255, 153, 0));
-} */ */
-
-.searchBox.active::after{
+} */
+.searchBox.active::after {
   filter: blur(10px);
   opacity: 1;
 }
 
-.searchBox .chipContainer{
+.searchBox .chipContainer {
   flex: 1;
   animation: fadein 0.2s ease;
   height: 40px;
-  
+
 }
 
 @keyframes fadein {
-  from{
+  from {
     opacity: 0;
   }
-  to{
+
+  to {
     opacity: 1;
   }
 }
 
-.searchBox.active .chipContainer{
+
+.model-selector {
+  /* padding: 15px; */
+  background-color: white;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  /* gap: 10px; */
+  width: 300px;
+  position: absolute;
+  bottom: 100%;
+  border-radius: 15px;
+  pointer-events: auto;
+  margin-bottom: 5px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.137);
+}
+
+.home.dark .model-selector {
+  background-color: #0c1019fc;
+}
+
+.model-selector .model-selector-head {
+  width: 100%;
+}
+
+.model-selector-head {
+  padding: 10px 20px 5px 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.model-selector-head p {
+  font-size: 14px;
+  font-weight: 500;
+  color: #a8a9ab;
+}
+
+.model-selector-head span {
+  font-size: 16px;
+}
+
+.model-selector-list {
+  display: flex;
+  flex-direction: column;
+  /* gap: 5px; */
+  padding: 0 10px 0 10px;
+}
+
+
+
+.model-selector-list .model-selector-list-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* gap: 10px; */
+  /* align-items: center; */
+  padding: 5px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  /* background-color: #f5f5f5; */
+}
+
+.model-selector-list-item:hover {
+  background-color: #f5f5f514;
+}
+
+.model-selector-list-item.switch-container {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.model-selector-list-item p:first-child {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: rgb(216, 216, 216);
+  display: flex;
+  gap: 5px;
+}
+
+.model-selector-list-item span {
+  font-size: 16px;
+}
+
+.model-selector-list-item p:last-child {
+  color: #818181;
+  font-size: 12px;
+}
+
+.model-selector-list-item .switch {
+  background-color: transparent;
+  box-shadow: none !important;
+}
+
+.model-selector-footer {
+  padding: 5px 10px 10px 10px;
+}
+
+.more-models {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.more-models:hover {
+  background-color: #f5f5f514;
+}
+
+.home.dark .more-models {
+  /* background-color: #ffffff10; */
+}
+
+.model-selector-footer p,
+.model-selector-footer span {
+  color: #86888a;
+  font-size: 13px;
+}
+
+.home.dark .model-selector-footer {
+  /* background-color: #ffffff0b; */
+}
+
+
+
+
+.searchBox.active .chipContainer {
   display: none;
 }
 
 
-.searchBoxInputContainer{
+.searchBoxInputContainer {
   padding-top: 10px;
   width: 100%;
   display: flex;
   align-items: center;
 }
 
-.searchBox.toolmode .searchBoxInputContainer{
+.searchBox.toolmode .searchBoxInputContainer {
   padding-top: 0 !important;
 }
 
-.searchBox.toolmode .chipContainer{
+.searchBox.toolmode .chipContainer {
   display: none;
 }
 
-.searchBoxInputContainer .searchTool{
+.searchBoxInputContainer .searchTool {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -209,40 +404,41 @@
   position: relative;
 }
 
-.home.dark .searchBoxInputContainer .searchTool{
-  background-color: #3d3d3d;
+.home.dark .searchBoxInputContainer .searchTool {
+  background-color: #ffffff10;
 }
 
-.searchBoxInputContainer .searchTool span{
+.searchBoxInputContainer .searchTool span {
   font-size: 1em;
 }
 
-.searchBoxInputContainer .searchTool span.draw{
+.searchBoxInputContainer .searchTool span.draw {
   color: rgb(247, 53, 53);
 }
 
-.searchBoxInputContainer .searchTool span.code{
+.searchBoxInputContainer .searchTool span.code {
   color: rgb(45, 250, 62);
 }
 
-.searchBoxInputContainer .searchTool span.summarise{
+.searchBoxInputContainer .searchTool span.summarise {
   color: rgb(53, 98, 247);
 }
 
-.searchBoxInputContainer .searchTool span.story{
+.searchBoxInputContainer .searchTool span.story {
   color: rgb(121, 53, 247);
 }
 
-.searchBoxInputContainer .searchTool span.learn{
+.searchBoxInputContainer .searchTool span.learn {
   color: rgb(247, 170, 53);
 }
 
 
-.searchBoxInputContainer .searchTool p{
+.searchBoxInputContainer .searchTool p {
   text-transform: capitalize;
 }
 
-.searchBoxInputContainer .searchTool .close-btn, .filesContainer .close-btn{
+.searchBoxInputContainer .searchTool .close-btn,
+.filesContainer .close-btn {
   height: 20px;
   width: 20px;
   position: absolute;
@@ -253,16 +449,18 @@
 }
 
 
-.searchBoxInputContainer .searchTool .close-btn span, .filesContainer .close-btn span{
+.searchBoxInputContainer .searchTool .close-btn span,
+.filesContainer .close-btn span {
   color: black;
   font-weight: 800;
   font-size: 14px;
 }
 
-.searchBoxButtonContainer{
-  width:100%;
+.searchBoxButtonContainer {
+  width: 100%;
   display: flex;
 }
+
 /* @media (min-width: 768px){
   .searchBox{
     margin-top: 20px;
@@ -273,7 +471,7 @@
   margin-top: 25px;
 } */
 
-.searchBox .searchBoxInputContainer textarea{
+.searchBox .searchBoxInputContainer textarea {
   width: 100%;
   outline: none;
   border: none;
@@ -288,23 +486,25 @@
   display: flex;
   align-items: center;
   cursor: text;
+  caret-color: rgb(103, 103, 192);
   /* color: #201a19; */
   /* color: #413418; */
 }
 
-.home.dark .searchBox .searchBoxInputContainer textarea{
+.home.dark .searchBox .searchBoxInputContainer textarea {
   color: #fffcf6;
 }
 
-.blank{
+.blank {
   flex: 1;
 }
 
-.searchBox .smallBtn{
-  background: rgba(40,57,70,1);
+.searchBox .smallBtn {
+  background: rgba(40, 57, 70, 1);
 }
 
-.searchBox.active, .searchBox.toolmode{
+.searchBox.active,
+.searchBox.toolmode {
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -317,14 +517,15 @@
 
 
   transition: height 0.3s ease;
-  
+
 }
 
-.searchBox.toolmode{
+.searchBox.toolmode {
   max-height: 200px;
 }
 
-.searchBox.active .searchBoxInputContainer, .searchBox.toolmode .searchBoxInputContainer{
+.searchBox.active .searchBoxInputContainer,
+.searchBox.toolmode .searchBoxInputContainer {
   flex: 1;
   align-items: center;
   padding-top: 0;
@@ -332,35 +533,37 @@
 
 
 
-.searchBox.active .searchBoxButtonContainer, .searchBox.toolmode .searchBoxButtonContainer{
+.searchBox.active .searchBoxButtonContainer,
+.searchBox.toolmode .searchBoxButtonContainer {
   width: auto;
 }
 
 
-.searchBox .sendBtn{
+.searchBox .sendBtn {
   position: absolute;
   bottom: 10px;
   right: 10px;
 
-  background-color: rgba(255, 255, 255, 0.05) ;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-.searchBox.active .sendBtn, .searchBox.toolmode .sendBtn{
+.searchBox.active .sendBtn,
+.searchBox.toolmode .sendBtn {
   bottom: 15px;
 }
 
-.searchBox.toolmode .add-btn{
+.searchBox.toolmode .add-btn {
   /* display: none; */
 }
 
 
-.searchBox.onsearch .chip{
-  background:  #272e45;;
+.searchBox.onsearch .chip {
+  background: #272e45;
 }
 
-.add-btn{
+.add-btn {
   height: 100%;
-  min-height: 40px; 
+  min-height: 40px;
   aspect-ratio: 1/1;
   display: inline-flex;
   justify-content: center;
@@ -371,7 +574,7 @@
   position: relative;
 }
 
-.add-btn span{
+.add-btn span {
   font-size: 20px;
   transition: all 0.3s;
   color: #3d3d3d;
@@ -380,27 +583,29 @@
 
 }
 
-.add-btn.active span{
+.add-btn.active span {
   transform: rotate(45deg);
   scale: 1.1;
 }
 
 
-.add-btn:hover{
+.add-btn:hover {
   background-color: rgb(245, 245, 245);
 }
-.home.dark .add-btn span{
+
+.home.dark .add-btn span {
   color: white;
 }
-.home.dark .add-btn:hover{
+
+.home.dark .add-btn:hover {
   background-color: #ffffff15;
 }
 
-.home.dark .add-btn.active{
+.home.dark .add-btn.active {
   background-color: rgb(65, 61, 55);
 }
 
-.add-btn.active{
+.add-btn.active {
   background-color: rgb(228, 228, 228);
 }
 
@@ -417,23 +622,27 @@
   background-color: white;
   border: 1px solid rgb(240, 240, 240);
   position: absolute;
-  bottom: 100%; /* stick it above the button */
+  bottom: 100%;
+  /* stick it above the button */
   left: 0;
   z-index: 1000;
   border-radius: 15px;
   pointer-events: auto;
-  margin-bottom: 5px; /* small gap */
+  margin-bottom: 5px;
+  /* small gap */
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.137);
   padding: 5px;
   display: flex;
   flex-direction: column;
 }
-.home.dark .searchAddOnes{
-  background-color: #2b2b2b;
+
+.home.dark .searchAddOnes {
+  background-color: var(--secondary-bg);
   box-shadow: 0px 0px 5px 1px rgba(255, 255, 255, 0.055);
   border: 1px solid rgba(255, 255, 255, 0.11);
 }
-.searchAddOne{
+
+.searchAddOne {
   width: 100%;
   display: flex;
   align-items: center;
@@ -442,25 +651,29 @@
   cursor: pointer;
   border-radius: 10px;
 }
-.searchAddOne:hover{
+
+.searchAddOne:hover {
   background-color: rgb(247, 247, 247);
 }
-.home.dark .searchAddOne:hover{
+
+.home.dark .searchAddOne:hover {
   background-color: rgba(255, 255, 255, 0.089);
 }
-.searchAddOne span{
+
+.searchAddOne span {
   font-size: 20px;
 }
-.searchAddOne p{
+
+.searchAddOne p {
   font-size: 14px;
 }
 
-.searchAddOnes .line{
+.searchAddOnes .line {
   margin: 5px 0;
 }
 
 
-.filesContainer{
+.filesContainer {
   height: 55px;
   aspect-ratio: 1/1;
   max-width: 600px;
@@ -473,7 +686,7 @@
 }
 
 
-.filesContainer img{
+.filesContainer img {
   height: 100%;
   width: 100%;
   border-radius: 20px;

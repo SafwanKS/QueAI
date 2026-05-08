@@ -10,7 +10,9 @@ import {
 } from 'react'
 import Home from './activities/Home.jsx'
 import CodeEditor from './activities/Editor.jsx'
+import Search from './activities/Search.jsx'
 import './css/material-symbols-outlined.css'
+
 function App() {
 
   const [collapsed, setCollapsed] = useState(false)
@@ -29,7 +31,7 @@ function App() {
     <main>
       <Routes>
         <Route path='/' element={<Home />} isActive={location.pathname === '/' ? true : false} />
-        {/* <Route path='/chat/:chatId?' element={<Search />} /> */}
+        <Route path='/chat/:chatID' element={<Home />} />
         <Route path='/createProject' element={<CodeEditor />} />
       </Routes>
     </main>

@@ -1,4 +1,4 @@
-.header{
+.header {
   width: 100%;
   position: absolute;
   top: 0;
@@ -8,16 +8,18 @@
   align-items: center;
   /* background: rgba(16, 18, 24, 1) */
   z-index: 1;
+
+  transition: opacity 0.5s ease-in-out;
 }
 
-.header h1{
+.header h1 {
   font-family: GeneralSans-Medium;
   font-family: "Poppins";
 
 }
 
-@media (min-width : 768px){
-  header{
+@media (min-width : 768px) {
+  header {
     position: fixed;
     top: 0;
     left: 80px;
@@ -26,30 +28,33 @@
   }
 }
 
-.headcol{
+.headcol {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.headcol p{
+
+.headcol p {
   font-weight: 800;
   font-size: 18px;
 }
-.headcol:nth-child(2){
+
+.headcol:nth-child(2) {
   text-align: center;
   justify-content: center;
 }
+
 .headcol:nth-child(3) {
   justify-content: end;
 }
 
-#headLogo{
+#headLogo {
   width: 40px;
   height: 40px;
 }
 
-.login-btn{
+.login-btn {
   padding: 5px 10px;
   border-radius: 10px;
   display: flex;
@@ -60,23 +65,24 @@
   cursor: pointer;
 }
 
-.login-btn:hover{
+.login-btn:hover {
   /* background-color: rgb(206, 218, 255); */
   opacity: 0.7;
 }
-.home.dark .login-btn{
-  background-color: rgb(36, 32, 29);
+
+.home.dark .login-btn {
+  background-color: #1e2431;
 }
 
-.home.dark .login-btn:hover{
+.home.dark .login-btn:hover {
   background-color: rgb(53, 47, 42);
 }
 
-.login-btn p{
+.login-btn p {
   font-weight: 500;
 }
 
-.login-btn img{
+.login-btn img {
   width: 25px;
   height: 25px;
   border-radius: 50%;
@@ -84,51 +90,51 @@
 
 
 
-.home .header{
+.home .header {
   width: 100%;
   height: 60px;
   display: flex;
-  padding:0 30px 0 80px; 
+  padding: 0 30px 0 80px;
   align-items: center;
-    /* background-color: rgba(255, 255, 255, 0.699); */
+  /* background-color: rgba(255, 255, 255, 0.699); */
   /* backdrop-filter: blur(10px); */
 }
 
-@media (max-width: 768px){
-  .home .header{
+@media (max-width: 768px) {
+  .home .header {
     padding: 0 10px;
   }
 }
 
-.home .header .firstCol{
+.home .header .firstCol {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 10px;
-  
+
 }
-.header.hide{
+
+.header.hide {
   display: none;
 }
 
 
-.back-btn{
+.back-btn {
   display: flex;
   align-items: center;
   gap: 5px;
   cursor: pointer;
-  color: rgb(64, 64, 255);
 }
 
-.back-btn:hover{
+.back-btn:hover {
   opacity: 0.3;
 }
 
-.back-btn span{
+.back-btn span {
   font-size: 16px;
 }
 
-.home .header .secondCol{
+.home .header .secondCol {
   flex: 1;
   margin-left: auto;
   text-align: end;
@@ -138,7 +144,83 @@
   gap: 10px;
 }
 
-.secondCol .btn, .firstCol .btn{
+
+.searchBar {
+  height: 35px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: #e5e9f0;
+  cursor: pointer;
+}
+
+.home.dark .searchBar {
+  background-color: #121722;
+}
+
+
+.secondCol .searchBar:hover {
+  background-color: #d1d7e1;
+}
+
+.home.dark .secondCol .searchBar:hover {
+  background-color: #0c101a;
+}
+
+
+.searchBar span {
+  cursor: pointer;
+  font-size: 15px;
+  color: #121722;
+  margin-bottom: 2px;
+}
+
+
+@media (max-width:768px) {
+  .searchBar p {
+    display: none;
+  }
+}
+
+.home.dark .searchBar span {
+  color: #d0d0d0;
+}
+
+.searchBar p {
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
+  width: 130px;
+  text-align: start;
+}
+
+.keys {
+  display: flex;
+  gap: 5px;
+}
+
+.keys p {
+  font-size: 10px;
+  font-weight: 500;
+  pointer-events: none;
+  border-radius: 5px;
+  padding: 0 5px;
+  width: max-content;
+  background-color: #d1d7e1;
+}
+
+.home.dark .keys p {
+  background-color: #ffffff1c;
+}
+
+.home.dark .searchBar p {
+  color: #d0d0d0;
+}
+
+.secondCol .btn,
+.firstCol .btn {
   width: 50px;
   aspect-ratio: 1/1;
   display: flex;
@@ -149,37 +231,91 @@
 
 }
 
-.secondCol .btn:hover, .firstCol .btn:hover{
+.secondCol .btn:hover,
+.firstCol .btn:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
 
-.secondCol .btn span{
+.secondCol .btn span {
   font-size: 26px;
   transition: background-color 0.2s ease;
 }
 
-.secondCol .profile-container{
-  height: 30px;
+.secondCol .profile-container {
+  height: 35px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
+  gap: 5px;
+  padding: 8px;
+  background-color: #e5e9f0;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.secondCol .profile-container:hover {
+  background-color: #d1d7e1;
+}
+
+.home.dark .secondCol .profile-container {
+  background-color: #121722;
+}
+
+.home.dark .secondCol .profile-container:hover {
+  background-color: #0c101a;
+}
+
+.secondCol .profile-container p {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 
-.secondCol .profile-container img{
-  height: 30px;
-  width: 30px;
+@media (max-width: 768px) {
+  .secondCol .profile-container {
+    background-color: none;
+    padding: 0;
+    height: fit-content;
+  }
+
+  .secondCol .profile-container .profileName {
+    display: none;
+  }
+
+  .secondCol .profile-container img {
+    height: 30px;
+    width: 30px;
+  }
+
+
+  .secondCol .searchBar {
+    padding: 0;
+    height: fit-content;
+    background-color: transparent !important;
+  }
+
+  .searchBar span {
+    font-size: 22px;
+  }
+
+}
+
+.secondCol .profile-container img {
+  height: 25px;
+  width: 25px;
   border-radius: 50%;
   cursor: pointer;
   pointer-events: auto;
 }
 
-.secondCol .profile-container img:hover{
-  border: 2px solid rgb(158, 153, 153);
+.secondCol .profile-container img:hover {
+  /* border: 2px solid rgb(158, 153, 153); */
 }
 
-.profileInfo{
+.profileInfo {
   width: 300px;
   /* height: 200px; */
   background-color: rgba(255, 255, 255, 0.05);
@@ -193,15 +329,18 @@
   background-color: #E9EFF7;
   box-shadow: 0 5px 10px rgba(104, 104, 104, 0.205);
   /* box-shadow: 10px black; */
+  pointer-events: auto;
 }
-.profileInfoHeader{
+
+.profileInfoHeader {
   height: 30px;
   width: 100%;
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
 }
-.closeBtn{
+
+.closeBtn {
   height: 35px;
   width: 35px;
   display: flex;
@@ -210,24 +349,26 @@
   border-radius: 50%;
   cursor: pointer;
 }
-.closeBtn:hover{
+
+.closeBtn:hover {
   background-color: rgb(226, 226, 226);
 }
 
-.home.dark .closeBtn:hover{
+.home.dark .closeBtn:hover {
   background-color: #ffffff1f;
 }
-.home.dark .profileInfo{
-  background-color: #292929;
-  border: 1px solid rgb(78, 78, 78);
+
+.home.dark .profileInfo {
+  background-color: #121722;
+  border: 1px solid rgb(22, 21, 31);
   box-shadow: none;
 }
 
-.secondCol .profile-container:hover .profileInfo{
+.secondCol .profile-container:hover .profileInfo {
   /* display: flex; */
 }
 
-.profileInfo .accDetails{
+.profileInfo .accDetails {
   height: 60px;
   width: 100%;
   gap: 10px;
@@ -236,29 +377,33 @@
   padding: 0 5px;
 }
 
-.profileInfo .profilePic img:hover{
+.profileInfo .profilePic img:hover {
   border: none;
 }
 
-.accDetails .info{
+.accDetails .info {
   display: flex;
   flex-direction: column;
   align-items: start;
 }
 
-.accDetails .info h3{
+.accDetails .info h3 {
   margin: 0;
   padding: 0;
 }
 
 
-.accDetails .info p{
+.accDetails .info p {
   font-size: 12px;
 }
-.settings-button{
+
+.settings-button {
   margin-top: 5px;
 }
-.settings-button, .logout-button, .customize-button{
+
+.settings-button,
+.logout-button,
+.customize-button {
   width: 100%;
   border-radius: 10px;
   display: flex;
@@ -268,28 +413,29 @@
   cursor: pointer;
 }
 
-.settings-button:hover, .logout-button:hover{
+.settings-button:hover,
+.logout-button:hover {
   background-color: rgba(255, 255, 255, 0.397);
 }
 
-.home.dark .settings-button:hover,.home.dark .logout-button:hover{
+.home.dark .settings-button:hover,
+.home.dark .logout-button:hover {
   background-color: #ffffff1f;
 }
 
-.profileInfo span{
+.profileInfo span {
   font-size: 18px;
 }
 
-.pbtn p{
+.pbtn p {
   font-size: 14px;
 }
 
 
 
 
-.profile-wrapper{
+.profile-wrapper {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-

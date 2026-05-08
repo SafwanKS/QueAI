@@ -21,26 +21,26 @@ const manifestForPlugin = {
       sizes: '192x192',
       type: 'image/png',
     },
-      {
-        src: '/android-chrome-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-      },
-      {
-        src: '/apple-touch-icon.png',
-        sizes: '180x180',
-        type: 'image/png',
-        purpose: 'apple touch icon',
-      },
-      {
-        src: '/maskable_icon.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      }],
-       workbox: {
-        cleanupOutdatedCaches: true
-      },
+    {
+      src: '/android-chrome-512x512.png',
+      sizes: '512x512',
+      type: 'image/png',
+    },
+    {
+      src: '/apple-touch-icon.png',
+      sizes: '180x180',
+      type: 'image/png',
+      purpose: 'apple touch icon',
+    },
+    {
+      src: '/maskable_icon.png',
+      sizes: '512x512',
+      type: 'image/png',
+      purpose: 'maskable',
+    }],
+    workbox: {
+      cleanupOutdatedCaches: true
+    },
     theme_color: '#101218',
     background_color: '#101218',
     display: "standalone",
@@ -55,9 +55,15 @@ const manifestForPlugin = {
 
 
 // https://vite.dev/config/
-export default defineConfig( {
+export default defineConfig({
   base: "./",
   plugins: [react(),
     // VitePWA(manifestForPlugin)
   ],
+  server: {
+    allowedHosts: [
+      'handbag-icky-alkalize.ngrok-free.dev', // The specific link ngrok gave you
+      '.ngrok-free.dev'                       // This allows ANY ngrok link you generate later
+    ]
+  }
 })

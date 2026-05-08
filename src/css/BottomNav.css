@@ -1,0 +1,43 @@
+.BottomNavContainer {
+    height: 70px;
+    width: 100%;
+    position: fixed;
+    bottom: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.BottomNav {
+    height: 65px;
+    /* width: 90%; */
+    background-color: rgba(255, 255, 255, 0.065);
+    border-radius: 40px;
+    padding: 5px;
+    display: flex;
+}
+
+.BottomNavItem {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 25px;
+    gap: 2px;
+}
+
+.BottomNavItem.active {
+    background-color: rgba(255, 255, 255, 0.113);
+    border-radius: 40px;
+}
+
+.BottomNavItem span {
+    font-size: 22px;
+}
+
+.BottomNavItem p {
+    font-size: 11px;
+    font-weight: 500;
+}
