@@ -1,8 +1,11 @@
 import React, { forwardRef } from 'react'
+import ReactDOM from 'react-dom'
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import '../css/Sidebar.css'
 import Logo from '../assets/logosmall.png';
+import { Menu, MenuOption } from "../components/Menu.jsx";
+import { collection, deleteDoc, doc } from "firebase/firestore";
 
 import GlobalTooltip from "./GlobalTooltip";
 
@@ -28,14 +31,18 @@ const LeftSideBar = forwardRef(({
   setSearched,
   resultRef,
   handleClearChat,
-  showStoriesWindow,
   showCanvasWindow,
   showLessonsWindow,
   setDrawerOpened,
   showLibraryWindow,
   setShowLoginDialog,
   openedChatID,
-  setOpenedChatID
+  setOpenedChatID,
+  darkmode,
+  setShowRenameDialog,
+  setShowDeleteDialog,
+  setShowInfoDialog,
+  setTempChatID
 }, ref) => {
 
   const [emptyChats, setEmptyChats] = useState(false)
@@ -43,18 +50,44 @@ const LeftSideBar = forwardRef(({
   const [showTitle, setShowTitle] = useState(false)
   const navigate = useNavigate()
 
+  const [showMenu, setShowMenu] = useState(false)
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
+  const [openMenuIndex, setOpenMenuIndex] = useState(null)
+
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setShowLoading(false)
       setEmptyChats(true)
     }, 2000)
-  }, [clearTimeout()])
-
-
-  useEffect(() => {
-
+    return () => clearTimeout(timer)
   }, [])
 
+
+  const handleMenuClick = (e, index) => {
+    e.stopPropagation()
+    const btn = e.currentTarget
+    const rect = btn.getBoundingClientRect()
+    const menuHeight = 150
+    const spaceBelow = window.innerHeight - rect.bottom
+    const spaceAbove = rect.top
+
+    let top = 0
+    if (spaceBelow >= menuHeight) {
+      top = rect.bottom + window.scrollY + 5
+    } else {
+      top = rect.top + window.scrollY - menuHeight - 5
+    }
+
+    setMenuPosition({ top, left: rect.left })
+    setOpenMenuIndex(openMenuIndex === index ? null : index)
+
+  }
+
+  useEffect(() => {
+    const handleOutsideClick = () => setOpenMenuIndex(null)
+    document.addEventListener("click", handleOutsideClick)
+    return () => document.removeEventListener("click", handleOutsideClick)
+  }, [])
 
   return (
     <div ref={ref} className={`left-sidebar ${!(window.innerWidth < 768) ? (drawerCollapsed && "collapsed") : ""}`} style={{
@@ -142,7 +175,7 @@ const LeftSideBar = forwardRef(({
           }
           }>
             <span className="material-symbols-outlined">folder</span>
-            <p>Collections</p>
+            <p>Library</p>
           </div>
         </div>
         <div className="recent-chats">
@@ -173,9 +206,39 @@ const LeftSideBar = forwardRef(({
                         }, 200);
                       }}>
                         <p>{chat.title}</p>
-                        <div className="more">
+                        <div className="more" onClick={(e) => {
+                          handleMenuClick(e, index)
+                        }}>
                           <span className="material-symbols-outlined">more_horiz</span>
                         </div>
+                        {
+                          openMenuIndex === index && ReactDOM.createPortal(
+                            <Menu key={index} menuPosition={menuPosition} darkmode={darkmode}>
+                              <MenuOption icon="edit" text="Rename" onClick={(e) => {
+                                e.stopPropagation()
+                                setOpenMenuIndex(null)
+                                setTempChatID(chat.id)
+                                setShowRenameDialog(true)
+                              }} />
+                              <MenuOption icon="star" text="Favourite" onClick={(e) => {
+                                e.stopPropagation()
+                              }} />
+                              <MenuOption icon="info" text="Info" onClick={(e) => {
+                                e.stopPropagation()
+                                setOpenMenuIndex(null)
+                                setTempChatID(chat.id)
+                                setShowInfoDialog(true)
+                              }} />
+                              <MenuOption icon="delete" text="Delete" onClick={(e) => {
+                                e.stopPropagation()
+                                setOpenMenuIndex(null)
+                                setTempChatID(chat.id)
+                                setShowDeleteDialog(true)
+                              }} />
+                            </Menu>
+                            , ref.current
+                          )
+                        }
                       </div>
                     ))
                   ) : (

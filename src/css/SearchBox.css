@@ -17,7 +17,7 @@
 @media (max-width: 768px) {
   .searchBoxContainer {
     position: fixed;
-    bottom: 30px !important;
+    bottom: 10px !important;
     left: 0;
     width: 100%;
     justify-content: center;
@@ -38,7 +38,7 @@
   padding: 10px;
   position: relative;
   margin: 0 10px;
-  transition: min-height 0.3s ease, flex-direction 0.3s ease;
+  transition: height 0.3s ease, flex-direction 0.3s ease;
   background: rgba(255, 255, 255, 0.435);
   pointer-events: auto;
   /* background-color: rgb(255, 247, 222) ; */
@@ -146,7 +146,7 @@
   .searchBoxContainer.onsearch {
 
     position: absolute;
-    bottom: 25px;
+    bottom: 10px !important;
   }
 }
 

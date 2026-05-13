@@ -42,13 +42,6 @@
   margin-bottom: 10px;
   margin-top: 10px;
 } */
-.responseDiv:last-child {
-  min-height: 100%;
-}
-
-.responseDiv:last-child #response {
-  padding-bottom: 150px;
-}
 
 .filters {
   margin: 10px 0;
@@ -282,6 +275,12 @@
   pointer-events: auto;
 }
 
+.resans {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 
 #response p {
   margin: 0;
@@ -294,20 +293,27 @@
   font-optical-sizing: auto;
   font-weight: unset;
   font-style: normal;
+  line-height: 1.7;
+}
 
+.resans p {
+  line-height: 1.7 !important;
+  max-height: fit-content !important;
 }
 
 .resans ul {
   /* list-style: none; */
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .resans li {
   height: unset !important;
   padding: 0 !important;
+  display: list-item;
 }
 
 .responseDiv p {
-  font-size: 1em;
   line-height: 1.5;
   color: var(--text-color);
   /* font-family: GeneralSans-SemiBold; */
@@ -652,7 +658,6 @@ hr {
 
 .list-title {
   margin-left: auto;
-  font-size: 28px;
   padding: 10px 20px;
   width: fit-content;
   max-width: 50%;
@@ -664,6 +669,14 @@ hr {
   margin-bottom: 20px;
 }
 
+.list-title.story {
+  font-size: 28px;
+  margin-left: 0;
+  background-color: transparent !important;
+  padding: 0;
+  font-weight: 600;
+  max-width: unset;
+}
 
 .home.dark .list-title {
   background-color: #1b2333;
@@ -796,17 +809,6 @@ code {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 .action-menu {
   position: relative;
 }
@@ -818,7 +820,7 @@ code {
   top: 30px;
   left: 0%;
   background-color: white;
-  border-radius: 15px;
+  border-radius: 20px;
   display: none;
   flex-direction: column;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
@@ -870,8 +872,10 @@ code {
 }
 
 .menu-item span {
-  font-size: 20px;
+  font-size: 17px;
+  margin-bottom: 3px;
 }
+
 
 .menu.dark .menu-item span,
 .menu.dark .menu-item p {
@@ -879,9 +883,8 @@ code {
 }
 
 .menu-item p {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--text-color);
   font-family: "Poppins";
 }
 
@@ -891,6 +894,12 @@ code {
 
 .menu.dark .menu-item:hover {
   background-color: rgba(255, 255, 255, 0.05);
+}
+
+
+.menu-item span,
+.menu-item p {
+  color: rgb(53, 53, 53);
 }
 
 
@@ -1032,4 +1041,13 @@ code {
 .source-results .info-container .time {
   font-size: 10px;
   color: rgb(138, 138, 138);
+}
+
+
+.responseDiv:last-child {
+  min-height: 100%;
+}
+
+.responseDiv:last-child #response {
+  padding-bottom: 150px;
 }

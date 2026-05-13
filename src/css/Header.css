@@ -322,7 +322,7 @@
   border-radius: 20px;
   position: absolute;
   top: 0px;
-  right: -10px;
+  right: 0px;
   /* display: none; */
   flex-direction: column;
   padding: 10px;
@@ -330,6 +330,8 @@
   box-shadow: 0 5px 10px rgba(104, 104, 104, 0.205);
   /* box-shadow: 10px black; */
   pointer-events: auto;
+  animation: showMenu 0.3s ease;
+  transform-origin: top right;
 }
 
 .profileInfoHeader {

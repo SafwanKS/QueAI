@@ -36,6 +36,7 @@ import Library from './Library.jsx';
 import BottomNav from '../components/BottomNav.jsx';
 import Suggestions from '../components/Suggessions.jsx';
 import SearchChats from '../components/SearchChats.jsx';
+import { RenameDialog, DeleteDialog, InfoDialog } from '../components/Dialog.jsx';
 
 export default function Home() {
 
@@ -70,6 +71,7 @@ export default function Home() {
   const searchBoxRef = useRef(null)
   const introRef = useRef(null)
   const toolsRef = useRef(null)
+  const suggestionsRef = useRef(null)
   const resultRef = useRef(null)
   const canvasRef = useRef(null)
   const libraryRef = useRef(null)
@@ -136,6 +138,9 @@ export default function Home() {
   const [showGallery, setShowGallery] = useState(null)
   const [showStories, setShowStories] = useState(null)
   const [showLessons, setShowLessons] = useState(null)
+  const [showRenameDialog, setShowRenameDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showInfoDialog, setShowInfoDialog] = useState(false)
 
   const [question, setQuestion] = useState("")
 
@@ -157,8 +162,10 @@ export default function Home() {
 
   const [galleryImages, setGalleryImages] = useState([])
   const [lessonsList, setLessonsList] = useState([])
+  const [storiesList, setStoriesList] = useState([])
 
   const [chatID, setChatID] = useState("")
+  const [tempChatID, setTempChatID] = useState("")
 
   const [chatTitle, setChatTitle] = useState("")
 
@@ -225,6 +232,9 @@ export default function Home() {
       toolsRef.current.classList.remove("invisible")
       headerRef.current.classList.remove("invisible")
     }
+    if (location.pathname === "/library") {
+      showLibraryWindow()
+    }
   }, [location.pathname])
 
   useEffect(() => {
@@ -245,9 +255,14 @@ export default function Home() {
   useEffect(() => {
     setDarkmode(JSON.parse(localStorage.getItem("darkmode")))
     setUseBlack(JSON.parse(localStorage.getItem("useBlack")))
+    if (darkmode) {
+      document.body.style.backgroundColor = useBlack ? "#000" : "#01050d"
+    } else {
+      document.body.style.backgroundColor = "white"
+    }
     setUser(JSON.parse(localStorage.getItem("userData")))
     setLoginState(JSON.parse(localStorage.getItem("userState")))
-  }, [])
+  }, [darkmode, useBlack])
 
   const getChats = async (user) => {
     const chatsRef = collection(db, "users", user.uid, "chats");
@@ -268,6 +283,45 @@ export default function Home() {
       timestamp: chat.timestamp
     }));
     setRecentChats(formattedChats);
+
+    const storiesRef = collection(db, "users", user.uid, "stories");
+    const storyDocs = await getDocs(storiesRef);
+    const allStories = [];
+    storyDocs.forEach(doc => {
+      allStories.push({ id: doc.id, ...doc.data() });
+    });
+    allStories.sort((a, b) => {
+      if (!a.timestamp || !b.timestamp) return 0;
+      return b.timestamp - a.timestamp
+    });
+    const formattedStories = allStories.map((story, index) => ({
+      title: story.title,
+      content: story.content,
+      index: index,
+      timestamp: story.timestamp,
+      id: story.id
+    }));
+    setStoriesList(formattedStories);
+    // console.log(formattedStories);
+
+    // const lessonsRef = collection(db, "users", user.uid, "library", "lessons");
+    // const lessonDocs = await getDocs(lessonsRef);
+    // const allLessons = [];
+    // lessonDocs.forEach(doc => {
+    //   allLessons.push({ id: doc.id, ...doc.data() });
+    // });
+    // allLessons.sort((a, b) => {
+    //   if (!a.timestamp || !b.timestamp) return 0;
+    //   return b.timestamp - a.timestamp
+    // });
+    // const formattedLessons = allLessons.map((lesson, index) => ({
+    //   id: lesson.id,
+    //   title: lesson.title,
+    //   messages: lesson.messages,
+    //   index: index,
+    //   timestamp: lesson.timestamp
+    // }));
+    // setLessonsList(formattedLessons);
   }
 
   const setChatMessages = (chat) => {
@@ -287,6 +341,9 @@ export default function Home() {
     // setDrawerCollapsed(true)
     setChatTitle(chat.title)
     setOnSearch(true)
+    setToolMode(false)
+    setToolName(null)
+    searchContainerRef.current.classList.remove('hide')
   }
 
   const welcomeMsg = {
@@ -362,7 +419,8 @@ export default function Home() {
         setShowSearchChats(true)
         return
       }
-      if (event.key && event.key.length === 1 && !showSearchChats && document.activeElement !== inputRef.current) {
+      if (!event.ctrlKey && event.key && event.key.length === 1 && !showSearchChats && document.activeElement !== inputRef.current) {
+        if (showRenameDialog) return;
         event.preventDefault();
         inputRef.current.focus();
         inputRef.current.value = (inputRef.current.value || "") + event.key;
@@ -374,10 +432,7 @@ export default function Home() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isLoggedIn, user, showSearchChats]);
-
-
-
+  }, [isLoggedIn, user, showSearchChats, showRenameDialog]);
 
   const getRandomString = (length) => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
@@ -412,17 +467,6 @@ export default function Home() {
     await Promise.all(deletePromises);
     console.log("All chats deleted.");
   };
-
-  const extractJsonFromText = (text) => {
-    const match = text.match(/{[^]*}/);
-    if (!match) return null;
-    try {
-      return JSON.parse(match[0]);
-    } catch (err) {
-      console.error("Still broken JSON:", err);
-      return null;
-    }
-  }
 
   const getResult = async (chatID, history, prompt, currentTime, lang, resType, onChunk) => {
     try {
@@ -496,17 +540,29 @@ export default function Home() {
   }
 
 
-  const showStoriesWindow = () => {
+  const showStoriesWindow = async (urlStoryID) => {
+
+    const docRef = doc(db, "users", user.uid, "stories", urlStoryID)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      const story = docSnap.data()
+      setStories([{ title: story.title, content: story.content, type: "story" }])
+    } else {
+      console.log("Story not found")
+      navigate('/')
+      return;
+    }
+
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
     headerRef.current.classList.add("hide")
     resultRef.current.classList.add("show")
+    libraryRef.current.classList.remove("show")
     canvasRef.current.classList.remove("show")
     leftSidebarRef.current.classList.add("show")
     homeWrapperRef.current.style.paddingTop = "0"
-    searchContainerRef.current.classList.add('onsearch')
-    searchBoxRef.current.classList.remove('active')
+    searchContainerRef.current.classList.add('hide')
     homeContainerRef.current.classList.add('onsearch')
     setDrawerCollapsed(true)
     setOnSearch(true)
@@ -644,6 +700,61 @@ export default function Home() {
     }
   };
 
+  const generateStory = (que) => {
+    const prompt = que || question
+    if (prompt.trim() !== "") {
+      (async () => {
+        setAnswering(true);
+        const story = await storyWriteAI(prompt)
+        setStories([{
+          title: story.name,
+          content: story.content,
+          type: "story"
+        }]);
+        setStoriesList(prev => [
+          {
+            title: story.name,
+            content: story.content
+          }
+          , ...prev]);
+
+        const storyID = getRandomString(16);
+
+        if (user && isLoggedIn) {
+          try {
+            await setDoc(doc(db, "users", user.uid, "stories", storyID), {
+              title: story.name,
+              content: story.content,
+              timestamp: Date.now()
+            });
+            console.log("Story saved to DB");
+          } catch (err) {
+            console.error("Error saving story:", err);
+          }
+        }
+
+        setAnswering(false);
+        setSearched(true)
+        introRef.current.classList.add("hide")
+        toolsRef.current.classList.add("hide")
+        setShowSuggestions(false)
+        headerRef.current.classList.add("hide")
+        resultRef.current.classList.add("show")
+        leftSidebarRef.current.classList.add("show")
+        homeWrapperRef.current.style.paddingTop = "0"
+        searchContainerRef.current.classList.add('hide')
+        homeContainerRef.current.classList.add('onsearch')
+        setDrawerCollapsed(true)
+        setOnSearch(true)
+
+        shouldSaveChat.current = true
+
+        if (user && isLoggedIn) navigate(`/story/${storyID}`)
+
+      })();
+    }
+  }
+
   const handleClearChat = () => {
     navigate('/')
     introRef.current.classList.remove("hide")
@@ -691,6 +802,7 @@ export default function Home() {
   }
 
   const showLibraryWindow = () => {
+    navigate('/library')
     setSearched(true)
     introRef.current.classList.add("hide")
     toolsRef.current.classList.add("hide")
@@ -712,13 +824,10 @@ export default function Home() {
   const { chatID: urlChatID } = useParams()
 
   useEffect(() => {
-
     if (isNewChat.current) {
       return
     }
-
     if (authLoading) return
-
     if (urlChatID && user) {
       const loadChat = async () => {
         const docRef = doc(db, "users", user.uid, "chats", urlChatID)
@@ -736,6 +845,14 @@ export default function Home() {
     } else if (!user) navigate("/")
   }, [urlChatID, user, authLoading])
 
+  const { storyID: urlStoryID } = useParams()
+
+  useEffect(() => {
+    if (!urlStoryID || !user || authLoading) return;
+    showStoriesWindow(urlStoryID)
+  }, [urlStoryID, user, authLoading])
+
+
   const handleButtonClick = (que) => {
 
     const inputBox = inputRef.current
@@ -745,6 +862,7 @@ export default function Home() {
     inputBox.style.height = inputBox.scrollHeight + 'px';
     setBtnState(false)
     setQuestion("")
+    setShowSuggestions(false)
 
     setDrawerOpened(false)
 
@@ -809,8 +927,8 @@ export default function Home() {
         reasoning: "",
         sources: [],
         model: "",
-        steps: []
-
+        steps: [],
+        timestamp: Date.now()
       }]);
 
       setAnswering(true);
@@ -913,51 +1031,7 @@ export default function Home() {
         }
       }
       if (toolMode && toolName === "story") {
-        if (question.trim() !== "") {
-
-          (async () => {
-
-            setAnswering(true);
-
-            const storyTitle = await genStoryTitle(question)
-            setSearched(true)
-            introRef.current.classList.add("hide")
-            toolsRef.current.classList.add("hide")
-            headerRef.current.classList.add("hide")
-            resultRef.current.classList.add("show")
-            leftSidebarRef.current.classList.add("show")
-            homeWrapperRef.current.style.paddingTop = "0"
-            searchContainerRef.current.classList.add('hide')
-            homeContainerRef.current.classList.add('onsearch')
-            setDrawerCollapsed(true)
-            setOnSearch(true)
-
-            shouldSaveChat.current = true;
-
-            // const img = await createImageAI(storyTitle)
-
-            setStories([{
-              type: "story",
-              title: storyTitle,
-              content: "",
-              // image: img || {}
-            }]);
-
-
-
-            let streamedAnswer = "";
-            await storyWriteAI(question, (chunk) => {
-              streamedAnswer += chunk;
-              setStories((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].content += chunk;
-                return updated;
-              });
-            });
-
-            setAnswering(false);
-          })()
-        }
+        generateStory()
       }
       if (toolMode && toolName === "learn") {
         if (question.trim() !== "") {
@@ -1069,6 +1143,11 @@ export default function Home() {
             setShowLoginDialog={setShowLoginDialog}
             openedChatID={openedChatID}
             setOpenedChatID={setOpenedChatID}
+            darkmode={darkmode}
+            setShowRenameDialog={setShowRenameDialog}
+            setShowDeleteDialog={setShowDeleteDialog}
+            setShowInfoDialog={setShowInfoDialog}
+            setTempChatID={setTempChatID}
           />
           <div ref={homeContainerRef} style={{
             // padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
@@ -1186,6 +1265,10 @@ export default function Home() {
               selectedModel={selectedModel}
               setSelectedModel={setSelectedModel}
               darkmode={darkmode}
+              setTempChatID={setTempChatID}
+              setShowDeleteDialog={setShowDeleteDialog}
+              setShowRenameDialog={setShowRenameDialog}
+              setShowInfoDialog={setShowInfoDialog}
             // generativeModel={generativeModel}
             // setGenerativeModel={setGenerativeModel}
             />
@@ -1204,6 +1287,8 @@ export default function Home() {
               ref={libraryRef}
               drawerCollapsed={drawerCollapsed}
               handleClearChat={handleClearChat}
+              storiesList={storiesList}
+              showStoriesWindow={showStoriesWindow}
             />
 
             {/* {
@@ -1275,8 +1360,10 @@ export default function Home() {
             {
               showSuggestions &&
               <Suggestions
+                ref={suggestionsRef}
                 suggestions={suggestionsList}
                 toolName={toolName}
+                generateStory={generateStory}
               />
             }
           </div>
@@ -1559,6 +1646,39 @@ export default function Home() {
         {showToast &&
           <Toast ref={toastRef} text={toastText} />
         }
+
+        {
+          showRenameDialog &&
+          <RenameDialog
+            setShowRenameDialog={setShowRenameDialog}
+            visible={showRenameDialog}
+            tempChatID={tempChatID}
+            user={user}
+            getChats={getChats}
+          />
+        }
+
+        {
+          showDeleteDialog &&
+          <DeleteDialog
+            setShowDeleteDialog={setShowDeleteDialog}
+            visible={showDeleteDialog}
+            tempChatID={tempChatID}
+            user={user}
+            getChats={getChats}
+          />
+        }
+
+        {
+          showInfoDialog &&
+          <InfoDialog
+            setShowInfoDialog={setShowInfoDialog}
+            visible={showInfoDialog}
+            user={user}
+            tempChatID={tempChatID}
+          />
+        }
+
       </div>
     </>
   )

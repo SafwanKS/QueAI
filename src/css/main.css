@@ -2,9 +2,10 @@
 @import url('./loader.css');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
+
 *,
 *::after,
-*::before{
+*::before {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -15,7 +16,7 @@
 
   /* color: var(--main-text); */
   -ms-overflow-style: none;
-  scrollbar-width: none; 
+  scrollbar-width: none;
   /* cursor: default; */
 
   user-select: none;
@@ -31,62 +32,76 @@
   --vh: 1vh;
 }
 
-*::selection{
+*::selection {
   background-color: rgb(235, 235, 235);
 }
 
-.home.dark *::selection{
+.home.dark *::selection {
   background-color: rgb(66, 66, 66);
 }
+
 *::-webkit-scrollbar {
   display: none;
 }
 
 
-#root{
+#root {
   height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
-  overflow: hidden !important; /* Important: prevent document scrolling */
+  overflow: hidden !important;
+  /* Important: prevent document scrolling */
 }
 
-h1, h2, h3, h4, h5, h6, p, span{
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span {
   padding: 0;
   margin: 0;
   pointer-events: none;
 }
-html{
-  height: -webkit-fill-available;
+
+html {
+  height: 100dvh;
   width: 100%;
   scroll-behavior: smooth;
+  overscroll-behavior: none;
 }
-body{
-  height: -webkit-fill-available;
+
+body {
+  height: 100dvh;
   width: 100%;
   font-family: GeneralSans-Regular;
   font-family: "Poppins", sans-serif;
   display: flex;
   flex-direction: column;
   overflow-y: hidden;
-
+  overscroll-behavior: none;
+  /* transition: height 0.3s ease; */
 }
-main{
+
+main {
   height: 100%;
   width: 100%;
   position: relative;
   overflow-y: scroll;
 }
 
-@media (min-width: 768px){
-  main{
+@media (min-width: 768px) {
+  main {
     padding-top: 0;
     ppadding-left: 80px;
-    
+
   }
 }
 
 
-.splashScreen{
+.splashScreen {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -97,7 +112,7 @@ main{
   align-items: center;
 }
 
-.splashScreen img{
+.splashScreen img {
   height: 100px;
   width: 100px;
 }

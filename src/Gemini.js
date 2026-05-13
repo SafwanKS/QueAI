@@ -30,50 +30,6 @@ const createImageAI = async (prompt) => {
 
 }
 
-const getCodeAI = async (prompt) => {
-  try {
-    const chat = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: `You are a code generator AI. Create all files the user wants in their project.
-Return ONLY a valid JSON object with this exact structure:
-{
-  "name": "project-name",
-  "src": {
-    "html": "...",
-    "css": "...",
-    "js": "..."
-  }
-}
-No explanation, no markdown, no backticks. Just the JSON object.`
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-
-      model: "llama-3.3-70b-versatile",
-      response_format: { type: "json_object" },
-      temperature: 1.7,
-      max_completion_tokens: 3000,
-      top_p: 1,
-      stream: false,
-      stop: null
-    });
-
-    const raw = chat.choices[0].message.content;
-    const parsed = JSON.parse(raw);
-
-    console.log(parsed);
-    return parsed;
-
-  } catch (err) {
-    console.error("getCodeAI error:", err);
-  }
-};
-
 const COOLDOWN_MODELS = []
 
 const askaiStream = async (selectedMode, history, knowledges, prompt, language, currentTime, onChunk, onReasoning, onModel, onKnowledge, onImages, onSteps, onSources, onNews) => {
@@ -449,35 +405,80 @@ Be smart, clear, natural, and context-aware — not rigid or scripted.
 
 
 
-
-const storyWriteAI = async (text, onChunk) => {
+const getCodeAI = async (prompt) => {
   try {
-    const stream = await groq.chat.completions.create({
-      "messages": [
+    const chat = await groq.chat.completions.create({
+      messages: [
         {
-          "role": "system",
-          "content": "You are story writer ai. Create a beautiful and children friendly story based on user prompt. Use conversational language and emojis. Only return the story without any teasor before story or something"
+          role: "system",
+          content: `You are a code generator AI. Create all files the user wants in their project.
+Return ONLY a valid JSON object with this exact structure:
+{
+  "name": "project-name",
+  "src": {
+    "html": "...",
+    "css": "...",
+    "js": "..."
+  }
+}
+No explanation, no markdown, no backticks. Just the JSON object.`
         },
         {
-          "role": "user",
-          "content": `Generate a story about ${text}`
+          role: "user",
+          content: prompt
         }
       ],
 
-      "model": "llama-3.1-8b-instant",
-      "temperature": 1.7,
-      "max_completion_tokens": 1024,
-      "top_p": 1,
-      "stream": true,
-      "stop": null
+      model: "llama-3.3-70b-versatile",
+      response_format: { type: "json_object" },
+      temperature: 1.7,
+      max_completion_tokens: 3000,
+      top_p: 1,
+      stream: false,
+      stop: null
     });
 
-    for await (const chunk of stream) {
-      const text = chunk.choices?.[0]?.delta?.content || "";
-      if (text) {
-        onChunk(text);
-      }
-    }
+    const raw = chat.choices[0].message.content;
+    const parsed = JSON.parse(raw);
+
+    console.log(parsed);
+    return parsed;
+
+  } catch (err) {
+    console.error("getCodeAI error:", err);
+  }
+};
+
+
+const storyWriteAI = async (text) => {
+  try {
+    const response = await groq.chat.completions.create({
+      "messages": [
+        {
+          "role": "system",
+          "content": `You are a story generator AI. Create a beautiful story based on user prompt. Use conversational language and emojis. 
+Return ONLY a valid JSON object with this exact structure:
+{
+  "name": "story-name",
+  "content": "<story>"
+}
+No explanation, no markdown, no backticks. Start with "Once upon a time..." and end with "The End" Just the JSON object.`
+        },
+        {
+          "role": "user",
+          "content": text
+        }
+      ],
+
+      model: "llama-3.1-8b-instant",
+      temperature: 0.9,
+      response_format: { type: "json_object" },
+      max_completion_tokens: 2048,
+      top_p: 0.9,
+    });
+
+    const raw = response.choices[0].message.content;
+    return JSON.parse(raw);
 
   } catch (err) {
     console.log(err);
@@ -563,13 +564,17 @@ const summariseAI = async (text, onChunk) => {
 
       "messages": [
         {
+          role: "system",
+          content: "You are an academic text summarizer. Your only job is to shorten and condense the text the user provides. Do NOT answer questions, explain topics, or generate new content. If the input is a question or has no summarisable content, respond with: 'No summarisable text provided.'"
+        },
+        {
           "role": "user",
-          "content": `You are a text summariser ai. You should have to give a short, neat and academic summary of the text user give to you. Dont add any extra conversational things. Strictly Summarise this text: ${text}`
+          "content": `Summarise this text: ${text}`
         }
       ],
 
-      "model": "llama-3.1-8b-instant",
-      "temperature": 1.7,
+      "model": "openai/gpt-oss-20b",
+      "temperature": 0.3,
       "max_completion_tokens": 100,
       "top_p": 1,
       "stream": true,
@@ -659,7 +664,7 @@ const searchImages = async (query) => {
 
 
 const search_web = async (query) => {
-  const res = await fetch(`http://127.0.0.1:8000/search?q=${encodeURIComponent(query)}`)
+  const res = await fetch(`https://que-ai-backend.vercel.app/search?q=${encodeURIComponent(query)}`)
   const data = await res.json()
   return JSON.stringify(data.results)
 }
@@ -794,6 +799,5 @@ const executeTool = async (name, args, onKnowledge, onImages, onSources) => {
   }
   return "Tool not found";
 };
-
 
 export { askaiStream, relatedAI, getCodeAI, summariseAI, createImageAI, getTitle, storyWriteAI, tutorAI, genStoryTitle, genLessonName }

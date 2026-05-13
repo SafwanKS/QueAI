@@ -27,3 +27,4 @@ dist-ssr
 node_modules
 .vercel
 .env*.local
+.agents

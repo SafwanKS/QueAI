@@ -8,6 +8,7 @@ import { auth, db } from '../firebase.js'
 import { getTitle } from '../Gemini.js'
 import '../css/LoadingBar.css'
 import { useRef } from "react";
+import { Menu, MenuOption } from "../components/Menu.jsx";
 const Result = forwardRef(({
   introRef,
   toolsRef,
@@ -52,44 +53,59 @@ const Result = forwardRef(({
   setSelectedModel,
   selectedModel,
   darkmode,
+  setShowRenameDialog,
+  setShowDeleteDialog,
+  setShowInfoDialog,
+  setTempChatID
 }, ref) => {
 
   const [showModelSelect, setShowModeSelect] = useState(false)
 
   const [title, setTitle] = useState('');
 
+  const menuRef = useRef(null)
+  const moreMenuRef = useRef(null)
   const titlesObserverRef = useRef(null)
+
+  const [showMenu, setShowMenu] = useState(false)
 
   const [openMenuIndex, setOpenMenuIndex] = useState(null);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
-  const menuRef = useRef(null);
 
   const handleMenuClick = (e, index) => {
     e.stopPropagation();
+    setShowMenu(false);
     const btn = e.currentTarget;
     const rect = btn.getBoundingClientRect();
-    const menuHeight = 150; // approximate menu height
+    const menuHeight = 150;
     const spaceBelow = window.innerHeight - rect.bottom;
     const spaceAbove = rect.top;
 
     let top;
     if (spaceBelow >= menuHeight) {
-      top = rect.bottom + window.scrollY + 5; // show below
+      top = rect.bottom + window.scrollY + 5;
     } else {
-      top = rect.top + window.scrollY - menuHeight - 5; // show above
+      top = rect.top + window.scrollY - menuHeight - 5;
     }
 
     setMenuPosition({ top, left: rect.left });
     setOpenMenuIndex(openMenuIndex === index ? null : index);
   };
 
-  // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => setOpenMenuIndex(null);
-    document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
-  }, []);
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowMenu(false)
+      }
+      if (openMenuIndex !== null) setOpenMenuIndex(null)
+    }
 
+    document.addEventListener("click", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside)
+    }
+  }, [openMenuIndex])
 
   const ErrorBox = ({ children }) => {
     return (
@@ -395,7 +411,6 @@ const Result = forwardRef(({
               handleClearChat()
             }} >
               <span className="material-symbols-outlined">arrow_back_ios_new</span>
-              {/* <p>Back</p> */}
             </div>
           }
 
@@ -410,8 +425,41 @@ const Result = forwardRef(({
           {window.innerWidth <= 768 && <p className="title-text">{chatTitle ? chatTitle : "New Chat"}</p>}
         </div>
         <div className="result-header-right">
-          <div className="more_btn">
+          <div className="share-btn">
+            <span className="material-symbols-outlined">ios_share</span>
+            <p>Share</p>
+          </div>
+          <div className="more_btn" ref={menuRef} onClick={(e) => {
+            setOpenMenuIndex(null)
+            setShowMenu(!showMenu)
+          }}>
             <span className="material-symbols-outlined">more_horiz</span>
+            {
+              showMenu &&
+              <Menu darkmode={darkmode}>
+                <MenuOption icon="edit" text="Rename" onClick={(e) => {
+                  e.stopPropagation()
+                  setOpenMenuIndex(null)
+                  setTempChatID(chatID)
+                  setShowRenameDialog(true)
+                }} />
+                <MenuOption icon="star" text="Favourite" onClick={(e) => {
+                  e.stopPropagation()
+                }} />
+                <MenuOption icon="info" text="Info" onClick={(e) => {
+                  e.stopPropagation()
+                  setOpenMenuIndex(null)
+                  setTempChatID(chatID)
+                  setShowInfoDialog(true)
+                }} />
+                <MenuOption icon="delete" text="Delete" onClick={(e) => {
+                  e.stopPropagation()
+                  setOpenMenuIndex(null)
+                  setTempChatID(chatID)
+                  setShowDeleteDialog(true)
+                }} />
+              </Menu>
+            }
           </div>
         </div>
       </div>
@@ -420,13 +468,12 @@ const Result = forwardRef(({
         {
           itemName?.map((item, index) =>
             <div key={index} ref={index === (toolMode ? toolName === "story" ? stories.length : lessons.length : messages.length) - 1 ? lastElement : null} className="responseDiv">
-              <p className="list-title">
-                {toolMode
-                  ? toolName === "story"
-                    ? item.title
-                    : item.que
+              <p className={`list-title ${toolMode && toolName === "story" ? "story" : ""}`}>                {toolMode
+                ? toolName === "story"
+                  ? item.title
                   : item.que
-                }
+                : item.que
+              }
               </p>
               {
                 !toolMode && item.sources && item.sources.length !== 0 &&
@@ -449,8 +496,9 @@ const Result = forwardRef(({
               }
 
               {/* <div className='line' ></div> */}
-              <div id="response"
-              >
+              <div id="response" style={{
+                paddingBottom: index === (toolMode ? toolName === "story" ? stories.length : lessons.length : messages.length) - 1 ? "150px" : "0"
+              }}>
                 {
                   (item.ans || item.content || item.reasoning) && (item.ans || item.content || item.reasoning) !== "" ?
                     (
@@ -518,8 +566,6 @@ const Result = forwardRef(({
                           }
 
 
-
-
                           <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
                             blockquote: BlockquoteRenderer
                           }}>
@@ -547,17 +593,23 @@ const Result = forwardRef(({
                           }
 
                         </div>
+
                         {
-                          // selectedModel !== "casual" &&
-                          <div className={`actions ${item.ans.startsWith("> [!error]") ? "hide" : (answering || "active")}`}>
+                          (toolMode && toolName) !== "story" &&
+                          <div className={`actions ${item.ans && item.ans.startsWith("> [!error]") ? "hide" : (answering || "active")}`}>
                             <div className="quickActions">
-                              <div className="actionBtn action-favorite">
+                              <div className="actionBtn action-favorite" onClick={(e) => {
+                                e.currentTarget.querySelector("span").style.color = "red"
+                              }}>
                                 <span className="material-symbols-outlined">favorite</span>
                               </div>
                               <div className="actionBtn action-copy" onClick={() => copyText(item.ans || item.content)}>
                                 <span className="material-symbols-outlined">content_copy</span>
                               </div>
-                              <div className="actionBtn action-retry" onClick={() => copyText(item.ans || item.content)}>
+                              <div className="actionBtn action-retry" onClick={() => {
+                                let message = messages[messages.length - 1].que
+                                handleButtonClick(message)
+                              }}>
                                 <span className="material-symbols-outlined">refresh</span>
                               </div>
                               <div className="actionBtn action-menu" onClick={(e) => handleMenuClick(e, index)}>
@@ -565,8 +617,8 @@ const Result = forwardRef(({
                               </div>
                               {openMenuIndex === index && ReactDOM.createPortal(
                                 <div
-                                  ref={menuRef}
-                                  className={`menu ${darkmode === true ? "dark" : ""}`}
+                                  ref={moreMenuRef}
+                                  className={`menu ${darkmode ? "dark" : ""}`}
                                   style={{
                                     display: "flex",
                                     position: "fixed",
@@ -595,21 +647,11 @@ const Result = forwardRef(({
                                       <p>Listen</p>
                                     </div>
                                   </div>
-                                  <div className="menu-footer"><p></p></div>
+                                  <div className="menu-footer"><p>{timeAgo(item.timestamp)}</p></div>
                                 </div>,
                                 document.body
                               )}
                             </div>
-                            {/* <div className="bigActions">
-                            <div className="actionBtn action-share" onClick={() => handleShare((item.que || item.title), (item.ans || item.content))}>
-                              <span className="material-symbols-outlined">ios_share</span>
-                              <p>Share</p>
-                            </div>
-                            <div className="actionBtn actionExport" onClick={() => handleSave((item.que || item.title), (item.ans || item.content))}>
-                              <span className="material-symbols-outlined">save_alt</span>
-                              <p>Export</p>
-                            </div>
-                          </div> */}
                             <div className="gap"></div>
 
                           </div>
@@ -685,6 +727,30 @@ const Result = forwardRef(({
           <div className='line' ></div>
           </>
         } */}
+
+        {
+          toolName === "story" &&
+          <div className="BottomNavContainer">
+            <div className="BottomNav">
+              <div className="BottomNavItem active">
+                <span className="material-symbols-outlined">content_copy</span>
+                <p>Copy</p>
+              </div>
+              <div className="BottomNavItem">
+                <span className="material-symbols-outlined">ios_share</span>
+                <p>Share</p>
+              </div>
+              <div className="BottomNavItem">
+                <span className="material-symbols-outlined">download</span>
+                <p>Export</p>
+              </div>
+              <div className="BottomNavItem">
+                <span className="material-symbols-outlined">volume_down</span>
+                <p>Listen</p>
+              </div>
+            </div>
+          </div>
+        }
 
       </div>
     </div>

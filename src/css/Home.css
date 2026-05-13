@@ -557,6 +557,10 @@
   background-color: #01050d;
 }
 
+.home.black .library .library-header {
+  background-color: #000;
+}
+
 .result-header-left,
 .result-header-right,
 .canvas-header-left,
@@ -621,12 +625,158 @@
   cursor: pointer;
   background-color: #ffffff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.311);
+  position: relative;
 }
+
+.share-btn {
+  width: auto;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 12px;
+  border-radius: 30px;
+  pointer-events: auto;
+  cursor: pointer;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.311);
+}
+
+.share-btn span {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.share-btn p {
+  font-size: 14px;
+  font-family: GeneralSans-Medium;
+}
+
+.share-btn:hover {
+  background-color: rgb(243, 243, 243);
+}
+
+.home.dark .share-btn {
+  background-color: #121823;
+  border: 1px solid #212837;
+}
+
+.home.dark .share-btn:hover {
+  background-color: rgba(255, 255, 255, 0.103);
+}
+
+
+@media (max-width: 768px) {
+  .share-btn p {
+    display: none;
+  }
+
+  .share-btn span {
+    /* margin-bottom: 0; */
+    font-size: 18px;
+  }
+
+  .share-btn {
+    width: 40px;
+    padding: 0;
+  }
+}
+
+.more-menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: white;
+  border-radius: 20px;
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.311);
+  width: 160px;
+  z-index: 9999;
+  animation: showMenu 0.3s ease forwards;
+  transform-origin: top left;
+}
+
+.more_btn .more-menu {
+  top: 60px !important;
+  right: 10px !important;
+  transform-origin: top right;
+}
+
+@keyframes showMenu {
+  from {
+    scale: 0;
+    opacity: 0;
+  }
+
+  to {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+.more-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 15px;
+  pointer-events: auto;
+}
+
+.more-menu-item:hover {
+  background-color: rgb(243, 243, 243);
+}
+
+.more-menu.dark .more-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.103);
+}
+
+.more-menu-item span {
+  font-size: 16px !important;
+  color: rgb(51, 51, 51);
+}
+
+.more-menu-item p {
+  font-size: 14px !important;
+  font-family: GeneralSans-Medium;
+  font-weight: 300;
+  color: #000;
+}
+
+.more-menu.dark {
+  background-color: #070d19;
+  border: 1px solid #212837;
+}
+
+.more-menu.dark .more-menu-item span {
+  color: rgb(190, 190, 190);
+}
+
+.more-menu.dark .more-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.054);
+}
+
+
+.more-menu-item.delete span,
+.more-menu-item.delete p {
+  color: rgb(247, 53, 53) !important;
+}
+
+.more-menu-item.delete:hover {
+  background-color: rgba(247, 53, 53, 0.103) !important;
+}
+
+.more-menu.dark .more-menu-item p {
+  color: #fff;
+}
+
+
 
 .back_btn span,
 .more_btn span {
   font-size: 20px;
-
 }
 
 .home.dark .back_btn,
@@ -666,6 +816,7 @@
   padding: 20px 20px 0 20px;
   overflow-y: scroll;
   scroll-behavior: smooth;
+  overscroll-behavior: auto;
 }
 
 

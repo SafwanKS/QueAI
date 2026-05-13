@@ -12,6 +12,10 @@ const SearchChats = ({
 
     const navigate = useNavigate()
 
+    const [searchInput, setSearchInput] = useState("")
+
+    const filteredChats = recentsChats.filter((chat) => chat.title.toLowerCase().includes(searchInput.toLowerCase()))
+
     useEffect(() => {
         const handleEsc = (event) => {
             if (event.key === 'Escape') {
@@ -27,7 +31,7 @@ const SearchChats = ({
             <div className="searchChats">
                 <div className="searchChatsHeader">
                     <span className="material-symbols-outlined">search</span>
-                    <input autoFocus type="text" placeholder="Search Chats" />
+                    <input autoFocus type="text" placeholder="Search Chats" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
                     <div className="gap"></div>
                     <span className="material-symbols-outlined close" onClick={() => {
                         setShowSearchChats(false)
@@ -35,18 +39,22 @@ const SearchChats = ({
                 </div>
                 <div className="searchChatsList">
                     {
-                        recentsChats.map((chat) => (
-                            <div key={chat.id} className="searchChatsListItem" onClick={() => {
-                                setOpenedChatID(chat.id)
-                                shouldSaveChat.current = false
-                                setChatMessages(chat)
-                                navigate(`/chat/${chat.id}`)
-                                setShowSearchChats(false)
-                            }}>
-                                <span className="material-symbols-outlined">chat_bubble</span>
-                                <p>{chat.title}</p>
+                        filteredChats.length > 0 ?
+                            filteredChats.map((chat) => (
+                                <div key={chat.id} className="searchChatsListItem" onClick={() => {
+                                    setOpenedChatID(chat.id)
+                                    shouldSaveChat.current = false
+                                    setChatMessages(chat)
+                                    navigate(`/chat/${chat.id}`)
+                                    setShowSearchChats(false)
+                                }}>
+                                    <span className="material-symbols-outlined">chat_bubble</span>
+                                    <p>{chat.title}</p>
+                                </div>
+                            ))
+                            : <div>
+                                No results found
                             </div>
-                        ))
                     }
                 </div>
             </div>

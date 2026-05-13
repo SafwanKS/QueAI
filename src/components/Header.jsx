@@ -7,6 +7,7 @@ import Logo from '../assets/logosmall.png'
 import Avatar from '../assets/avatar.png'
 import SmallBtn from './SmallBtn.jsx'
 import GlobalTooltip from "./GlobalTooltip";
+import { useRef } from 'react'
 
 const Header = forwardRef(({
   searched,
@@ -42,6 +43,17 @@ const Header = forwardRef(({
   }, [location])
 
   const [showProfileInfo, setShowProfileInfo] = useState(false)
+  const profileInfoRef = useRef(null)
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (profileInfoRef.current && !profileInfoRef.current.contains(e.target)) {
+        setShowProfileInfo(false)
+      }
+    }
+    document.addEventListener("click", handleOutsideClick)
+    return () => document.removeEventListener("click", handleOutsideClick)
+  }, [])
 
   return (
 
@@ -104,12 +116,12 @@ const Header = forwardRef(({
             }} >
               <span className="material-symbols-outlined">history</span>
             </div> */}
-              <div className="profile-container" onClick={() => setShowProfileInfo(!showProfileInfo)}>
+              <div className="profile-container" ref={profileInfoRef} onClick={() => setShowProfileInfo(true)}>
                 <img src={user.photoURL} alt="profile" />
                 <p className='profileName'>{user.displayName.split(" ")[0]}</p>
                 {
                   showProfileInfo &&
-                  <div className="profileInfo" onClick={() => { }}>
+                  <div className="profileInfo">
                     <div className="profileInfoHeader">
                       <div className="closeBtn" onClick={() => setShowProfileInfo(!showProfileInfo)}>
                         <span className="material-symbols-outlined">close</span>
@@ -178,7 +190,7 @@ const Header = forwardRef(({
 
         }
       </div>
-    </div>
+    </div >
   )
 })
 

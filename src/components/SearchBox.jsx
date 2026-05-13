@@ -9,7 +9,7 @@ import {
 } from 'react-router'
 import '../css/SearchBox.css'
 import SmallBtn from "./SmallBtn.jsx"
-import Dialog from '../components/Dialog.jsx'
+import { Dialog } from '../components/Dialog.jsx'
 import SelectionChip from '../components/SelectionChip.jsx'
 
 
@@ -66,19 +66,10 @@ const SearchBox = forwardRef(({
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // model selector
-      if (
-        modelSelectorRef.current &&
-        !modelSelectorRef.current.contains(e.target)
-      ) {
+      if (modelSelectorRef.current && !modelSelectorRef.current.contains(e.target)) {
         setShowModelSelector(false)
       }
-
-      // add-ons
-      if (
-        addOnesRef.current &&
-        !addOnesRef.current.contains(e.target)
-      ) {
+      if (addOnesRef.current && !addOnesRef.current.contains(e.target)) {
         setShowAddOnes(false)
       }
     }
@@ -91,10 +82,6 @@ const SearchBox = forwardRef(({
       document.removeEventListener("touchstart", handleClickOutside)
     }
   }, [])
-
-
-
-
 
   const [anim, setAnim] = useState(false)
 
