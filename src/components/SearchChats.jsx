@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../css/SearchChats.css';
 import { useNavigate } from 'react-router';
-
+import { Search, X } from 'lucide-react';
 const SearchChats = ({
     recentsChats,
     setOpenedChatID,
@@ -30,12 +30,12 @@ const SearchChats = ({
         <div className="searchChatsContainer">
             <div className="searchChats">
                 <div className="searchChatsHeader">
-                    <span className="material-symbols-outlined">search</span>
+                    <Search size={16} style={{ marginTop: 1 }} />
                     <input autoFocus type="text" placeholder="Search Chats" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} />
                     <div className="gap"></div>
-                    <span className="material-symbols-outlined close" onClick={() => {
+                    <span className="close" onClick={() => {
                         setShowSearchChats(false)
-                    }}>close</span>
+                    }}><X size={18} /></span>
                 </div>
                 <div className="searchChatsList">
                     {

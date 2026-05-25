@@ -8,17 +8,15 @@ import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebas
 import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, sum } from "firebase/firestore";
 import { auth, db } from '../firebase.js'
 import { askaiStream, relatedAI, summariseAI, storyWriteAI, genStoryTitle, tutorAI, genLessonName } from '../Gemini.js'
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from "remark-gfm";
 import {
   useNavigate
 } from 'react-router'
 
-import Logo from '../assets/logosmall.png'
-import animation from '../assets/animation.gif'
 import '../css/Home.css'
 import '../css/Search.css'
 import '../css/loader.css'
+import Logo from '../assets/logosmall.png'
+import animation from '../assets/animation.gif'
 import SearchBox from '../components/SearchBox.jsx'
 import Header from '../components/Header.jsx';
 import GLogo from '../assets/google-logo.png'
@@ -33,7 +31,6 @@ import Gallery from './Gallery.jsx';
 import Stories from './Stories.jsx';
 import Lessons from './Lessons.jsx';
 import Library from './Library.jsx';
-import BottomNav from '../components/BottomNav.jsx';
 import Suggestions from '../components/Suggessions.jsx';
 import SearchChats from '../components/SearchChats.jsx';
 import { RenameDialog, DeleteDialog, InfoDialog } from '../components/Dialog.jsx';
@@ -158,7 +155,7 @@ export default function Home() {
   const [useBlack, setUseBlack] = useState(false)
 
 
-  const [selectedModel, setSelectedModel] = useState("smart")
+  const [selectedModel, setSelectedModel] = useState("auto")
 
   const [galleryImages, setGalleryImages] = useState([])
   const [lessonsList, setLessonsList] = useState([])
@@ -176,6 +173,7 @@ export default function Home() {
   const [customePlaceHolder, setCustomePlaceHolder] = useState("")
   const [summarisedText, setSummarisedText] = useState("")
 
+  const [uploadedFiles, setUploadedFiles] = useState([])
   const [uploadedImage, setUploadedImage] = useState(null)
 
   const [chats, setChats] = useState({})
@@ -187,6 +185,7 @@ export default function Home() {
 
 
   const [btnState, setBtnState] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const [customAnimEnabled, setCustomAnimEnabled] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showRecents, setShowRecents] = useState(false)
@@ -255,13 +254,16 @@ export default function Home() {
   useEffect(() => {
     setDarkmode(JSON.parse(localStorage.getItem("darkmode")))
     setUseBlack(JSON.parse(localStorage.getItem("useBlack")))
+    setUser(JSON.parse(localStorage.getItem("userData")))
+    setLoginState(JSON.parse(localStorage.getItem("userState")))
+  }, [])
+
+  useEffect(() => {
     if (darkmode) {
       document.body.style.backgroundColor = useBlack ? "#000" : "#01050d"
     } else {
       document.body.style.backgroundColor = "white"
     }
-    setUser(JSON.parse(localStorage.getItem("userData")))
-    setLoginState(JSON.parse(localStorage.getItem("userState")))
   }, [darkmode, useBlack])
 
   const getChats = async (user) => {
@@ -350,7 +352,9 @@ export default function Home() {
     code: `What do you want to <span class="material-symbols-outlined"> code </span> code today?`,
     summarise: `What do you want to <span class="material-symbols-outlined"> assignment </span> Summarise?`,
     story: `Write a <span class="material-symbols-outlined"> ink_pen </span> Story`,
-    learn: `What do you want to <span class="material-symbols-outlined"> school </span> Learn today?`
+    learn: `What do you want to <span class="material-symbols-outlined"> school </span> Learn today?`,
+    searchweb: `What do you want to <span class="material-symbols-outlined"> language </span> Search?`,
+    draw: `Describe your image`
   }
 
   useEffect(() => {
@@ -452,7 +456,7 @@ export default function Home() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
 
-    return `Date: ${day} / ${month} / ${year}, Time: ${hours}:${minutes}`;
+    return `Date: ${day} / ${month} / ${year}, Time: ${hours}:${minutes} `;
 
   }
 
@@ -465,7 +469,7 @@ export default function Home() {
     );
 
     await Promise.all(deletePromises);
-    console.log("All chats deleted.");
+    await getChats(user);
   };
 
   const getResult = async (chatID, history, prompt, currentTime, lang, resType, onChunk) => {
@@ -478,7 +482,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_input: (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe}`) + (`Current Time: ${currentTime}`) + (`Prompt: ${prompt}`),
+          user_input: (customPreferences && customPreferences.userName && customPreferences.preferences && customPreferences.describe && `Name: ${customPreferences.userName}. My preferences: ${customPreferences.preferences}. Be like: ${customPreferences.describe} `) + (`Current Time: ${currentTime} `) + (`Prompt: ${prompt} `),
           thread_id: chatID
         }),
       });
@@ -591,9 +595,6 @@ export default function Home() {
     // setShowStories(true)
   }
 
-
-
-
   const onInputChanged = (e) => {
     const inputBox = inputRef.current
     inputBox.rows = inputBox.value.split('\n').length;
@@ -601,22 +602,31 @@ export default function Home() {
     inputBox.style.height = inputBox.scrollHeight + 'px';
     setBtnState(inputBox.value.trim().length > 0)
     setQuestion(e.target.value)
+
+    if (inputBox.value.length > 40 || inputBox.value.includes('\n')) {
+      setExpanded(true);
+    } else if (!toolMode && uploadedFiles.length === 0) setExpanded(false)
+
   }
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUploadedImage(file);
-      setPreviewImage(URL.createObjectURL(file))
-    }
-  }
+    const files = Array.from(e.target.files);
+    const newFiles = files.map(file => {
+      return {
+        file,
+        previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null
+      };
+    });
+    setUploadedFiles(prev => [...prev, ...newFiles]);
+    setExpanded(true);
+  };
 
   const downloadImage = (obj) => {
     if (!obj.img) return;
     const imageName = obj.title.replaceAll(' ', "-")
     const link = document.createElement("a")
-    link.href = `data:${obj.img.mimeType};base64,${obj.img.base64Data}`;
-    link.download = `${imageName}.${obj.img.mimeType.split('/')[1]}`;
+    link.href = `data:${obj.img.mimeType}; base64, ${obj.img.base64Data} `;
+    link.download = `${imageName}.${obj.img.mimeType.split('/')[1]} `;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -770,6 +780,7 @@ export default function Home() {
     searchContainerRef.current.classList.remove('hide')
     // searchBoxRef.current.classList.add('active') 
     homeContainerRef.current.classList.remove('onsearch')
+    inputRef.current.value.trim().length === 0 && setExpanded(false)
     setSearched(false)
     setToolMode(false)
     setCustomePlaceHolder("")
@@ -853,7 +864,179 @@ export default function Home() {
   }, [urlStoryID, user, authLoading])
 
 
+  const sendChatMessage = (ques, filesToSend = [], tool = "") => {
+
+
+    if (!searched) {
+
+      setSearched(true)
+      introRef.current.classList.add("hide")
+      toolsRef.current.classList.add("hide")
+      toolsRef.current.classList.add("hide")
+      headerRef.current.classList.add("hide")
+      resultRef.current.classList.add("show")
+      leftSidebarRef.current.classList.add("show")
+      homeWrapperRef.current.style.paddingTop = "0"
+      searchContainerRef.current.classList.add('onsearch')
+      searchBoxRef.current.classList.remove('active')
+      homeContainerRef.current.classList.add('onsearch')
+      setDrawerCollapsed(true)
+      setOnSearch(true)
+    }
+
+    if (!(messages[0])) {
+      const newChatID = getRandomString(16)
+      setChatID(newChatID)
+      isNewChat.current = true
+      navigate(`/chat/${newChatID}`)
+    }
+
+
+    const history = []
+
+    messages.map((message, index) => {
+      history.push(
+        {
+          role: "user",
+          parts: [{
+            text: message.que
+          }]
+        },
+        {
+          role: "model",
+          parts: [{
+            text: message.ans
+          }]
+        }
+      )
+    });
+
+    shouldSaveChat.current = true;
+
+
+    setMessages([...messages, {
+      type: "chat",
+      que: ques,
+      ans: "",
+      reasoning: "",
+      sources: [],
+      model: "",
+      steps: [],
+      timestamp: Date.now(),
+      files: filesToSend ? filesToSend.map(f => ({
+        name: f.file.name,
+        size: f.file.size,
+        type: f.file.type,
+        previewUrl: f.previewUrl
+      })) : []
+    }]);
+
+    setAnswering(true);
+    setRelatedQues(null);
+
+    const currentTime = getDate()
+
+    if (proEnabled) {
+      (async () => {
+
+        let streamedAnswer = ""
+
+        await getResult(chatID, history, ques, currentTime, searchLang, "fast", (chunk) => {
+          streamedAnswer += chunk;
+          setMessages((prev) => {
+            const updated = [...prev];
+            updated[updated.length - 1].ans += chunk;
+            return updated;
+          });
+        })
+
+      })()
+    } else {
+
+      (async () => {
+
+        let base64Files = [];
+        if (filesToSend && filesToSend.length > 0) {
+          base64Files = await Promise.all(filesToSend.map(async (f) => ({
+            type: f.file.type,
+            base64Data: await fileToBase64(f.file)
+          })));
+        }
+
+        let streamedAnswer = "";
+
+        await askaiStream(user, selectedModel, history, knowledgeAvailable, ques, base64Files, toolName === "searchweb", tool, searchLang, currentTime,
+          (chunk) => {
+            streamedAnswer += chunk;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].ans += chunk;
+              return updated;
+            });
+          },
+          (reasoningChunk) => {
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].reasoning += reasoningChunk;
+              return updated;
+            });
+          },
+          (model) => {
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].model = model;
+              return updated;
+            });
+          },
+          (knowledge) => {
+            setKnowledgeAvailable((prev) => {
+              const updated = [...prev];
+              updated.push(knowledge);
+              return updated;
+            });
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].infoSaved = {
+                saved: true,
+                data: knowledge
+              }
+              return updated;
+            })
+          },
+          (images) => {
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].images = JSON.parse(images);
+              return updated;
+            });
+          },
+          (step) => {
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1].steps.push(step)
+              return updated;
+            });
+          },
+          (sources) => {
+            setMessages((prev) => {
+              const updated = [...prev]
+              updated[updated.length - 1].sources = sources
+              return updated
+            })
+          }
+        );
+
+        setAnswering(false);
+      })()
+    }
+  }
+
+
   const handleButtonClick = (que) => {
+
+    const filesToSend = [...uploadedFiles];
+    setUploadedFiles([]);
+    if (!toolMode) setExpanded(false);
 
     const inputBox = inputRef.current
     inputBox.value = ''
@@ -870,155 +1053,10 @@ export default function Home() {
 
     let prompt = que || question
 
-    let ques = que || (question);
+    let ques = que || question;
 
-    if (!toolMode) {
-
-      if (!searched) {
-
-        setSearched(true)
-        introRef.current.classList.add("hide")
-        toolsRef.current.classList.add("hide")
-        toolsRef.current.classList.add("hide")
-        headerRef.current.classList.add("hide")
-        resultRef.current.classList.add("show")
-        leftSidebarRef.current.classList.add("show")
-        homeWrapperRef.current.style.paddingTop = "0"
-        searchContainerRef.current.classList.add('onsearch')
-        searchBoxRef.current.classList.remove('active')
-        homeContainerRef.current.classList.add('onsearch')
-        setDrawerCollapsed(true)
-        setOnSearch(true)
-      }
-
-      if (!(messages[0])) {
-        const newChatID = getRandomString(16)
-        setChatID(newChatID)
-        isNewChat.current = true
-        navigate(`/chat/${newChatID}`)
-      }
-
-      const history = []
-
-      messages.map((message, index) => {
-        history.push(
-          {
-            role: "user",
-            parts: [{
-              text: message.que
-            }]
-          },
-          {
-            role: "model",
-            parts: [{
-              text: message.ans
-            }]
-          }
-        )
-      });
-
-      shouldSaveChat.current = true;
-
-
-      setMessages([...messages, {
-        type: "chat",
-        que: ques,
-        ans: "",
-        reasoning: "",
-        sources: [],
-        model: "",
-        steps: [],
-        timestamp: Date.now()
-      }]);
-
-      setAnswering(true);
-      setRelatedQues(null);
-
-      const currentTime = getDate()
-
-      if (proEnabled) {
-        (async () => {
-
-          let streamedAnswer = ""
-
-          await getResult(chatID, history, prompt, currentTime, searchLang, "fast", (chunk) => {
-            streamedAnswer += chunk;
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1].ans += chunk;
-              return updated;
-            });
-          })
-
-        })()
-      } else {
-
-        (async () => {
-          let streamedAnswer = "";
-          await askaiStream(selectedModel, history, knowledgeAvailable, prompt, searchLang, currentTime,
-            (chunk) => {
-              streamedAnswer += chunk;
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].ans += chunk;
-                return updated;
-              });
-            },
-            (reasoningChunk) => {
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].reasoning += reasoningChunk;
-                return updated;
-              });
-            },
-            (model) => {
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].model = model;
-                return updated;
-              });
-            },
-            (knowledge) => {
-              setKnowledgeAvailable((prev) => {
-                const updated = [...prev];
-                updated.push(knowledge);
-                return updated;
-              });
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].infoSaved = {
-                  saved: true,
-                  data: knowledge
-                }
-                return updated;
-              })
-            },
-            (images) => {
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].images = JSON.parse(images);
-                return updated;
-              });
-            },
-            (step) => {
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1].steps.push(step)
-                return updated;
-              });
-            },
-            (sources) => {
-              setMessages((prev) => {
-                const updated = [...prev]
-                updated[updated.length - 1].sources = sources
-                return updated
-              })
-            }
-          );
-
-          setAnswering(false);
-        })()
-      }
+    if (!toolMode || toolName === "searchweb") {
+      sendChatMessage(ques, filesToSend);
 
     } else {
       if (toolMode && toolName === "draw") {
@@ -1034,9 +1072,13 @@ export default function Home() {
         generateStory()
       }
       if (toolMode && toolName === "learn") {
+
         if (question.trim() !== "") {
+
           (async () => {
+
             setAnswering(true);
+
             const lessonName = lessons[0]?.que ? question : await genLessonName(question)
 
             setSearched(true)
@@ -1099,20 +1141,13 @@ export default function Home() {
         }
       }
       if (toolMode && toolName === "summarise") {
-        if (question !== "") {
-          setShowSummarise(true);
-          (async () => {
-            try {
-              await summariseAI(question, (chunk) => {
-                setSummarisedText((prev) => {
-                  const text = prev + chunk
-                  return text
-                })
-              })
-            } catch (err) {
-              console.log(err);
-            }
-          })()
+        const summariseText = question
+        if (summariseText !== "") {
+          setToolMode(false)
+          setToolName("")
+          setTimeout(() => {
+            sendChatMessage(`Summarise this text:\n\n"${summariseText}"`, [], "summarise")
+          }, 50);
         }
       }
     }
@@ -1120,7 +1155,7 @@ export default function Home() {
 
   return (
     <>
-      <div ref={HomeRef} className={`home ${darkmode && "dark"} ${useBlack && darkmode ? "black" : ""}`} >
+      <div ref={HomeRef} className={`home ${darkmode && "dark"} ${useBlack && darkmode ? "black" : ""} `} >
         <div ref={homeWrapperRef} className={`home-wrapper`}>
           <LeftSideBar
             ref={leftSidebarRef}
@@ -1151,7 +1186,7 @@ export default function Home() {
           />
           <div ref={homeContainerRef} style={{
             // padding: searched ? (window.innerWidth < 768 ? "0" : (drawerCollapsed && searched ? (animations ? "10px 10px 10px 10px" : "0 0 0 80px") : (animations ? "10px 10px 10px 0" : "0 0 0 0"))) : "150px 0 0"
-          }} className={`homeContainer ${drawerOpened && "drawer"}`} >
+          }} className={`homeContainer ${drawerOpened && "drawer"} `} >
             <Header
               ref={headerRef}
               drawerCollapsed={drawerCollapsed}
@@ -1178,7 +1213,7 @@ export default function Home() {
             <div ref={introRef} className="intro invisible">
               <img className='sirianim' src={animation} alt="" />
               <div className='introTxtContainer'>
-                <h1 className={` welcomeMsgTitle ${user && user !== null && "loggedin"}`} ref={welcomeMsgTitle}>
+                <h1 className={` welcomeMsgTitle ${user && user !== null && "loggedin"} `} ref={welcomeMsgTitle}>
                   {
                     user && user !== null && user.displayName && user.displayName !== null ?
                       "Welcome, " + user.displayName.split(" ")[0]
@@ -1194,34 +1229,7 @@ export default function Home() {
                       "Your personal AI, ready to help you think better and move faster."
                   }
                 </p>
-
               </div>
-
-              {/* <p style={{
-                    fontSize: "20px"
-                  }}>How can i help you today?</p> */}
-              {/* <div className="selectionButtonContainer">
-                    <div className="selectionButton">
-                      <span className='material-symbols-outlined'>animated_images</span>
-                        <p>Create</p>
-                    </div>
-                    <div className="selectionButton">
-                      <span className='material-symbols-outlined'>code</span>
-                      <p>Code</p>
-                    </div>
-                    <div className="selectionButton">
-                      <span className='material-symbols-outlined'>assignment</span>
-                      <p>Summarise</p>
-                    </div>
-                    <div className="selectionButton">
-                       <span className='material-symbols-outlined'>ink_pen</span>
-                       <p>Write</p>
-                    </div>
-                    <div className="selectionButton">
-                      <span className='material-symbols-outlined'>school</span>
-                      <p>Learn</p>
-                    </div>
-                  </div> */}
             </div>
             <Result
               ref={resultRef}
@@ -1319,20 +1327,23 @@ export default function Home() {
               btnState={btnState}
               answering={answering}
               setOnSearch={setOnSearch}
-              searched={searched}
               placeHolder={customePlaceHolder !== "" ? customePlaceHolder : "Ask anything..."}
               onKeyDown={handleButtonClick}
               setBtnState={setBtnState}
               onLangChanged={setSearchLang}
+              darkmode={darkmode}
               toolMode={toolMode}
               toolName={toolName}
               setToolMode={setToolMode}
+              setToolName={setToolName}
               searchContainerRef={searchContainerRef}
               proEnabled={proEnabled}
               setProEnabled={setProEnabled}
               onSearch={onSearch}
               fileInputRef={fileInputRef}
               handleFileChange={handleFileChange}
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
               uploadedImage={uploadedImage}
               previewImage={previewImage}
               generateImage={generateImage}
@@ -1342,6 +1353,9 @@ export default function Home() {
               setShowSuggestions={setShowSuggestions}
               setSuggestionsList={setSuggestionsList}
               toolsRef={toolsRef}
+              expanded={expanded}
+              setExpanded={setExpanded}
+              searched={searched}
             />
             <SearchTools
               ref={toolsRef}
@@ -1356,6 +1370,7 @@ export default function Home() {
               setShowProjectCreation={setShowProjectCreation}
               setShowSuggestions={setShowSuggestions}
               setSuggestionsList={setSuggestionsList}
+              setExpanded={setExpanded}
             />
             {
               showSuggestions &&
@@ -1426,7 +1441,7 @@ export default function Home() {
               </div>
               <div className="genImageBody">
                 <img
-                  src={`data:${canvasImages[showGenImage.index].img.mimeType};base64,${canvasImages[showGenImage.index].img.base64Data}`}
+                  src={`data:${canvasImages[showGenImage.index].img.mimeType}; base64, ${canvasImages[showGenImage.index].img.base64Data} `}
                   alt="Generated"
                 />
               </div>
@@ -1546,49 +1561,6 @@ export default function Home() {
             </div>
           </div>
         }
-
-        {
-          showSummarise &&
-          <div className="summariseContainer">
-            <div className="summariseWrapper" ref={summariseWrapper}>
-              <div className="summariseHeader">
-                <h2>Summarise text</h2>
-                <div className="close-btn btn" onClick={() => {
-                  summariseWrapper.current.classList.add("hide")
-                  setTimeout(() => {
-                    setShowSummarise(false)
-                    setSummarisedText("")
-                  }, 200)
-                }} >
-                  <span className="material-symbols-outlined">close</span>
-                </div>
-              </div>
-              <div className="summariseBody">
-                {
-                  summarisedText && summarisedText !== "" ? (
-                    <div className='resans markdown-output' >
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {summarisedText}
-                      </ReactMarkdown>
-                    </div>
-
-                  ) : (
-                    <>
-                      <div className='loadingBars'>
-                        <div className='loadingBar' />
-                        <div className='loadingBar' />
-                        <div className='loadingBar' />
-                      </div>
-                    </>
-                  )
-                }
-
-              </div>
-            </div>
-          </div>
-        }
-
-
 
         {
           showSources &&

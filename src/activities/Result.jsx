@@ -113,7 +113,7 @@ const Result = forwardRef(({
         <div>
           <span className="material-symbols-outlined">error</span>
           <p>{children}</p>
-          {/* </div>
+        </div>
         <div className="error-box-options">
           <div className="error-option" onClick={() => {
             setSelectedModel("auto")
@@ -124,8 +124,8 @@ const Result = forwardRef(({
             }, 500);
           }}>
             <span className="material-symbols-outlined">refresh</span>
-            Retry with auto mode
-          </div> */}
+            Retry
+          </div>
         </div>
       </div>
     )
@@ -267,6 +267,7 @@ const Result = forwardRef(({
   if (toolMode) {
     if (toolName === "story") itemName = stories
     else if (toolName === "learn") itemName = lessons
+    else if (toolName === "searchweb") itemName = messages
   } else {
     itemName = messages
   }
@@ -467,16 +468,39 @@ const Result = forwardRef(({
       <div className="result-body">
         {
           itemName?.map((item, index) =>
-            <div key={index} ref={index === (toolMode ? toolName === "story" ? stories.length : lessons.length : messages.length) - 1 ? lastElement : null} className="responseDiv">
-              <p className={`list-title ${toolMode && toolName === "story" ? "story" : ""}`}>                {toolMode
-                ? toolName === "story"
-                  ? item.title
-                  : item.que
-                : item.que
-              }
-              </p>
+            <div key={index} ref={index === (toolMode ? toolName === "story" ? stories.length : toolName === "searchweb" ? messages.length : lessons.length : messages.length) - 1 ? lastElement : null} className="responseDiv">
+              <div>
+                {item.files && item.files.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px', marginBottom: '10px', justifyContent: "flex-end" }}>
+                    {item.files.map((fileItem, fileIndex) => (
+                      <div key={fileIndex} className="uploaded-file-item" style={{ paddingRight: '12px', minWidth: 'auto', height: '50px' }}>
+                        <div className="file-icon-wrapper" style={{ width: '34px', height: '34px' }}>
+                          {fileItem.previewUrl ? (
+                            <img src={fileItem.previewUrl} alt={fileItem.name} />
+                          ) : (
+                            <span className="material-symbols-outlined file-icon" style={{ fontSize: '18px' }}>description</span>
+                          )}
+                        </div>
+                        <div className="fileInfo">
+                          <h4 style={{ fontSize: '12px', maxWidth: '150px' }}>{fileItem.name}</h4>
+                          <p style={{ fontSize: '10px' }}>{fileItem.size > 1024 * 1024 ? (fileItem.size / (1024 * 1024)).toFixed(1) + ' MB' : (fileItem.size / 1024).toFixed(1) + ' KB'}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className={`list-title ${toolMode && toolName === "story" ? "story" : ""}`}>
+                  {toolMode
+                    ? toolName === "story"
+                      ? item.title
+                      : item.que
+                    : item.que
+                  }
+                </p>
+              </div>
+
               {
-                !toolMode && item.sources && item.sources.length !== 0 &&
+                (!toolMode || toolName === "searchweb") && item.sources && item.sources.length !== 0 &&
                 // <div className="filters">
                 //   <div className="filter active">
                 //     Answer
@@ -489,15 +513,17 @@ const Result = forwardRef(({
                   gap: "5px",
                   alignItems: "center",
                   opacity: "0.4",
-                  marginTop: "10px"
+                  marginTop: "10px",
+                  fontSize: "14px"
                 }}><span className="material-symbols-outlined" style={{
-                  fontSize: "16px"
+                  fontSize: "14px",
+                  marginBottom: "2px"
                 }}>language</span>Searched Web</p>
               }
 
               {/* <div className='line' ></div> */}
               <div id="response" style={{
-                paddingBottom: index === (toolMode ? toolName === "story" ? stories.length : lessons.length : messages.length) - 1 ? "150px" : "0"
+                paddingBottom: index === (toolMode ? toolName === "story" ? stories.length : toolName === "learn" ? lessons.length : messages.length : messages.length) - 1 ? "150px" : "0"
               }}>
                 {
                   (item.ans || item.content || item.reasoning) && (item.ans || item.content || item.reasoning) !== "" ?
@@ -524,8 +550,6 @@ const Result = forwardRef(({
                             </div>
 
                           }
-
-
 
                           {item.images && item.images.length > 0 && (
                             <div className="image-results">
@@ -595,7 +619,7 @@ const Result = forwardRef(({
                         </div>
 
                         {
-                          (toolMode && toolName) !== "story" &&
+                          toolName !== "story" &&
                           <div className={`actions ${item.ans && item.ans.startsWith("> [!error]") ? "hide" : (answering || "active")}`}>
                             <div className="quickActions">
                               <div className="actionBtn action-favorite" onClick={(e) => {
@@ -664,31 +688,17 @@ const Result = forwardRef(({
                       item?.steps && item.steps.length > 0 && (
                         <ul className="steps">
                           <div className="loading loading01">
-                            {
-                              selectedModel == "casual" ? (
-                                <div>
-                                  <span>T</span>
-                                  <span>y</span>
-                                  <span>p</span>
-                                  <span>i</span>
-                                  <span>n</span>
-                                  <span>g</span>
-                                </div>)
-                                : (
-                                  <div>
-                                    <span>W</span>
-                                    <span>o</span>
-                                    <span>r</span>
-                                    <span>k</span>
-                                    <span>i</span>
-                                    <span>n</span>
-                                    <span>g</span>
-                                  </div>
-                                )
-                            }
-
+                            <div>
+                              <span>W</span>
+                              <span>o</span>
+                              <span>r</span>
+                              <span>k</span>
+                              <span>i</span>
+                              <span>n</span>
+                              <span>g</span>
+                            </div>
                           </div>
-                          {selectedModel !== "casual" && item.steps.map((step, index) => (
+                          {item.steps.map((step, index) => (
                             <li key={index}>{step}</li>
                           ))}
                         </ul>

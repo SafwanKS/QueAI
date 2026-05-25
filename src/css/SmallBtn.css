@@ -1,8 +1,8 @@
-.smallBtn{
+.smallBtn {
   height: 40px;
   aspect-ratio: 1/1;
   border-radius: 50%;
-  box-shadow: 0, 0 10px rgba(0,0,0,1);
+  box-shadow: 0, 0 10px rgba(0, 0, 0, 1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,59 +12,58 @@
   position: relative;
   cursor: pointer;
 }
-.smallBtn:hover{
-  background: var(--button-onhover)
+
+.smallBtn:hover {
+  /* background: var(--button-onhover) */
 }
-.smallBtn span{
+
+.smallBtn span {
   pointer-events: none;
 }
-.smallBtn.inactive{
-  /* background-color: var(--button-bg); */
-  /* background-color: rgb(255, 240, 209); */
-  background-color: rgb(223, 223, 223) ;
 
+.smallBtn.inactive {
   opacity: 0.5;
   pointer-events: none;
 }
 
-.home.dark .smallBtn.smallBtn.inactive{
-  background-color: rgb(27, 26, 23);
-  
+.home.dark .smallBtn.smallBtn.inactive {
+  /* background-color: rgb(27, 26, 23); */
+
 }
 
-.smallBtn.active{
+.smallBtn.active {
   /* background-color: var(--button-active); */
   /* background-color: rgb(212, 212, 212); */
-  background-color: rgb(70, 70, 255) ;
+  background-color: rgb(70, 70, 255);
 
   color: white;
   pointer-events: auto;
 }
 
-.home.dark .smallBtn.smallBtn.active{
+.home.dark .smallBtn.smallBtn.active {
   background-color: rgb(33, 30, 192);
 }
 
 
-.smallBtn.active.draw{
+.smallBtn.active.draw {
   background-color: rgb(255, 0, 0);
 }
 
-.smallBtn.active.summarise{
+.smallBtn.active.summarise {
   background-color: rgb(19, 57, 182);
 }
 
 
-.smallBtn.active.code{
+.smallBtn.active.code {
   background-color: rgb(14, 112, 23);
 }
 
 
-.smallBtn.active.story{
+.smallBtn.active.story {
   background-color: rgb(55, 11, 136);
 }
 
 
-.smallBtn.active.learn{
+.smallBtn.active.learn {
   background-color: rgb(138, 87, 11);
 }

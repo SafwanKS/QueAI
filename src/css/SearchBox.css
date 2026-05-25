@@ -7,6 +7,33 @@
   gap: 10px;
   z-index: 100;
   pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, white 20%);
+}
+
+.home.dark .searchBoxContainer {
+  background: linear-gradient(to bottom, transparent 0%, var(--main-bg) 20%);
+}
+
+.home.black .searchBoxContainer {
+  background: linear-gradient(to bottom, transparent 0%, #000 20%);
+}
+
+
+.searchBoxContainer.onsearch {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  width: 100%;
+  justify-content: center;
+  padding: 0 0 30px 0;
+}
+
+.searchBoxContainer.onsearch::after {
+  content: "QueAI can make mistakes, so double check it.";
+  position: absolute;
+  font-size: 10px;
+  bottom: 10px;
+  opacity: 0.5;
 }
 
 .searchBoxContainer.hide {
@@ -17,49 +44,51 @@
 @media (max-width: 768px) {
   .searchBoxContainer {
     position: fixed;
-    bottom: 10px !important;
+    bottom: 0px !important;
     left: 0;
     width: 100%;
     justify-content: center;
+    padding: 0 0 20px 0;
   }
 }
 
 .searchBox {
   width: 90%;
-  min-height: 110px;
-  /* height: 110px; */
+  min-height: 65px;
   max-height: ;
   max-width: 670px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-  border-radius: 30px;
+  border-radius: 50px;
   padding: 10px;
   position: relative;
   margin: 0 10px;
   transition: height 0.3s ease, flex-direction 0.3s ease;
-  background: rgba(255, 255, 255, 0.435);
   pointer-events: auto;
-  /* background-color: rgb(255, 247, 222) ; */
-
-  /* background-color: #fffcf6; */
-
-  /* border: 1px solid rgb(255, 214, 165) ; */
-  /* box-shadow: 0 0 10px 0px rgb(247, 208, 157); */
-  border: 1px solid rgb(226, 226, 226);
   box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.082);
   background-color: rgb(255, 255, 255);
-  /* backdrop-filter: blur(10px); */
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 5px;
+}
+
+.searchBox.expanded {
+  grid-template-rows: auto auto;
+  align-items: flex-end;
+  border-radius: 30px;
+}
+
+.searchBox.toolmode {
+  column-gap: 0;
 }
 
 
 .home.dark .searchBox {
   background-color: var(--secondary-bg);
   background-color: #0c1019fc;
-  background-color: #121722fc;
+  background-color: #131926;
   /* box-shadow: 0 0 5px 0px rgb(104, 8s7, 65); */
-  border: 1px solid rgb(33, 34, 60);
+  border: 1px solid rgb(26, 27, 52);
   box-shadow: none;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.517);
 
@@ -73,25 +102,28 @@
   --angle: 0deg;
   content: "";
   position: absolute;
-  height: calc(100% + 5px);
-  width: calc(100% + 5px);
-  background-image: conic-gradient(from var(--angle), red, blue, green, red);
+  height: calc(100% + 4px);
+  width: calc(100% + 4px);
+  background-image: conic-gradient(from var(--angle), rgb(245, 97, 97), rgb(116, 120, 253), rgb(133, 255, 137), rgb(221, 93, 132));
   top: 50%;
   left: 50%;
   translate: -50% -50%;
   z-index: -1;
-  border-radius: 32px;
+  border-radius: 50px;
   opacity: 0;
   transition: opacity 0.5s ease;
   animation: 4s spin linear infinite;
-
 }
 
-.searchBox.toolmode::before,
-.searchBox.toolmode::after {
-  border-radius: 50px;
+.home.dark .searchBox::after,
+.home.dark .searchBox::before {
+  background-image: conic-gradient(from var(--angle), rgb(255, 0, 0), rgb(0, 21, 255), rgb(0, 255, 0), rgb(255, 0, 0));
 }
 
+.searchBox.expanded::before,
+.searchBox.expanded::after {
+  border-radius: 30px;
+}
 
 .searchBox::after {
   filter: blur(0.5rem);
@@ -109,123 +141,21 @@
 }
 
 .searchBox.anim::after {
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .home.dark .searchBox.anim::after {
-  opacity: 1;
+  opacity: 0.5;
 }
 
 .searchBox.onsearch {
   max-width: 650px;
 }
 
+/* 
 .searchBox.toolmode {
   height: unset;
-}
-
-
-.searchBoxContainer.onsearch {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  width: 100%;
-  justify-content: center;
-}
-
-.searchBoxContainer.onsearch::after {
-  /* content: "QueAI can make mistakes, so double check it."; */
-  position: absolute;
-  font-size: 10px;
-  bottom: -20px;
-  opacity: 0.5;
-}
-
-@media (max-width: 768px) {
-
-  .searchBoxContainer.onsearch {
-
-    position: absolute;
-    bottom: 10px !important;
-  }
-}
-
-.searchBox.active {
-  background-color: red;
-  z-index: 10;
-}
-
-.searchBox.active::after,
-.searchBox.active::before {
-  content: "";
-  position: absolute;
-  height: 105%;
-  width: 101%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50px;
-  background-image: conic-gradient(from var(--angle), transparent 50%, blue);
-  z-index: -1;
-  animation: spinBox 3s linear infinite;
-}
-
-
-@media (max-width: 768px) {
-  /* .searchBox.active::after, .searchBox.active::before{
-    height: 106%;
-    width: 102%;
-    background-image: conic-gradient(from var(--angle), transparent 50%, rgb(40, 40, 255));
-    animation: spinBox 3s linear infinite ;
-  } */
-
-  .searchBox.anim::after,
-  .searchBox.anim::before {
-    height: 104%;
-    width: 101%;
-  }
-}
-
-/* 
-.searchBox.active.red{
-  background-color: #2f1a1a;
-}
-.searchBox.active.green{
-  background-color: #1b2f1a;
-}
-.searchBox.active.blue{
-  background-color: #1a1a2f;
-}
-.searchBox.active.purple{
-  background-color: #241a2f;
-}
-.searchBox.active.yellow{
-  background-color: #2f2d1a;
-}
-
-/* .searchBox.red.active::after, .searchBox.red.active::before{
-  background-image: conic-gradient(from var(--angle), transparent 50%,  rgb(255, 0, 0));
-}
-
-.searchBox.blue.active::after, .searchBox.blue.active::before{
-  background-image: conic-gradient(from var(--angle), transparent 50%,  rgb(0, 60, 255));
-}
-
-.searchBox.green.active::after, .searchBox.green.active::before{
-  background-image: conic-gradient(from var(--angle), transparent 50%,  rgb(0, 255, 21));
-}
-
-.searchBox.purple.active::after, .searchBox.purple.active::before{
-  background-image: conic-gradient(from var(--angle), transparent 50%,  rgb(89, 0, 255));
-}
-
-.searchBox.yellow.active::after, .searchBox.yellow.active::before{
-  background-image: conic-gradient(from var(--angle), transparent 50%,  rgb(255, 153, 0));
 } */
-.searchBox.active::after {
-  filter: blur(10px);
-  opacity: 1;
-}
 
 .searchBox .chipContainer {
   flex: 1;
@@ -307,7 +237,11 @@
 }
 
 .model-selector-list-item:hover {
-  background-color: #f5f5f514;
+  background-color: #0000000b;
+}
+
+.home.dark .model-selector-list-item:hover {
+  background-color: #ffffff11;
 }
 
 .model-selector-list-item.switch-container {
@@ -318,9 +252,9 @@
 
 .model-selector-list-item p:first-child {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 0.5px;
-  color: rgb(216, 216, 216);
+  color: rgb(115, 114, 114);
   display: flex;
   gap: 5px;
 }
@@ -330,8 +264,16 @@
 }
 
 .model-selector-list-item p:last-child {
-  color: #818181;
+  color: #afafaf;
   font-size: 12px;
+}
+
+.home.dark .model-selector-list-item p:first-child {
+  color: #cacaca;
+}
+
+.home.dark .model-selector-list-item p:last-child {
+  color: #8e8e8e;
 }
 
 .model-selector-list-item .switch {
@@ -354,7 +296,7 @@
 }
 
 .more-models:hover {
-  background-color: #f5f5f514;
+  background-color: #0000000b;
 }
 
 .home.dark .more-models {
@@ -380,64 +322,80 @@
 
 
 .searchBoxInputContainer {
-  padding-top: 10px;
+  /* padding-top: 10px; */
   width: 100%;
   display: flex;
   align-items: center;
+  grid-column: 2;
+  grid-row: 1;
 }
 
-.searchBox.toolmode .searchBoxInputContainer {
+/* .searchBox.toolmode .searchBoxInputContainer {
   padding-top: 0 !important;
-}
+} */
 
 .searchBox.toolmode .chipContainer {
-  display: none;
+  /* display: none; */
 }
 
-.searchBoxInputContainer .searchTool {
+.searchTool {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   background-color: #E9EFF7;
   border-radius: 30px;
-  padding: 10px 15px;
+  padding: 8px 12px;
   position: relative;
+  /* height: 40px; */
+  width: fit-content;
+  margin: auto 0;
 }
 
-.home.dark .searchBoxInputContainer .searchTool {
+.home.dark .searchTool {
   background-color: #ffffff10;
 }
 
-.searchBoxInputContainer .searchTool span {
-  font-size: 1em;
+.searchTool span {
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
-.searchBoxInputContainer .searchTool span.draw {
+.searchTool span.draw {
   color: rgb(247, 53, 53);
 }
 
-.searchBoxInputContainer .searchTool span.code {
+.home.dark .searchTool span.draw {
+  color: rgb(247, 53, 53);
+}
+
+.searchTool span.code {
+  color: rgb(0, 193, 16);
+}
+
+.home.dark .searchTool span.code {
   color: rgb(45, 250, 62);
 }
 
-.searchBoxInputContainer .searchTool span.summarise {
+.searchTool span.summarise {
   color: rgb(53, 98, 247);
 }
 
-.searchBoxInputContainer .searchTool span.story {
+.searchTool span.story {
   color: rgb(121, 53, 247);
 }
 
-.searchBoxInputContainer .searchTool span.learn {
+.searchTool span.learn {
   color: rgb(247, 170, 53);
 }
 
 
-.searchBoxInputContainer .searchTool p {
+.searchTool p {
   text-transform: capitalize;
+  font-size: 14px;
 }
 
-.searchBoxInputContainer .searchTool .close-btn,
+.searchTool .close-btn,
 .filesContainer .close-btn {
   height: 20px;
   width: 20px;
@@ -446,19 +404,32 @@
   right: 0;
   background-color: rgb(255, 255, 255);
   box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.164);
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.searchTool:hover .close-btn {
+  opacity: 1;
 }
 
 
-.searchBoxInputContainer .searchTool .close-btn span,
+.searchTool .close-btn span,
 .filesContainer .close-btn span {
   color: black;
   font-weight: 800;
   font-size: 14px;
 }
 
+.home.dark .searchTool .close-btn span,
+.home.dark .filesContainer .close-btn span {
+  color: white;
+}
+
 .searchBoxButtonContainer {
   width: 100%;
   display: flex;
+  grid-column: 3;
+  grid-row: 1;
 }
 
 /* @media (min-width: 768px){
@@ -479,7 +450,7 @@
   font-size: 16px;
   font-family: GeneralSans-Regular;
   font-family: "Poppins";
-  padding: 0 10px;
+  /* padding: 0 10px; */
   max-height: 120px;
   word-wrap: break-word;
   resize: none;
@@ -503,53 +474,34 @@
   background: rgba(40, 57, 70, 1);
 }
 
-.searchBox.active,
-.searchBox.toolmode {
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  min-height: unset;
-  min-height: 70px;
-  max-height: 70px;
-  border-radius: 50px;
-  /* background: #0a1333; */
 
-
-
-  transition: height 0.3s ease;
-
-}
-
-.searchBox.toolmode {
+/* .searchBox.toolmode {
   max-height: 200px;
-}
+} */
 
-.searchBox.active .searchBoxInputContainer,
-.searchBox.toolmode .searchBoxInputContainer {
+/* .searchBox.toolmode .searchBoxInputContainer {
   flex: 1;
   align-items: center;
   padding-top: 0;
-}
+} */
 
-
-
-.searchBox.active .searchBoxButtonContainer,
-.searchBox.toolmode .searchBoxButtonContainer {
+/* .searchBox.toolmode .searchBoxButtonContainer {
   width: auto;
-}
+} */
 
 
 .searchBox .sendBtn {
-  position: absolute;
+  /* position: absolute;
   bottom: 10px;
-  right: 10px;
+  right: 10px; */
 
   background-color: rgba(255, 255, 255, 0.05);
+  grid-column: 4;
+  grid-row: 1;
 }
 
-.searchBox.active .sendBtn,
 .searchBox.toolmode .sendBtn {
-  bottom: 15px;
+  /* bottom: 15px; */
 }
 
 .searchBox.toolmode .add-btn {
@@ -572,10 +524,12 @@
   border-radius: 50%;
   margin-right: 5px;
   position: relative;
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .add-btn span {
-  font-size: 20px;
+  font-size: 22px;
   transition: all 0.3s;
   color: #3d3d3d;
 
@@ -602,7 +556,7 @@
 }
 
 .home.dark .add-btn.active {
-  background-color: rgb(65, 61, 55);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 .add-btn.active {
@@ -626,20 +580,21 @@
   /* stick it above the button */
   left: 0;
   z-index: 1000;
-  border-radius: 15px;
+  border-radius: 20px;
   pointer-events: auto;
   margin-bottom: 5px;
   /* small gap */
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.137);
-  padding: 5px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .home.dark .searchAddOnes {
   background-color: var(--secondary-bg);
-  box-shadow: 0px 0px 5px 1px rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0px 0px 30px 5px rgba(0, 0, 0, 0.205);
+  border: 1px solid rgba(255, 255, 255, 0.088);
 }
 
 .searchAddOne {
@@ -647,25 +602,40 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px;
+  padding: 8px 10px;
   cursor: pointer;
   border-radius: 10px;
 }
 
-.searchAddOne:hover {
+.searchAddOne.active {
+  color: blue;
+  background-color: rgb(240, 240, 255);
+}
+
+.home.dark .searchAddOne.active {
+  color: rgb(113, 113, 255);
+  background-color: rgba(42, 42, 162, 0.209);
+}
+
+.searchAddOne:hover,
+.searchAddOne.selected {
   background-color: rgb(247, 247, 247);
 }
 
-.home.dark .searchAddOne:hover {
+.home.dark .searchAddOne:hover,
+.home.dark .searchAddOne.selected {
   background-color: rgba(255, 255, 255, 0.089);
 }
 
+
 .searchAddOne span {
-  font-size: 20px;
+  font-size: 18px;
+  margin-bottom: 2px;
 }
 
 .searchAddOne p {
   font-size: 14px;
+  font-family: "Poppins", sans-serif;
 }
 
 .searchAddOnes .line {
@@ -691,4 +661,187 @@
   width: 100%;
   border-radius: 20px;
   object-fit: cover;
+}
+
+
+.searchBox.expanded .searchBoxInputContainer {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  padding: 10px;
+}
+
+.searchBox.has-files.expanded .searchBoxFilesContainer {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.searchBox.has-files.expanded .searchBoxInputContainer {
+  grid-row: 2;
+}
+
+.searchBox.expanded .add-btn {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.searchBox.has-files.expanded .add-btn {
+  grid-row: 3;
+}
+
+.searchBox.expanded .searchBoxButtonContainer {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.searchBox.has-files.expanded .searchBoxButtonContainer {
+  grid-row: 3;
+}
+
+.searchBox.expanded .sendBtn {
+  grid-column: 4;
+  grid-row: 2;
+}
+
+.searchBox.has-files.expanded .sendBtn {
+  grid-row: 3;
+}
+
+
+@media (max-width:768px) {
+  .searchBoxButtonContainer {
+    display: none;
+  }
+}
+
+.searchBoxFilesContainer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 10px 0 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+.uploaded-file-item {
+  position: relative;
+  /* height: 60px; */
+  border-radius: 12px;
+  /* background-color: #f5f5f5; */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px;
+  /* padding-right: 36px; */
+  gap: 8px;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  /* min-width: 140px; */
+  border: 1px solid #e9e9e9;
+}
+
+.home.dark .uploaded-file-item {
+  /* background-color: rgba(25  5, 255, 255, 0.05); */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.uploaded-file-item .file-icon-wrapper {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  flex-shrink: 0;
+}
+
+.home.dark .uploaded-file-item .file-icon-wrapper {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.uploaded-file-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploaded-file-item .file-icon {
+  font-size: 18px;
+  margin-bottom: 2px;
+  color: #666;
+}
+
+.home.dark .uploaded-file-item .file-icon {
+  color: #ccc;
+}
+
+.uploaded-file-item .fileInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.uploaded-file-item .fileInfo h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.home.dark .uploaded-file-item .fileInfo h4 {
+  color: #eee;
+}
+
+.uploaded-file-item .fileInfo p {
+  margin: 0;
+  margin-top: 2px;
+  font-size: 11px;
+  color: #888;
+}
+
+.home.dark .uploaded-file-item .fileInfo p {
+  color: #aaa;
+}
+
+.uploaded-file-item .remove-file-btn {
+  /* position: absolute; */
+  /* top: 50%; */
+  /* transform: translateY(-50%); */
+  /* right: 8px; */
+  background: transparent;
+  color: #888;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+}
+
+.uploaded-file-item .remove-file-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.home.dark .uploaded-file-item .remove-file-btn {
+  color: #aaa;
+}
+
+.home.dark .uploaded-file-item .remove-file-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.uploaded-file-item .remove-file-btn span {
+  font-size: 18px;
 }

@@ -414,7 +414,7 @@
 }
 
 .home.dark .tool {
-  border: 1px solid rgb(51, 51, 51);
+  border: 1px solid rgb(34, 34, 34);
 }
 
 
@@ -440,25 +440,23 @@
   text-overflow: ellipsis;
 }
 
-.tool:nth-child(1) span {
-  color: rgb(247, 53, 53);
+.tool:nth-child(1) svg {
   color: rgb(173, 19, 19);
 }
 
-.tool:nth-child(2) span {
-  color: rgb(45, 250, 62);
+.tool:nth-child(2) svg {
   color: rgb(42, 180, 53);
 }
 
-.tool:nth-child(3) span {
+.tool:nth-child(3) svg {
   color: rgb(53, 98, 247);
 }
 
-.tool:nth-child(4) span {
+.tool:nth-child(4) svg {
   color: rgb(121, 53, 247);
 }
 
-.tool:nth-child(5) span {
+.tool:nth-child(5) svg {
   color: rgb(247, 170, 53);
 }
 
@@ -527,7 +525,8 @@
   padding: 0 10px;
   /* border-bottom: 1px solid #333232; */
   z-index: 100;
-  /* position: fixed; */
+  position: sticky;
+  top: 0;
   background-color: white;
 }
 
@@ -541,7 +540,7 @@
 }
 
 .home.dark .result-header,
-.canvas .canvas-header {
+.home.dark .canvas-header {
   box-shadow: 0 10px 10px rgb(1, 5, 13);
   background-color: #01050d;
 }
@@ -959,7 +958,7 @@
 .home.dark .summariseWrapper,
 .home.dark .sourcesWrapper,
 .home.dark .projectCreateWrapper {
-  background-color: #090d16;
+  background-color: #090d16cb;
 }
 
 /* .summariseWrapper{

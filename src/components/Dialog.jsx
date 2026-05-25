@@ -14,8 +14,10 @@ function Dialog({
   return (
     <div className='overlay'>
       <div className={`dialog ${type === 'selection' && 'selection'} ${isVisible && 'show'} `}>
-        {type === 'selection' ? <span className='material-symbols-outlined'>{icon}</span> : <></>}
-        <h1 className='dTitle'>{title}</h1>
+        <div className="dialog-head">
+          {type === 'selection' ? <span className='material-symbols-outlined'>{icon}</span> : <></>}
+          <h1 className='dTitle'>{title}</h1>
+        </div>
         {
           type === 'normal' ?
             <p className='dMessage'>

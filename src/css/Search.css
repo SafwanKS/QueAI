@@ -143,7 +143,7 @@
 }
 
 #response {
-  margin-top: 10px;
+  /* margin-top: 10px; */
   font-family: customFonts;
   max-width: 100%;
   white-space: pre-wrap;
@@ -564,7 +564,7 @@
 
 @media (max-width: 768px) {
   .result-body {
-    max-height: calc(100vh - 150px) !important;
+    /* max-height: calc(100vh - 150px) !important; */
     overflow-y: scroll;
   }
 }
@@ -658,10 +658,10 @@ hr {
 
 .list-title {
   margin-left: auto;
-  padding: 10px 20px;
+  padding: 10px 16px;
   width: fit-content;
   max-width: 50%;
-  border-radius: 20px 0 20px 20px;
+  border-radius: 20px;
   user-select: text;
   pointer-events: auto;
   cursor: text;
@@ -695,7 +695,7 @@ pre {
   padding: 20px 20px;
   overflow-x: auto;
   overflow-y: auto;
-  border-radius: 10px;
+  border-radius: 30px;
   background-color: #f3f3f3;
   position: relative;
   word-wrap: break-word;

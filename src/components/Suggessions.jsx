@@ -1,5 +1,6 @@
 import { useState, useRef, forwardRef } from "react";
 import "../css/Suggestions.css"
+import { Code2, FileText, PenLine, GraduationCap } from 'lucide-react'
 
 const Suggestions = forwardRef(({ suggestions, toolName, generateStory }, ref) => {
 
@@ -15,7 +16,10 @@ const Suggestions = forwardRef(({ suggestions, toolName, generateStory }, ref) =
                         generateStory(suggestion)
                     }
                 }}>
-                    <span className="material-symbols-outlined">{toolName === "code" ? "code" : toolName === "story" ? "ink_pen" : "school"}</span>
+                    {toolName === "code" ? <Code2 size={17} /> :
+                        toolName === "summarise" ? <FileText size={17} /> :
+                            toolName === "story" ? <PenLine size={17} /> :
+                                toolName === "learn" && <GraduationCap size={17} />}
                     <p>{suggestion}</p>
                 </div>
             ))}

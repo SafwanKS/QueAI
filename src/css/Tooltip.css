@@ -1,0 +1,105 @@
+.tooltip-wrapper {
+    display: inline-block;
+    position: relative;
+}
+
+/* Base styles matching your image */
+.tooltip-tip {
+    position: absolute;
+    background: #e3e3e3;
+    /* Light gray from image */
+    color: #202124;
+    /* Dark text */
+    padding: 8px 16px;
+    border-radius: 20px;
+    /* Pill shape */
+    font-size: 14px;
+    font-family: sans-serif;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+    /* Smooth fade in */
+    opacity: 0;
+    animation: fadeIn 0.2s ease-in-out forwards;
+}
+
+/* Base styles for the arrow (caret) */
+.tooltip-tip::after {
+    content: '';
+    position: absolute;
+    border-width: 6px;
+    border-style: solid;
+}
+
+/* --- BOTTOM: Tooltip is below, Arrow points UP --- */
+.tooltip-tip.bottom {
+    top: calc(100% + 10px);
+    /* Push down */
+    left: 50%;
+    transform: translateX(-50%);
+    /* Center horizontally */
+}
+
+.tooltip-tip.bottom::after {
+    bottom: 100%;
+    /* Top of the tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: transparent transparent #e3e3e3 transparent;
+}
+
+/* --- TOP: Tooltip is above, Arrow points DOWN --- */
+.tooltip-tip.top {
+    bottom: calc(100% + 10px);
+    /* Push up */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip-tip.top::after {
+    top: 100%;
+    /* Bottom of the tooltip */
+    left: 50%;
+    transform: translateX(-50%);
+    border-color: #e3e3e3 transparent transparent transparent;
+}
+
+/* --- RIGHT: Tooltip is right, Arrow points LEFT --- */
+.tooltip-tip.right {
+    left: calc(100% + 10px);
+    /* Push right */
+    top: 50%;
+    transform: translateY(-50%);
+    /* Center vertically */
+}
+
+.tooltip-tip.right::after {
+    right: 100%;
+    /* Left of the tooltip */
+    top: 50%;
+    transform: translateY(-50%);
+    border-color: transparent #e3e3e3 transparent transparent;
+}
+
+/* --- LEFT: Tooltip is left, Arrow points RIGHT --- */
+.tooltip-tip.left {
+    right: calc(100% + 10px);
+    /* Push left */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tooltip-tip.left::after {
+    left: 100%;
+    /* Right of the tooltip */
+    top: 50%;
+    transform: translateY(-50%);
+    border-color: transparent transparent transparent #e3e3e3;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}

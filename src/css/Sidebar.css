@@ -56,12 +56,11 @@
 }
 
 
-.sidebar-collapse-btn span {
-  font-size: 20px;
+.sidebar-collapse-btn svg {
   color: rgb(85, 85, 85);
 }
 
-.home.dark .sidebar-collapse-btn span {
+.home.dark .sidebar-collapse-btn svg {
   color: rgb(190, 190, 190);
 }
 
@@ -407,10 +406,10 @@
   color: rgb(190, 190, 190);
 }
 
-.home.dark .new_chat_button span,
-.home.dark .gallery_btn span,
-.home.dark .lessons_btn span,
-.home.dark .stories_btn span {
+.home.dark .new_chat_button svg,
+.home.dark .gallery_btn svg,
+.home.dark .lessons_btn svg,
+.home.dark .stories_btn svg {
   color: rgb(190, 190, 190);
 }
 
@@ -512,7 +511,7 @@
 
   .left-sidebar.open {
     transform: translateX(0%);
-    overflow: hidden;
+    /* overflow: hidden; */
     transition: transform 0.4s ease;
   }
 
@@ -730,4 +729,13 @@
   font-size: 27px;
   margin-left: 2px;
   margin-bottom: 2px;
+}
+
+.new_chat_button svg,
+.gallery_btn svg,
+.lessons_btn svg,
+.stories_btn svg {
+  flex-shrink: 0;
+  min-width: 18px;
+  min-height: 18px;
 }

@@ -6,7 +6,7 @@ import '../css/Sidebar.css'
 import Logo from '../assets/logosmall.png';
 import { Menu, MenuOption } from "../components/Menu.jsx";
 import { collection, deleteDoc, doc } from "firebase/firestore";
-
+import { SquarePen, Images, Code2, FolderOpen, Settings } from 'lucide-react'
 import GlobalTooltip from "./GlobalTooltip";
 
 const LeftSideBar = forwardRef(({
@@ -89,6 +89,8 @@ const LeftSideBar = forwardRef(({
     return () => document.removeEventListener("click", handleOutsideClick)
   }, [])
 
+  const iconProps = { size: 18, strokeWidth: 1.8 }
+
   return (
     <div ref={ref} className={`left-sidebar ${!(window.innerWidth < 768) ? (drawerCollapsed && "collapsed") : ""}`} style={{
       // display: window.innerWidth < 768 && onSearch ? "none" : "flex",
@@ -123,7 +125,7 @@ const LeftSideBar = forwardRef(({
             }, 200);
           }
           }>
-            <span className="material-symbols-outlined">edit_square</span>
+            <SquarePen {...iconProps} />
             <p>New chat</p>
             <div className="gap"></div>
             {
@@ -146,7 +148,7 @@ const LeftSideBar = forwardRef(({
             }, 200);
           }
           }>
-            <span className="material-symbols-outlined">animated_images</span>
+            <Images {...iconProps} />
             <p>Gallery</p>
           </div>
           <div className="stories_btn" onClick={(e) => {
@@ -157,7 +159,7 @@ const LeftSideBar = forwardRef(({
             }, 200);
           }
           }>
-            <span className="material-symbols-outlined">code</span>
+            <Code2 {...iconProps} />
             <p>Projects</p>
           </div>
           <div className="lessons_btn" onClick={(e) => {
@@ -174,7 +176,7 @@ const LeftSideBar = forwardRef(({
             }, 200);
           }
           }>
-            <span className="material-symbols-outlined">folder</span>
+            <FolderOpen {...iconProps} />
             <p>Library</p>
           </div>
         </div>
@@ -256,7 +258,7 @@ const LeftSideBar = forwardRef(({
           navigate({ hash: "#settings" })
         }
         }>
-          <span className="material-symbols-outlined">settings</span>
+          <Settings {...iconProps} />
           <p>Settings</p>
         </div>
       </div>

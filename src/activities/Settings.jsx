@@ -103,17 +103,24 @@ function Settings({
                             {/* <span className="material-symbols-outlined">resume</span> */}
                             <h4>Appearance</h4>
                         </div>
-                        <div className={`settings-menu-item ${selectedSettingsItem === "personalization" && "active"}`} onClick={(e) => {
-                            e.target.style.opacity = "0.7"
-                            setTimeout(() => {
-                                e.target.style.opacity = "1"
-                            }, 200);
-                            setSelectedSettingsItem("personalization")
-                            window.innerWidth < 768 && setShowSettingsContent(true)
-                        }}>
-                            {/* <span className="material-symbols-outlined">text_select</span> */}
-                            <h4>Personalization</h4>
-                        </div>
+                        {
+                            user && isLoggedIn &&
+                            (
+
+                                <div className={`settings-menu-item ${selectedSettingsItem === "personalization" && "active"}`} onClick={(e) => {
+                                    e.target.style.opacity = "0.7"
+                                    setTimeout(() => {
+                                        e.target.style.opacity = "1"
+                                    }, 200);
+                                    setSelectedSettingsItem("personalization")
+                                    window.innerWidth < 768 && setShowSettingsContent(true)
+                                }}>
+                                    {/* <span className="material-symbols-outlined">text_select</span> */}
+                                    <h4>Personalization</h4>
+                                </div>
+
+                            )
+                        }
                         {
                             user && isLoggedIn &&
                             (
@@ -222,6 +229,15 @@ function Settings({
                                         </div>
                                     </div>
                                 }
+                                {/* <div className="settings-item">
+                                    <p className="item-name">Animations</p>
+                                    <div className={`switch ${animations && "active"}`} onClick={() => {
+                                        setAnimations(!animations)
+                                        localStorage.setItem("animations", JSON.stringify(!animations))
+                                    }}>
+                                        <div className="switch-btn"></div>
+                                    </div>
+                                </div> */}
                                 {/* {
                                     animations &&
                                     <>

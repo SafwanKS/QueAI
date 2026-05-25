@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react'
-
+import { Sparkles, Code2, FileText, PenLine, GraduationCap } from 'lucide-react'
 const SearchTools = forwardRef(({
     setQuestion,
     inputRef,
@@ -12,7 +12,8 @@ const SearchTools = forwardRef(({
     setShowProjectCreation,
     setCustomePlaceHolder,
     setShowSuggestions,
-    setSuggestionsList
+    setSuggestionsList,
+    setExpanded
 }, ref) => {
 
     const suggessions = {
@@ -40,114 +41,83 @@ const SearchTools = forwardRef(({
 
     }
 
+    const iconProps = { size: 18 }
+
     return (
         <div ref={ref} className="toolsContainer invisible">
             <div className="tool" onClick={(e) => {
                 e.target.style.opacity = "0.7"
-                setTimeout(() => {
-                    e.target.style.opacity = "1"
-                }, 200);
+                setTimeout(() => { e.target.style.opacity = "1" }, 200);
                 setToolMode(true)
                 setToolName("draw")
-                // searchContainerRef.current.classList.add("onsearch")
-                showCanvasWindow()
                 setCustomePlaceHolder("Describe your image")
+                setExpanded(true)
                 ref.current.classList.add("hide")
-                setTimeout(() => {
-                    inputRef.current.focus()
-                }, 100);
+                setTimeout(() => { inputRef.current.focus() }, 100);
             }}>
-                <span className='material-symbols-outlined'>animated_images</span>
+                <Sparkles {...iconProps} />
                 <p>Create an image</p>
             </div>
-            <div className="tool" onClick={(e) => {
-                // setQuestion("How do I optimize this Python loop for better performance?")
-                // inputRef.current.value = "How do I optimize this Python loop for better performance?"
-                e.target.style.opacity = "0.7"
-                setTimeout(() => {
-                    e.target.style.opacity = "1"
-                }, 200);
-                setTimeout(() => {
-                    inputRef.current.focus()
-                }, 100);
 
-                // inputRef.current.classList.remove("active")
-                // setBtnState(true)
+            <div className="tool" onClick={(e) => {
+                e.target.style.opacity = "0.7"
+                setTimeout(() => { e.target.style.opacity = "1" }, 200);
+                setTimeout(() => { inputRef.current.focus() }, 100);
                 setToolMode(true)
                 setToolName("code")
                 setCustomePlaceHolder("Describe your idea...")
                 setSuggestionsList(suggessions.code)
                 setShowSuggestions(true)
+                setExpanded(true)
                 ref.current.classList.add("hide")
-                // setShowProjectCreation(true)
-
             }}>
-                <span className='material-symbols-outlined'>code</span>
+                <Code2 {...iconProps} />
                 <p>Create a project</p>
             </div>
+
             <div className="tool" onClick={(e) => {
                 e.target.style.opacity = "0.7"
-                setTimeout(() => {
-                    e.target.style.opacity = "1"
-                }, 200);
-                // setQuestion("Can you summarise this text for me? ")
-                // inputRef.current.value = "Can you summarise this text for me? "
-                setTimeout(() => {
-                    inputRef.current.focus()
-                }, 100);
-                // inputRef.current.classList.remove("active")
-                // setBtnState(true)
+                setTimeout(() => { e.target.style.opacity = "1" }, 200);
+                setTimeout(() => { inputRef.current.focus() }, 100);
                 setToolMode(true)
                 setToolName("summarise")
+                setExpanded(true)
                 setCustomePlaceHolder("Enter text to summarise")
                 ref.current.classList.add("hide")
             }}>
-                <span className='material-symbols-outlined'>assignment</span>
+                <FileText {...iconProps} />
                 <p>Summarise text</p>
             </div>
+
             <div className="tool" onClick={(e) => {
                 e.target.style.opacity = "0.7"
-                setTimeout(() => {
-                    e.target.style.opacity = "1"
-                }, 200);
-                // setQuestion("Can you help me write a short story about a brave knight?")
-                // inputRef.current.value = "Can you help me write a short story about a brave knight?"
-                setTimeout(() => {
-                    inputRef.current.focus()
-                }, 100);
-                // inputRef.current.classList.remove("active")
-                // setBtnState(true)
+                setTimeout(() => { e.target.style.opacity = "1" }, 200);
+                setTimeout(() => { inputRef.current.focus() }, 100);
                 setToolMode(true)
                 setToolName("story")
                 setCustomePlaceHolder("Write a story about...")
                 setSuggestionsList(suggessions.story)
                 setShowSuggestions(true)
+                setExpanded(true)
                 ref.current.classList.add("hide")
-            }} >
-                <span className='material-symbols-outlined'>ink_pen</span>
+            }}>
+                <PenLine {...iconProps} />
                 <p>Write a story</p>
             </div>
+
             <div className="tool" onClick={(e) => {
                 e.target.style.opacity = "0.7"
-                setTimeout(() => {
-                    e.target.style.opacity = "1"
-                }, 200);
-                // setQuestion("What are the key concepts in quantum physics?")
-                // inputRef.current.value = "What are the key concepts in quantum physics?"
-                setTimeout(() => {
-                    inputRef.current.focus()
-                }, 100);
-                // inputRef.current.classList.remove("active")
-                // setBtnState(true)
+                setTimeout(() => { e.target.style.opacity = "1" }, 200);
+                setTimeout(() => { inputRef.current.focus() }, 100);
                 setToolMode(true)
                 setToolName("learn")
                 setCustomePlaceHolder("What do you want to learn?")
                 setSuggestionsList(suggessions.learn)
                 setShowSuggestions(true)
+                setExpanded(true)
                 ref.current.classList.add("hide")
-
-            }} >
-                <span className='material-symbols-outlined'>school</span>
+            }}>
+                <GraduationCap {...iconProps} />
                 <p>Learn a topic</p>
             </div>
         </div>
